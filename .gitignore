@@ -13,3 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+/dashboard/tmp/
+/db/volumes/
+/trader/tmp/
