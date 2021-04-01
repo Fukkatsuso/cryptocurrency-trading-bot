@@ -1,0 +1,46 @@
+version: "3.7"
+
+services:
+  trader:
+    build: 
+      context: ./trader/
+      dockerfile: Dockerfile
+      target: dev
+    container_name: trading_trader
+    ports: 
+      - 8000:8080
+    tty: true
+    volumes:
+      - ./trader:/go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/trader
+    working_dir: /go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/trader
+
+  dashboard:
+    build:
+      context: ./dashboard/
+      dockerfile: Dockerfile
+      target: dev
+    container_name: trading_dashboard
+    ports:
+      - 8080:8080
+    tty: true
+    volumes:
+      - ./dashboard:/go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard
+    working_dir: /go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard
+
+  db:
+    build:
+      context: ./db/
+      dockerfile: Dockerfile
+    container_name: trading_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: trading_db
+      MYSQL_USER: trading_app
+      MYSQL_PASSWORD: password
+      TZ: "Asia/Tokyo"
+    ports:
+      - 3306:3306
+    restart: always
+    volumes:
+      - ./db/volumes:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
