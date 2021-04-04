@@ -44,7 +44,7 @@ jobs:
 
       - name: Migrate DB (up)
         run: |
-          migrate -path migrations/ -database '$MYSQL_DSN' up
+          migrate -path "./migrations/" -database "$MYSQL_DSN" up
 
   deploy-trader:
     runs-on: ubuntu-18.04
