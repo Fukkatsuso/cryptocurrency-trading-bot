@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
       target: dev
     container_name: trading_trader
+    env_file:
+      - .env
     links:
       - db
     ports:
@@ -22,6 +24,8 @@ services:
       dockerfile: Dockerfile
       target: dev
     container_name: trading_dashboard
+    env_file:
+      - .env
     links:
       - db
     ports:
@@ -38,10 +42,9 @@ services:
     container_name: trading_db
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: trading_db
-      MYSQL_USER: trading_app
-      MYSQL_PASSWORD: password
       TZ: "Asia/Tokyo"
+    env_file:
+      - .env
     ports:
       - 3306:3306
     restart: always
