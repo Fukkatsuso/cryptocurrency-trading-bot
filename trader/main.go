@@ -13,11 +13,21 @@ import (
 
 var db *sql.DB
 
+var (
+	MYSQL_USER     = os.Getenv("MYSQL_USER")
+	MYSQL_PASSWORD = os.Getenv("MYSQL_PASSWORD")
+	MYSQL_HOST     = os.Getenv("MYSQL_HOST")
+	MYSQL_PORT     = os.Getenv("MYSQL_PORT")
+	MYSQL_DATABASE = os.Getenv("MYSQL_DATABASE")
+)
+
 var timeFormat = "2006-01-02 15:04:05"
 
 func init() {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE)
+	fmt.Println("dsn:", dsn)
 	var err error
-	db, err = sql.Open("mysql", "trading_app:password@tcp(db:3306)/trading_db")
+	db, err = sql.Open("mysql", dsn)
 	if err != nil {
 		panic(err.Error())
 	}
