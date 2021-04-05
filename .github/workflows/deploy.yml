@@ -35,6 +35,19 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
+      - name: Create Key File
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" > $KEY_FILE
+
+      - name: Start Cloud SQL Proxy
+        run: |
+          docker run -d \
+            -v $KEY_FILE:/config \
+            -p 127.0.0.1:3306:3306 \
+            gcr.io/cloudsql-docker/gce-proxy:1.19.1 /cloud_sql_proxy \
+            -instances=$CLOUDSQL_INSTANCE_CONNECTION_NAME=tcp:0.0.0.0:3306 \
+            -credential_file=/config
+
       - name: Install migrate
         run: |
           curl -L https://packagecloud.io/golang-migrate/migrate/gpgkey | sudo apt-key add -
