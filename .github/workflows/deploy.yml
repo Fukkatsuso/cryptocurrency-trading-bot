@@ -12,6 +12,7 @@ on:
       - '.gitignore'
 
 env:
+  PROXY_IMAGE: gcr.io/cloudsql-docker/gce-proxy:1.19.1
   GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
   GCP_REGION: ${{ secrets.GCP_REGION }}
   CLOUDSQL_INSTANCE: ${{ secrets.CLOUDSQL_INSTANCE }}
@@ -31,17 +32,14 @@ jobs:
     defaults:
       run:
         working-directory: db
-    env:
-      PROXY_IMAGE: gcr.io/cloudsql-docker/gce-proxy:1.19.1
-      KEY_FILE: sa_key
 
     steps:
       - uses: actions/checkout@v1
 
       - name: Setup for Cloud SQL Proxy
         run: |
-          echo "${{ secrets.GCP_SA_KEY }}" > env.KEY_FILE
-          docker pull env.PROXY_IMAGE
+          echo "${{ secrets.GCP_SA_KEY }}" > sa_key
+          docker pull $PROXY_IMAGE
 
       - name: Install migrate
         run: |
@@ -53,9 +51,9 @@ jobs:
       - name: Migrate DB (up)
         run: |
           docker run -d \
-            -v $PWD/env.KEY_FILE:/config \
+            -v $PWD/sa_key:/config \
             -p 127.0.0.1:3306:3306 \
-            env.PROXY_IMAGE /cloud_sql_proxy \
+            $PROXY_IMAGE /cloud_sql_proxy \
             -instances=$CLOUDSQL_INSTANCE_CONNECTION_NAME=tcp:0.0.0.0:3306 \
             -credential_file=/config
           docker ps
