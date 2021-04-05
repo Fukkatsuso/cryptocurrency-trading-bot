@@ -31,23 +31,17 @@ jobs:
     defaults:
       run:
         working-directory: db
+    env:
+      PROXY_IMAGE: gcr.io/cloudsql-docker/gce-proxy:1.19.1
+      KEY_FILE: sa_key
 
     steps:
       - uses: actions/checkout@v1
 
-      - name: Create Key File
+      - name: Setup for Cloud SQL Proxy
         run: |
           echo "${{ secrets.GCP_SA_KEY }}" > env.KEY_FILE
-
-      - name: Start Cloud SQL Proxy
-        run: |
-          docker run -d \
-            -v $PWD/env.KEY_FILE:/config \
-            -p 127.0.0.1:3306:3306 \
-            gcr.io/cloudsql-docker/gce-proxy:1.19.1 /cloud_sql_proxy \
-            -instances=$CLOUDSQL_INSTANCE_CONNECTION_NAME=tcp:0.0.0.0:3306 \
-            -credential_file=/config
-          docker ps
+          docker pull env.PROXY_IMAGE
 
       - name: Install migrate
         run: |
@@ -58,6 +52,12 @@ jobs:
 
       - name: Migrate DB (up)
         run: |
+          docker run -d \
+            -v $PWD/env.KEY_FILE:/config \
+            -p 127.0.0.1:3306:3306 \
+            env.PROXY_IMAGE /cloud_sql_proxy \
+            -instances=$CLOUDSQL_INSTANCE_CONNECTION_NAME=tcp:0.0.0.0:3306 \
+            -credential_file=/config
           docker ps
           migrate -path "./migrations/" -database "$MYSQL_DSN" up
 
