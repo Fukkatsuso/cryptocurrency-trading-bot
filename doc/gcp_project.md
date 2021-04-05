@@ -112,6 +112,7 @@ gcloud sql databases list --instance=${CLOUDSQL_INSTANCE} # DBが作成された
 ```
 GCP_PROJECT: プロジェクトID
 GCP_REGION: リージョン
+GCP_SA_KEY_JSON: サービスアカウントのJSON鍵
 GCP_SA_KEY: サービスアカウントのJSON鍵をBase64エンコード
 CLOUDSQL_INSTANCE: Cloud SQLのインスタンス名
 MYSQL_USER: 作成したユーザ
