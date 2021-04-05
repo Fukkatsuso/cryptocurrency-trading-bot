@@ -59,6 +59,7 @@ jobs:
 
       - name: Migrate DB (up)
         run: |
+          docker ps
           migrate -path "./migrations/" -database "$MYSQL_DSN" up
 
   deploy-trader:
