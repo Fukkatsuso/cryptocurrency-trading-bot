@@ -40,6 +40,12 @@ jobs:
         run: |
           echo "${{ secrets.GCP_SA_KEY_JSON }}" > sa_key
           docker pull $PROXY_IMAGE
+          docker run -d \
+            -v $PWD/sa_key:/config \
+            -p 127.0.0.1:3306:3306 \
+            $PROXY_IMAGE /cloud_sql_proxy \
+            -instances=$CLOUDSQL_INSTANCE_CONNECTION_NAME=tcp:0.0.0.0:3306 \
+            -credential_file=/config
 
       - name: Install migrate
         run: |
@@ -50,12 +56,6 @@ jobs:
 
       - name: Migrate DB (up)
         run: |
-          docker run -d \
-            -v $PWD/sa_key:/config \
-            -p 127.0.0.1:3306:3306 \
-            $PROXY_IMAGE /cloud_sql_proxy \
-            -instances=$CLOUDSQL_INSTANCE_CONNECTION_NAME=tcp:0.0.0.0:3306 \
-            -credential_file=/config
           docker ps
           migrate -path "./migrations/" -database "$MYSQL_DSN" up
 
