@@ -31,8 +31,6 @@ jobs:
     defaults:
       run:
         working-directory: db
-    env:
-      KEY_FILE: sa_key
 
     steps:
       - uses: actions/checkout@v1
@@ -130,7 +128,7 @@ jobs:
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy dashboard \
+          gcloud run deploy trader \
             --image $DASHBOARD_IMAGE \
             --project $GCP_PROJECT \
             --region $GCP_REGION \
