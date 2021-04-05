@@ -21,7 +21,7 @@ env:
   MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
   MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
   MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-  MYSQL_DSN: mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@tcp(${{ secrets.MYSQL_HOST }}:${{ secrets.MYSQL_PORT }})/${{ secrets.MYSQL_DATABASE }}
+  MYSQL_DSN: mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@tcp(127.0.0.1:${{ secrets.MYSQL_PORT }})/${{ secrets.MYSQL_DATABASE }}
   TRADER_IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/trader:${{ github.sha }}
   DASHBOARD_IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/dashboard:${{ github.sha }}
 
