@@ -36,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Setup for Cloud SQL Proxy
+      - name: Start Cloud SQL Proxy
         run: |
           echo '${{ secrets.GCP_SA_KEY_JSON }}' > sa_key
           docker pull $PROXY_IMAGE
@@ -56,7 +56,6 @@ jobs:
 
       - name: Migrate DB (up)
         run: |
-          docker ps
           migrate -path "./migrations/" -database "$MYSQL_DSN" up
 
   deploy-trader:
