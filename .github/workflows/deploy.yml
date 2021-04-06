@@ -119,7 +119,7 @@ jobs:
         run: gcloud auth configure-docker --quiet
 
       - name: Build a docker image
-        run: docker build -f Dockerfile --target release -t $TRADER_IMAGE .
+        run: docker build -f Dockerfile --target release -t $DASHBOARD_IMAGE .
 
       - name: Push the docker image
         run: docker push $DASHBOARD_IMAGE
