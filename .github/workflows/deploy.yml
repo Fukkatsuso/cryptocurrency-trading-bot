@@ -126,7 +126,7 @@ jobs:
 
       - name: Deploy to Cloud Run
         run: |
-          gcloud run deploy trader \
+          gcloud run deploy dashboard \
             --image $DASHBOARD_IMAGE \
             --project $GCP_PROJECT \
             --region $GCP_REGION \
