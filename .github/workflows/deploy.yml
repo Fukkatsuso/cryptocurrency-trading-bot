@@ -40,7 +40,7 @@ jobs:
         run: |
           echo '${{ secrets.GCP_SA_KEY_JSON }}' > sa_key
           docker pull $PROXY_IMAGE
-          docker run \
+          docker run -d \
             -v $PWD/sa_key:/config \
             -p 127.0.0.1:3306:3306 \
             $PROXY_IMAGE /cloud_sql_proxy \
