@@ -16,7 +16,7 @@ env:
   GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
   GCP_REGION: ${{ secrets.GCP_REGION }}
   CLOUDSQL_INSTANCE: ${{ secrets.CLOUDSQL_INSTANCE }}
-  CLOUDSQL_INSTANCE_CONNECTION_NAME: ${{ secrets.GCP_PROJECT }}:${{ secrets.GCP_REGION }}:${{ secrets.CLOUDSQL_INSTANCE_NAME }}
+  CLOUDSQL_INSTANCE_CONNECTION_NAME: ${{ secrets.GCP_PROJECT }}:${{ secrets.GCP_REGION }}:${{ secrets.CLOUDSQL_INSTANCE }}
   MYSQL_USER: ${{ secrets.MYSQL_USER }}
   MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
   MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
