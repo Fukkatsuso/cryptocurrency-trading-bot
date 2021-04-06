@@ -112,8 +112,7 @@ gcloud sql databases list --instance=${CLOUDSQL_INSTANCE} # DBが作成された
 ```
 GCP_PROJECT: プロジェクトID
 GCP_REGION: リージョン
-GCP_SA_KEY_JSON: サービスアカウントのJSON鍵
-GCP_SA_KEY: サービスアカウントのJSON鍵をBase64エンコード
+GCP_SA_KEY: サービスアカウントのJSON鍵
 CLOUDSQL_INSTANCE: Cloud SQLのインスタンス名
 MYSQL_USER: 作成したユーザ
 MYSQL_PASSWORD: ユーザのパスワード
@@ -122,9 +121,4 @@ MYSQL_PORT: ポート番号
 MYSQL_DATABASE: 作成したデータベース
 ```
 
-`GCP_SA_KEY`の取得方法
-
-```sh
-# Cloud Shell上で
-openssl base64 -in ~/${PROJECT_ID}/${SA_NAME}/key.json
-```
+`GCP_SA_KEY`は，Cloud Shellの`~/${PROJECT_ID}/${SA_NAME}/key.json`に作成済み

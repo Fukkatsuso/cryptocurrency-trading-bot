@@ -15,7 +15,6 @@ env:
   PROXY_IMAGE: gcr.io/cloudsql-docker/gce-proxy:1.19.1
   GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
   GCP_REGION: ${{ secrets.GCP_REGION }}
-  CLOUDSQL_INSTANCE: ${{ secrets.CLOUDSQL_INSTANCE }}
   CLOUDSQL_INSTANCE_CONNECTION_NAME: ${{ secrets.GCP_PROJECT }}:${{ secrets.GCP_REGION }}:${{ secrets.CLOUDSQL_INSTANCE }}
   MYSQL_USER: ${{ secrets.MYSQL_USER }}
   MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
@@ -36,9 +35,9 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Setup for Cloud SQL Proxy
+      - name: Start Cloud SQL Proxy
         run: |
-          echo '${{ secrets.GCP_SA_KEY_JSON }}' > sa_key
+          echo '${{ secrets.GCP_SA_KEY }}' > sa_key
           docker pull $PROXY_IMAGE
           docker run -d \
             -v $PWD/sa_key:/config \
@@ -56,7 +55,6 @@ jobs:
 
       - name: Migrate DB (up)
         run: |
-          docker ps
           migrate -path "./migrations/" -database "$MYSQL_DSN" up
 
   deploy-trader:
@@ -69,8 +67,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: GCP Authenticate
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
         with:
           project_id: ${{ secrets.GCP_PROJECT }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
@@ -110,8 +108,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: GCP Authenticate
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
         with:
           project_id: ${{ secrets.GCP_PROJECT }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
