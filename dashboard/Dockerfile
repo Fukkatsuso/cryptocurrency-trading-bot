@@ -18,5 +18,25 @@ RUN go get -v github.com/pilu/fresh
 CMD [ "fresh" ]
 
 
-# ビルドの参考
-# https://cloud.google.com/run/docs/quickstarts/build-and-deploy?hl=ja#containerizing
+# 参考: https://cloud.google.com/run/docs/quickstarts/build-and-deploy?hl=ja#containerizing
+FROM base AS builder
+
+COPY go.* ./
+RUN go mod download
+
+COPY . ./
+
+RUN CGO_ENABLED=0 GOOS=linux go build -mod=readonly -x -o /go/bin/server
+
+
+FROM debian:buster-slim AS release
+
+RUN set -x && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+      ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /go/bin/server /go/bin/server
+
+CMD [ "/go/bin/server" ]
