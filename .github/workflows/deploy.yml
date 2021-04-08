@@ -96,6 +96,7 @@ jobs:
             --update-env-vars MYSQL_HOST="$MYSQL_HOST" \
             --update-env-vars MYSQL_PORT="$MYSQL_PORT" \
             --update-env-vars MYSQL_DATABASE="$MYSQL_DATABASE" \
+            --update-env-vars MYSQL_CONNECTION_NAME="$CLOUDSQL_INSTANCE_CONNECTION_NAME" \
             --quiet
 
   deploy-dashboard:
@@ -137,5 +138,6 @@ jobs:
             --update-env-vars MYSQL_HOST="$MYSQL_HOST" \
             --update-env-vars MYSQL_PORT="$MYSQL_PORT" \
             --update-env-vars MYSQL_DATABASE="$MYSQL_DATABASE" \
+            --update-env-vars MYSQL_CONNECTION_NAME="$CLOUDSQL_INSTANCE_CONNECTION_NAME" \
             --allow-unauthenticated \
             --quiet
