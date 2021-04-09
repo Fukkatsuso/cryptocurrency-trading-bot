@@ -65,6 +65,8 @@ export PROJECT_NUMBER=XXXXXXXXXXXX # GCPコンソールの「プロジェクト�
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${IAM_ACCOUNT}" \
   --role="roles/run.admin"
+gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${IAM_ACCOUNT}" \
+  --role="roles/storage.admin"
 gcloud iam service-accounts add-iam-policy-binding ${PROJECT_NUMBER}-compute@developer.gserviceaccount.com --member="serviceAccount:${IAM_ACCOUNT}" \
   --role="roles/iam.serviceAccountUser"
 
