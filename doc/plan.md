@@ -23,13 +23,14 @@
 
 - DB: Cloud SQL
 - Server: Cloud Run
-- Scheduler: Cloud Scheduler, Pub/Sub
+- Scheduler: Cloud Scheduler
 - CI/CD: GitHub Actions
 
 取引に関わる処理（バックエンド）と情報表示（フロントエンド）で分けて開発する．
 
-取引を定期実行するためCloud SchedulerとPub/Subを使用．
+取引を定期実行するためCloud Schedulerを使用．
 バックエンドのCloud Runは認証必須にする．
+SchedulerとCloud Runの間にPub/Subを噛ませることが必要だと思っていたが，Schedulerから直接Cloud Runのサービスを認証付きで呼び出せるようなので，Pub/Subは不採用となった．
 
 GitHub Actionsでコードのpushをトリガーにテスト・デプロイする．
 
