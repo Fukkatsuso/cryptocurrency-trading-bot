@@ -17,5 +17,5 @@ func HelloWorldHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    fmt.Fprintf(w, "Hello World! (trader)\neth_candles count: %d\n", count)
+	fmt.Fprintf(w, "Hello World! (trader)\neth_candles count: %d\n", count)
 }
