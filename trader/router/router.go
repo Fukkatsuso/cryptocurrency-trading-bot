@@ -10,7 +10,7 @@ import (
 
 func Run() {
 	http.HandleFunc("/", controller.HelloWorldHandler)
-	http.HandleFunc("/fetch-board", controller.FetchBoardHandler)
+	http.HandleFunc("/fetch-ticker", controller.FetchTickerHandler)
 
 	// Determine port for HTTP service.
 	port := os.Getenv("PORT")
