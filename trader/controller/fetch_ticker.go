@@ -3,9 +3,11 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/config"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/bitflyer"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/model"
 )
 
 func FetchTickerHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +21,13 @@ func FetchTickerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 時刻をeth_candlesに保存
-	fmt.Println(ticker)
+	err = model.CreateCandleWithDuration(ticker, config.ProductCode, time.Hour)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Failed to create candle")
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Fetch ticker")

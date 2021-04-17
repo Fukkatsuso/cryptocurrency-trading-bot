@@ -118,3 +118,7 @@ func (c *Client) GetTicker(productCode string) (*Ticker, error) {
 	}
 	return &ticker, nil
 }
+
+func (t *Ticker) GetMidPrice() float64 {
+	return (t.BestBid + t.BestAsk) / 2
+}

@@ -17,6 +17,12 @@ var (
 	MYSQL_PORT            = os.Getenv("MYSQL_PORT")
 	MYSQL_DATABASE        = os.Getenv("MYSQL_DATABASE")
 	MYSQL_CONNECTION_NAME = os.Getenv("MYSQL_CONNECTION_NAME")
+	MYSQL_OPTION          = "?parseTime=true"
+)
+
+const (
+	CandleTableName = "eth_candles"
+	TimeFormat      = "2006-01-02 15:04:05"
 )
 
 func DSN() string {
@@ -27,9 +33,9 @@ func DSN() string {
 
 	var dsn string
 	if MYSQL_CONNECTION_NAME == "" {
-		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE)
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s%s", MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE, MYSQL_OPTION)
 	} else {
-		dsn = fmt.Sprintf("%s:%s@unix(/%s/%s)/%s", MYSQL_USER, MYSQL_PASSWORD, socketDir, MYSQL_CONNECTION_NAME, MYSQL_DATABASE)
+		dsn = fmt.Sprintf("%s:%s@unix(/%s/%s)/%s%s", MYSQL_USER, MYSQL_PASSWORD, socketDir, MYSQL_CONNECTION_NAME, MYSQL_DATABASE, MYSQL_OPTION)
 	}
 
 	return dsn
