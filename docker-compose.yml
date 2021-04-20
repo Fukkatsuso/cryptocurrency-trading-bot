@@ -51,3 +51,14 @@ services:
     volumes:
       - ./db/volumes:/var/lib/mysql
       - ./db/init:/docker-entrypoint-initdb.d
+
+  scheduler:
+    build:
+      context: ./scheduler/
+      dockerfile: Dockerfile
+    container_name: trader_scheduler
+    tty: true
+    volumes:
+      - ./scheduler:/go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/scheduler
+    working_dir: /go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/scheduler
+    command: go run main.go
