@@ -1,5 +1,13 @@
 # GCPのプロジェクトに関して
 
+## Caution
+
+### アプリを一時的に止める際のCloud SQLインスタンス
+
+当然インスタンスを停止させるが，パブリックIPアドレスが設定されたままだと何もしなくても1日40円くらい課金されてしまう．
+GCPコンソールの`SQL`=>`接続`=>`ネットワーキング`から「プライベートIP」に切り替えておくこと．
+その上でインスタンスを停止．
+
 ## Setup
 
 ### Cloud Shell上での作業
@@ -124,3 +132,36 @@ MYSQL_DATABASE: 作成したデータベース
 ```
 
 `GCP_SA_KEY`は，Cloud Shellの`~/${PROJECT_ID}/${SA_NAME}/key.json`に作成済み
+
+## Job Scheduling
+
+### Cloud Schedulerジョブの作成（Cloud Runにデプロイできてから）
+
+ticker取得や売買を定期的に行うため，ジョブを作成する．
+
+以下のコマンドをCloud Shell上で実行する．
+パラメータは適宜変更．
+`IAM_ACCOUNT`は以前作成したもの．
+
+```sh
+export JOB_NAME=job
+export SERVICE_URL=https://xxx/yyy
+# http-methodはGET, POST, PUT, DELETE, HEADのうちどれか
+gcloud beta scheduler jobs create http ${JOB_NAME} \
+  --schedule "5 * * * *" \
+  --http-method="POST" \
+  --uri="${SERVICE_URL}" \
+  --oidc-service-account-email="${IAM_ACCOUNT}" \
+  --oidc-token-audience="${SERVICE_URL}"
+  --time-zone="Asia/Tokyo"
+```
+
+参考（スケジューリング）: https://cloud.google.com/run/docs/triggering/using-scheduler?hl=ja
+参考（createコマンド）: https://cloud.google.com/sdk/gcloud/reference/beta/scheduler/jobs/create
+
+### crontabの書き方の例
+
+`* * * * *`で左から「分」「時」「日」「月」「曜日」の順
+
+- 5分おき: `*/5 * * * *`
+- 毎日9時: `00 9 * * *`
