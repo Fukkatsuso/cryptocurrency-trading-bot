@@ -26,8 +26,8 @@ env:
   BITFLYER_API_KEY: "hoge"
   BITFLYER_API_SECRET: "fuga"
   PRODUCT_CODE: "ETH_JPY"
-  TRADER_IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/trader #:${{ github.sha }}
-  DASHBOARD_IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/dashboard #:${{ github.sha }}
+  TRADER_IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/trader:${{ github.sha }}
+  DASHBOARD_IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/dashboard:${{ github.sha }}
 
 jobs:
   migrate-db:
