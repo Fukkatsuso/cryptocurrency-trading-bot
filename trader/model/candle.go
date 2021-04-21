@@ -61,20 +61,19 @@ func GetCandle(productCode string, duration time.Duration, dateTime time.Time) *
 	return NewCandle(productCode, duration, candle.Time, candle.Open, candle.Close, candle.High, candle.Low, candle.Volume)
 }
 
-// tickerのTimestampをフォーマット付きJSTに変換
-func DateTimeJST(timeString string) time.Time {
+// tickerのTimestampをフォーマット付きLocalTimeに変換
+func DateTimeLocal(timeString string) time.Time {
 	dateTimeUTC, err := time.Parse("2006-01-02T15:04:05", timeString)
 	if err != nil {
-		fmt.Println("[DateTimeJST]", err)
+		fmt.Println("[DateTimeLocal]", err)
 	}
 
-	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
-	return dateTimeUTC.In(jst)
+	return dateTimeUTC.In(config.LocalTime)
 }
 
 // hour時で1日を区切ってTruncate
-func TruncateDateTimeJST(timeString string, hour int) time.Time {
-	dateTime := DateTimeJST(timeString).Truncate(time.Hour)
+func TruncateDateTimeLocal(timeString string, hour int) time.Time {
+	dateTime := DateTimeLocal(timeString).Truncate(time.Hour)
 
 	// [0, hour)時の場合，日付を1日戻す
 	if dateTime.Hour() < hour {
@@ -87,7 +86,7 @@ func TruncateDateTimeJST(timeString string, hour int) time.Time {
 }
 
 func CreateCandleWithDuration(ticker *bitflyer.Ticker, productCode string, duration time.Duration) error {
-	truncateDateTime := TruncateDateTimeJST(ticker.Timestamp, config.TradeHour)
+	truncateDateTime := TruncateDateTimeLocal(ticker.Timestamp, config.TradeHour)
 	price := ticker.GetMidPrice()
 	currentCandle := GetCandle(productCode, duration, truncateDateTime)
 
