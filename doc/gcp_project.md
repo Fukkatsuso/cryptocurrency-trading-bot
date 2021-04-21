@@ -152,7 +152,7 @@ gcloud beta scheduler jobs create http ${JOB_NAME} \
   --http-method="POST" \
   --uri="${SERVICE_URL}" \
   --oidc-service-account-email="${IAM_ACCOUNT}" \
-  --oidc-token-audience="${SERVICE_URL}"
+  --oidc-token-audience="${SERVICE_URL}" \
   --time-zone="Asia/Tokyo"
 ```
 
