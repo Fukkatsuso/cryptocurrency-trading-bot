@@ -6,8 +6,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -58,7 +58,7 @@ func (c *Client) doRequest(method, path string, query map[string]string, body []
 		return
 	}
 	endpoint := baseURL.ResolveReference(apiURL).String()
-	log.Printf("[doRequest] %s %s", method, endpoint)
+	fmt.Printf("[doRequest] %s %s\n", method, endpoint)
 
 	req, err := http.NewRequest(method, endpoint, bytes.NewBuffer(body))
 	if err != nil {

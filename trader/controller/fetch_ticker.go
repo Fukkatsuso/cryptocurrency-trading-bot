@@ -20,7 +20,7 @@ func FetchTickerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("[ticker]", *ticker)
+	fmt.Println("[fetchTicker]", *ticker)
 
 	// 時刻をeth_candlesに保存
 	err = model.CreateCandleWithDuration(ticker, config.ProductCode, time.Hour)
