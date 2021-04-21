@@ -1,13 +1,13 @@
 package main
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/router"
 )
 
 func main() {
-	log.Print("starting server...")
+	fmt.Println("starting server...")
 
 	router.Run()
 }
