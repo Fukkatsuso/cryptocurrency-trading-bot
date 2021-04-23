@@ -15,6 +15,7 @@
 # vendor/
 
 .env
+sa_key
 
 /dashboard/tmp/
 /db/volumes/

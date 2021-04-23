@@ -165,3 +165,28 @@ gcloud beta scheduler jobs create http ${JOB_NAME} \
 
 - 5分おき: `*/5 * * * *`
 - 毎日9時: `00 9 * * *`
+
+## DBクライアントをCloud SQLに接続
+
+Cloud SQL Proxyを立てる
+
+```sh
+# sa_keyファイルにGCPサービスアカウントのキーを保存しておく
+docker run \
+  -v $PWD/sa_key:/config \
+  -p 127.0.0.1:3306:3306 \
+  gcr.io/cloudsql-docker/gce-proxy:1.19.1 /cloud_sql_proxy \
+  -instances=$GCP_PROJECT:$GCP_REGION:$CLOUDSQL_INSTANCE=tcp:0.0.0.0:3306 \
+  -credential_file=/config
+```
+
+DBクライアントで以下を設定すれば接続可能になる
+
+```
+Ver.: MySQL 5.x
+Host: 127.0.0.1
+Port: 3306
+User: (MYSQL_USERと同じ)
+Password: (MYSQL_PASSWORDと同じ)
+Database: (MYSQL_DATABASEと同じ)
+```
