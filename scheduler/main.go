@@ -25,7 +25,7 @@ func traderFetchTicker() {
 
 func main() {
 	c := cron.New()
-	c.AddFunc("*/1 * * * *", traderFetchTicker)
+	c.AddFunc("*/5 * * * *", traderFetchTicker)
 	c.Start()
 
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {})

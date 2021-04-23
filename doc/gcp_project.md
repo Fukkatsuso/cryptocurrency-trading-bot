@@ -22,7 +22,7 @@ gcloud config set project ${PROJECT_ID}
 gcloud config set run/region ${REGION}
 ```
 
-参考: https://cloud.google.com/sdk/gcloud/reference/projects/create
+- 参考: https://cloud.google.com/sdk/gcloud/reference/projects/create
 
 #### 2. 課金の有効化
 
@@ -94,7 +94,7 @@ export CLOUDSQL_INSTANCE=trading-mysql
 gcloud sql instances create ${CLOUDSQL_INSTANCE} --database-version=MYSQL_5_7 --region=${REGION} --tier=db-f1-micro
 ```
 
-参考: https://cloud.google.com/sql/docs/mysql/create-instance?hl=ja#gcloud
+- 参考: https://cloud.google.com/sql/docs/mysql/create-instance?hl=ja#gcloud
 
 DB初期化
 
@@ -112,8 +112,8 @@ gcloud sql databases create ${MYSQL_DATABASE} --instance=${CLOUDSQL_INSTANCE} --
 gcloud sql databases list --instance=${CLOUDSQL_INSTANCE} # DBが作成されたかチェック
 ```
 
-参考（ユーザの作成）: https://cloud.google.com/sdk/gcloud/reference/sql/users/create
-参考（DBの作成）: https://cloud.google.com/sdk/gcloud/reference/sql/databases/create
+- 参考（ユーザの作成）: https://cloud.google.com/sdk/gcloud/reference/sql/users/create
+- 参考（DBの作成）: https://cloud.google.com/sdk/gcloud/reference/sql/databases/create
 
 ### GitHubでの作業
 
@@ -156,8 +156,8 @@ gcloud beta scheduler jobs create http ${JOB_NAME} \
   --time-zone="Asia/Tokyo"
 ```
 
-参考（スケジューリング）: https://cloud.google.com/run/docs/triggering/using-scheduler?hl=ja
-参考（createコマンド）: https://cloud.google.com/sdk/gcloud/reference/beta/scheduler/jobs/create
+- 参考（スケジューリング）: https://cloud.google.com/run/docs/triggering/using-scheduler?hl=ja
+- 参考（createコマンド）: https://cloud.google.com/sdk/gcloud/reference/beta/scheduler/jobs/create
 
 ### crontabの書き方の例
 
@@ -165,3 +165,28 @@ gcloud beta scheduler jobs create http ${JOB_NAME} \
 
 - 5分おき: `*/5 * * * *`
 - 毎日9時: `00 9 * * *`
+
+## DBクライアントをCloud SQLに接続
+
+Cloud SQL Proxyを立てる
+
+```sh
+# sa_keyファイルにGCPサービスアカウントのキーを保存しておく
+docker run \
+  -v $PWD/sa_key:/config \
+  -p 127.0.0.1:3306:3306 \
+  gcr.io/cloudsql-docker/gce-proxy:1.19.1 /cloud_sql_proxy \
+  -instances=$GCP_PROJECT:$GCP_REGION:$CLOUDSQL_INSTANCE=tcp:0.0.0.0:3306 \
+  -credential_file=/config
+```
+
+DBクライアントで以下を設定すれば接続可能になる
+
+```
+Ver.: MySQL 5.x
+Host: 127.0.0.1
+Port: 3306
+User: (MYSQL_USERと同じ)
+Password: (MYSQL_PASSWORDと同じ)
+Database: (MYSQL_DATABASEと同じ)
+```
