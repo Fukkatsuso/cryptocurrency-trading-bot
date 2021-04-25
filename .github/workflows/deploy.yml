@@ -19,13 +19,11 @@ env:
   CLOUDSQL_INSTANCE_CONNECTION_NAME: ${{ secrets.GCP_PROJECT }}:${{ secrets.GCP_REGION }}:${{ secrets.CLOUDSQL_INSTANCE }}
   MYSQL_USER: ${{ secrets.MYSQL_USER }}
   MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-  MYSQL_HOST: ${{ secrets.MYSQL_HOST }}
-  MYSQL_PORT: ${{ secrets.MYSQL_PORT }}
   MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
-  MYSQL_DSN: mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@tcp(127.0.0.1:${{ secrets.MYSQL_PORT }})/${{ secrets.MYSQL_DATABASE }}
-  BITFLYER_API_KEY: "hoge"
-  BITFLYER_API_SECRET: "fuga"
-  PRODUCT_CODE: "ETH_JPY"
+  MYSQL_DSN: mysql://${{ secrets.MYSQL_USER }}:${{ secrets.MYSQL_PASSWORD }}@tcp(127.0.0.1:3306)/${{ secrets.MYSQL_DATABASE }}
+  BITFLYER_API_KEY: ${{ secrets.BITFLYER_API_KEY }}
+  BITFLYER_API_SECRET: ${{ secrets.BITFLYER_API_SECRET }}
+  PRODUCT_CODE: ${{ secrets.PRODUCT_CODE }}
   TRADER_IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/trader:${{ github.sha }}
   DASHBOARD_IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/dashboard:${{ github.sha }}
 
@@ -97,8 +95,6 @@ jobs:
             --add-cloudsql-instances $CLOUDSQL_INSTANCE_CONNECTION_NAME \
             --update-env-vars MYSQL_USER="$MYSQL_USER" \
             --update-env-vars MYSQL_PASSWORD="$MYSQL_PASSWORD" \
-            --update-env-vars MYSQL_HOST="$MYSQL_HOST" \
-            --update-env-vars MYSQL_PORT="$MYSQL_PORT" \
             --update-env-vars MYSQL_DATABASE="$MYSQL_DATABASE" \
             --update-env-vars MYSQL_CONNECTION_NAME="$CLOUDSQL_INSTANCE_CONNECTION_NAME" \
             --update-env-vars BITFLYER_API_KEY="$BITFLYER_API_KEY" \
@@ -142,8 +138,6 @@ jobs:
             --add-cloudsql-instances $CLOUDSQL_INSTANCE_CONNECTION_NAME \
             --update-env-vars MYSQL_USER="$MYSQL_USER" \
             --update-env-vars MYSQL_PASSWORD="$MYSQL_PASSWORD" \
-            --update-env-vars MYSQL_HOST="$MYSQL_HOST" \
-            --update-env-vars MYSQL_PORT="$MYSQL_PORT" \
             --update-env-vars MYSQL_DATABASE="$MYSQL_DATABASE" \
             --update-env-vars MYSQL_CONNECTION_NAME="$CLOUDSQL_INSTANCE_CONNECTION_NAME" \
             --update-env-vars BITFLYER_API_KEY="$BITFLYER_API_KEY" \
