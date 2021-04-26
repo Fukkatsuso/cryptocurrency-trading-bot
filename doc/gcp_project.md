@@ -119,19 +119,8 @@ gcloud sql databases list --instance=${CLOUDSQL_INSTANCE} # DBが作成された
 
 #### 環境変数を設定
 
-```
-GCP_PROJECT: プロジェクトID
-GCP_REGION: リージョン
-GCP_SA_KEY: サービスアカウントのJSON鍵
-CLOUDSQL_INSTANCE: Cloud SQLのインスタンス名
-MYSQL_USER: 作成したユーザ
-MYSQL_PASSWORD: ユーザのパスワード
-MYSQL_HOST: Cloud SQLインスタンスのパブリックIP
-MYSQL_PORT: ポート番号
-MYSQL_DATABASE: 作成したデータベース
-```
-
-`GCP_SA_KEY`は，Cloud Shellの`~/${PROJECT_ID}/${SA_NAME}/key.json`に作成済み
+- doc/env.mdを参照
+- `GCP_SA_KEY`は，Cloud Shellの`~/${PROJECT_ID}/${SA_NAME}/key.json`に作成済み
 
 ## Job Scheduling
 
