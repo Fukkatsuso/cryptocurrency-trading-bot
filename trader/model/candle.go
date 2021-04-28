@@ -104,3 +104,27 @@ func CreateCandleWithDuration(ticker *bitflyer.Ticker, productCode string, durat
 	currentCandle.Close = price
 	return currentCandle.Save()
 }
+
+func GetAllCandle(productCode string, duration time.Duration, limit int) (candles []Candle, err error) {
+	cmd := fmt.Sprintf("SELECT * FROM (SELECT time, open, close, high, low, volume FROM %s ORDER BY time DESC LIMIT ?) AS candle ORDER BY time ASC", config.CandleTableName)
+	rows, err := config.DB.Query(cmd, limit)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	candles = make([]Candle, 0)
+	for rows.Next() {
+		var candle Candle
+		candle.ProductCode = productCode
+		candle.Duration = duration
+		rows.Scan(&candle.Time, &candle.Open, &candle.Close, &candle.High, &candle.Low, &candle.Volume)
+		candles = append(candles, candle)
+	}
+	err = rows.Err()
+	if err != nil {
+		return
+	}
+
+	return candles, nil
+}
