@@ -9,7 +9,9 @@ import (
 )
 
 func Run() {
-	http.HandleFunc("/", controller.HelloWorldHandler)
+	http.HandleFunc("/", controller.IndexPageHandler)
+	http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("view/"))))
+
 	http.HandleFunc("/api/candle", controller.APICandleHandler)
 
 	// Determine port for HTTP service.
