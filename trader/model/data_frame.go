@@ -112,6 +112,9 @@ func (df *DataFrame) Volumes() []float64 {
 }
 
 func (df *DataFrame) AddSMA(period int) bool {
+	if df.SMAs == nil {
+		df.SMAs = make([]SMA, 0)
+	}
 	if len(df.Candles) > period {
 		df.SMAs = append(df.SMAs, SMA{
 			Period: period,
@@ -123,6 +126,9 @@ func (df *DataFrame) AddSMA(period int) bool {
 }
 
 func (df *DataFrame) AddEMA(period int) bool {
+	if df.EMAs == nil {
+		df.EMAs = make([]EMA, 0)
+	}
 	if len(df.Candles) > period {
 		df.EMAs = append(df.EMAs, EMA{
 			Period: period,
