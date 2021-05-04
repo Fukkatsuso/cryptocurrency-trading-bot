@@ -10,6 +10,7 @@ import (
 
 func Run() {
 	http.HandleFunc("/", controller.HelloWorldHandler)
+	http.HandleFunc("/api/candle", controller.APICandleHandler)
 
 	// Determine port for HTTP service.
 	port := os.Getenv("PORT")
