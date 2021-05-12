@@ -38,5 +38,6 @@ RUN set -x && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /go/bin/server /go/bin/server
+COPY view/ /go/bin/view/
 
 CMD [ "/go/bin/server" ]
