@@ -40,4 +40,5 @@ RUN set -x && \
 COPY --from=builder /go/bin/server /go/bin/server
 COPY view/ /go/bin/view/
 
-CMD [ "/go/bin/server" ]
+WORKDIR /go/bin
+CMD [ "./server" ]
