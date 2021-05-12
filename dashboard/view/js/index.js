@@ -1,10 +1,34 @@
+const chartOptions = {
+  chart: {
+    type: 'candlestick',
+    height: 350,
+  },
+  title: {
+    text: 'CandleStick Chart',
+    align: 'left',
+  },
+  xaxis: { // https://apexcharts.com/docs/options/xaxis/
+    type: 'datetime',
+  },
+  yaxis: {
+    tooltip: {
+      enabled: true,
+    },
+  },
+}
+
 new Vue({
   el: '#app',
   delimiters: ['${', '}'],
   vuetify: new Vuetify(),
+  components: {
+    apexchart: VueApexCharts,
+  },
   data() {
     return {
       candle: null,
+      series: null,
+      chartOptions: chartOptions,
     }
   },
   methods: {
@@ -21,8 +45,16 @@ new Vue({
         return null
       })
     },
-    drawChart() {
-      console.log("drawChart")
+    seriesData() {
+      const data = this.candle.candles.map(c => {
+        return {
+          x: new Date(c['time']),
+          y: [c['open'], c['high'], c['low'], c['close']],
+        }
+      })
+      return [{
+        data: data,
+      }]
     },
     async update() {
       // キャンドルデータとインディケータを取得
@@ -30,8 +62,8 @@ new Vue({
       if (!this.candle) {
         return
       }
-      // this.candleを使ってグラフ描画
-      this.drawChart()
+      // apexchartに渡すデータ
+      this.series = this.seriesData()
     }
   },
   mounted: async function() {
