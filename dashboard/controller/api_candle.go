@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/config"
@@ -11,8 +12,13 @@ import (
 
 // candleデータとテクニカル指標をjsonで返す
 func APICandleHandler(w http.ResponseWriter, r *http.Request) {
-	// limit: candle最大数．クエリパラメータで受け取る予定
-	limit := 10
+	// limit: candle最大数．[0, 1000]の範囲に限定
+	strLimit := r.URL.Query().Get("limit")
+	limit, err := strconv.Atoi(strLimit)
+	if strLimit == "" || err != nil || limit < 0 || limit > 1000 {
+		limit = 1000
+	}
+
 	candles, _ := model.GetAllCandle(config.ProductCode, 24*time.Hour, limit)
 
 	df := model.DataFrame{
