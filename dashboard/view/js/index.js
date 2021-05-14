@@ -27,7 +27,6 @@ new Vue({
   data() {
     return {
       candle: null,
-      series: null,
       chartOptions: chartOptions,
     }
   },
@@ -45,7 +44,18 @@ new Vue({
         return null
       })
     },
-    seriesData() {
+    async update() {
+      // キャンドルデータとインディケータを取得
+      this.candle = await this.getCandle()
+    }
+  },
+  computed: {
+    series() {
+      if (!this.candle || !this.candle.candles) {
+        return [{
+          data: []
+        }]
+      }
       const data = this.candle.candles.map(c => {
         return {
           x: new Date(c['time']),
@@ -55,15 +65,6 @@ new Vue({
       return [{
         data: data,
       }]
-    },
-    async update() {
-      // キャンドルデータとインディケータを取得
-      this.candle = await this.getCandle()
-      if (!this.candle) {
-        return
-      }
-      // apexchartに渡すデータ
-      this.series = this.seriesData()
     }
   },
   mounted: async function() {
