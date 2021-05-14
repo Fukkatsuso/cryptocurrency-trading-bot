@@ -22,9 +22,9 @@
           <v-toolbar-title>cryptocurrency trading bot</v-toolbar-title>
         </v-app-bar>
 
-        <v-container v-if="candle">
+        <v-container>
           <!-- ${ candle } -->
-          <div id="chart">
+          <div id="chart" v-if="candle">
             <apexchart
               height="400"
               :options="chartOptions"
