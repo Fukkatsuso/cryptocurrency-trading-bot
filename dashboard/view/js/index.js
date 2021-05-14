@@ -27,14 +27,16 @@ new Vue({
   data() {
     return {
       candle: null,
-      series: null,
       chartOptions: chartOptions,
+      config: {
+        limit: 30,
+      }
     }
   },
   methods: {
     async getCandle() {
       let params = {
-        "limit": 10,
+        "limit": this.config.limit,
       }
       return await axios.get('/api/candle', {
         params: params,
@@ -45,7 +47,18 @@ new Vue({
         return null
       })
     },
-    seriesData() {
+    async update() {
+      // キャンドルデータとインディケータを取得
+      this.candle = await this.getCandle()
+    }
+  },
+  computed: {
+    series() {
+      if (!this.candle || !this.candle.candles) {
+        return [{
+          data: []
+        }]
+      }
       const data = this.candle.candles.map(c => {
         return {
           x: new Date(c['time']),
@@ -55,15 +68,6 @@ new Vue({
       return [{
         data: data,
       }]
-    },
-    async update() {
-      // キャンドルデータとインディケータを取得
-      this.candle = await this.getCandle()
-      if (!this.candle) {
-        return
-      }
-      // apexchartに渡すデータ
-      this.series = this.seriesData()
     }
   },
   mounted: async function() {
