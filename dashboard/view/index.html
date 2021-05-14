@@ -23,6 +23,50 @@
         </v-app-bar>
 
         <v-container>
+          <!-- パラメータ入力フォーム．enterでリロードされるのを回避 -->
+          <v-form @submit.prevent>
+            <v-container>
+              <!-- limit -->
+              <v-row>
+                <v-col
+                  cols="2"
+                  md="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <p class="vertical-middle">
+                      limit
+                    </p>
+                  </div>
+                </v-col>
+                <v-col
+                  cols="6"
+                  md="3"
+                >
+                  <v-text-field
+                    v-model="config.limit"
+                    dense
+                    hide-details
+                    outlined
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <!-- update button -->
+              <v-row>
+                <v-col
+                  cols="8"
+                  md="4"
+                >
+                  <v-btn
+                    block
+                    @click="update"
+                  >
+                    update chart
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-form>
+
           <!-- ${ candle } -->
           <div id="chart" v-if="candle">
             <apexchart

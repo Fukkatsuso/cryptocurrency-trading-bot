@@ -28,12 +28,15 @@ new Vue({
     return {
       candle: null,
       chartOptions: chartOptions,
+      config: {
+        limit: 30,
+      }
     }
   },
   methods: {
     async getCandle() {
       let params = {
-        "limit": 10,
+        "limit": this.config.limit,
       }
       return await axios.get('/api/candle', {
         params: params,

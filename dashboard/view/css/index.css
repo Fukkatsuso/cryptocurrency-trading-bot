@@ -1,3 +1,14 @@
+.vertical-middle-wrapper {
+  height: 100%;
+  width: 100%;
+  display: table;
+}
+
+.vertical-middle {
+  display: table-cell;
+  vertical-align: middle;
+}
+
 #chart {
   padding-top: 1em;
 }
