@@ -50,6 +50,138 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
+              <!-- sma -->
+              <v-row>
+                <v-col
+                  cols="2"
+                  md="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <p class="vertical-middle">
+                      SMA
+                    </p>
+                  </div>
+                </v-col>
+                <v-col
+                  v-for="(smaPeriod, smaIndex) in config.sma.periods"
+                  :key="smaPeriod.id"
+                  cols="3"
+                >
+                  <v-text-field
+                    v-model="config.sma.periods[smaIndex]"
+                    dense
+                    hide-details
+                    outlined
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <!-- ema -->
+              <v-row>
+                <v-col
+                  cols="2"
+                  md="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <p class="vertical-middle">
+                      EMA
+                    </p>
+                  </div>
+                </v-col>
+                <v-col
+                  v-for="(emaPeriod, emaIndex) in config.ema.periods"
+                  :key="emaPeriod.id"
+                  cols="3"
+                >
+                  <v-text-field
+                    v-model="config.ema.periods[emaIndex]"
+                    dense
+                    hide-details
+                    outlined
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <!-- bbands -->
+              <v-row>
+                <v-col
+                  cols="2"
+                  md="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <p class="vertical-middle">
+                      BBands
+                    </p>
+                  </div>
+                </v-col>
+                <v-col
+                  cols="3"
+                >
+                  <v-text-field
+                    v-model="config.bbands.n"
+                    dense
+                    hide-details
+                    outlined
+                  ></v-text-field>
+                </v-col>
+                <v-col
+                  cols="3"
+                >
+                  <v-text-field
+                    v-model="config.bbands.k"
+                    dense
+                    hide-details
+                    outlined
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <!-- ichimoku -->
+              <!-- rsi -->
+              <v-row>
+                <v-col
+                  cols="2"
+                  md="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <p class="vertical-middle">
+                      RSI
+                    </p>
+                  </div>
+                </v-col>
+                <v-col
+                  cols="3"
+                >
+                  <v-text-field
+                    v-model="config.rsi.period"
+                    dense
+                    hide-details
+                    outlined
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <!-- macd -->
+              <v-row>
+                <v-col
+                  cols="2"
+                  md="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <p class="vertical-middle">
+                      MACD
+                    </p>
+                  </div>
+                </v-col>
+                <v-col
+                  v-for="(macdPeriod, macdIndex) in config.macd.periods"
+                  :key="macdPeriod.id"
+                  cols="3"
+                >
+                  <v-text-field
+                    v-model="config.macd.periods[macdIndex]"
+                    dense
+                    hide-details
+                    outlined
+                  ></v-text-field>
+                </v-col>
+              </v-row>
               <!-- update button -->
               <v-row>
                 <v-col
