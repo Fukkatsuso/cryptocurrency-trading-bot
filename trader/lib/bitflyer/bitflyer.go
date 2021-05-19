@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -115,6 +116,9 @@ func (c *Client) GetTicker(productCode string) (*Ticker, error) {
 	err = json.Unmarshal(resp, &ticker)
 	if err != nil {
 		return nil, err
+	}
+	if ticker.State != "RUNNING" {
+		return nil, errors.New("bitflyer is not running")
 	}
 	return &ticker, nil
 }
