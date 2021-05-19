@@ -29,6 +29,9 @@
               <!-- limit -->
               <v-row>
                 <v-col
+                  cols="1"
+                ></v-col>
+                <v-col
                   cols="2"
                   md="1"
                 >
@@ -52,6 +55,17 @@
               </v-row>
               <!-- sma -->
               <v-row>
+                <v-col
+                  cols="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <v-simple-checkbox
+                      v-model="config.sma.enable"
+                      color="primary"
+                      class="vertical-middle"
+                    ></v-simple-checkbox>
+                  </div>
+                </v-col>
                 <v-col
                   cols="2"
                   md="1"
@@ -78,6 +92,17 @@
               <!-- ema -->
               <v-row>
                 <v-col
+                  cols="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <v-simple-checkbox
+                      v-model="config.ema.enable"
+                      color="primary"
+                      class="vertical-middle"
+                    ></v-simple-checkbox>
+                  </div>
+                </v-col>
+                <v-col
                   cols="2"
                   md="1"
                 >
@@ -102,6 +127,17 @@
               </v-row>
               <!-- bbands -->
               <v-row>
+                <v-col
+                  cols="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <v-simple-checkbox
+                      v-model="config.bbands.enable"
+                      color="primary"
+                      class="vertical-middle"
+                    ></v-simple-checkbox>
+                  </div>
+                </v-col>
                 <v-col
                   cols="2"
                   md="1"
@@ -137,6 +173,17 @@
               <!-- rsi -->
               <v-row>
                 <v-col
+                  cols="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <v-simple-checkbox
+                      v-model="config.rsi.enable"
+                      color="primary"
+                      class="vertical-middle"
+                    ></v-simple-checkbox>
+                  </div>
+                </v-col>
+                <v-col
                   cols="2"
                   md="1"
                 >
@@ -159,6 +206,17 @@
               </v-row>
               <!-- macd -->
               <v-row>
+                <v-col
+                  cols="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <v-simple-checkbox
+                      v-model="config.macd.enable"
+                      color="primary"
+                      class="vertical-middle"
+                    ></v-simple-checkbox>
+                  </div>
+                </v-col>
                 <v-col
                   cols="2"
                   md="1"
