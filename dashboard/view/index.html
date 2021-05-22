@@ -240,6 +240,30 @@
                   ></v-text-field>
                 </v-col>
               </v-row>
+              <!-- backtest -->
+              <v-row>
+                <v-col
+                  cols="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <v-simple-checkbox
+                      v-model="config.backtest.enable"
+                      color="primary"
+                      class="vertical-middle"
+                    ></v-simple-checkbox>
+                  </div>
+                </v-col>
+                <v-col
+                  cols="2"
+                  md="1"
+                >
+                  <div class="vertical-middle-wrapper">
+                    <p class="vertical-middle text-body-2 text-md-body-1">
+                      backtest
+                    </p>
+                  </div>
+                </v-col>
+              </v-row>
               <!-- update button -->
               <v-row>
                 <v-col
@@ -264,7 +288,14 @@
               :options="chartOptions"
               :series="series"
             ></apexchart>
+
+            <div v-if="candle.backtest">
+              <p class="text-body-1 font-weight-bold">
+                backtest result: ${ backtest }
+              </p>
+            </div>
           </div>
+
         </v-container>
       </v-main>
     </v-app>

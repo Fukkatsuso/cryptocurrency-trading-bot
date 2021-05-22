@@ -54,6 +54,9 @@ new Vue({
           enable: false,
           periods: [12, 26, 9],
         },
+        backtest: {
+          enable: false,
+        }
       }
     }
   },
@@ -79,6 +82,7 @@ new Vue({
         "macdPeriod1": this.config.macd.periods[0],
         "macdPeriod2": this.config.macd.periods[1],
         "macdPeriod3": this.config.macd.periods[2],
+        "backtest": this.config.backtest.enable,
       }
       return await axios.get('/api/candle', {
         params: params,
