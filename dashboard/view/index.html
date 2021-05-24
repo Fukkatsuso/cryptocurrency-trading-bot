@@ -289,9 +289,9 @@
               :series="series"
             ></apexchart>
 
-            <div v-if="candle.backtest">
+            <div v-if="candle.backtestEvents">
               <p class="text-body-1 font-weight-bold">
-                backtest result: ${ backtest }
+                backtest events: ${ candle.backtestEvents }
               </p>
             </div>
           </div>

@@ -32,8 +32,11 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 	candles, _ := model.GetAllCandle(config.ProductCode, 24*time.Hour, limit)
 
 	df := model.DataFrame{
-		Candles: candles,
+		ProductCode: config.ProductCode,
+		Candles:     candles,
 	}
+
+	tradeParams := model.TradeParams{}
 
 	// 移動平均線
 	sma := r.URL.Query().Get("sma")
@@ -44,6 +47,10 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 		df.AddSMA(period1)
 		df.AddSMA(period2)
 		df.AddSMA(period3)
+		tradeParams.SMAEnable = true
+		tradeParams.SMAPeriod1 = period1
+		tradeParams.SMAPeriod2 = period2
+		tradeParams.SMAPeriod3 = period3
 	}
 
 	// 指数平滑移動平均線
@@ -55,6 +62,10 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 		df.AddEMA(period1)
 		df.AddEMA(period2)
 		df.AddEMA(period3)
+		tradeParams.EMAEnable = true
+		tradeParams.EMAPeriod1 = period1
+		tradeParams.EMAPeriod2 = period2
+		tradeParams.EMAPeriod3 = period3
 	}
 
 	// ボリンジャーバンド
@@ -63,6 +74,9 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 		n := getQueryUintDefault(r, "bbandsN", 20)
 		k := getQueryUintDefault(r, "bbandsK", 2)
 		df.AddBBands(n, float64(k))
+		tradeParams.BBandsEnable = true
+		tradeParams.BBandsN = n
+		tradeParams.BBandsK = float64(k)
 	}
 
 	// 一目均衡表
@@ -76,6 +90,10 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 	if rsi == "true" {
 		period := getQueryUintDefault(r, "rsiPeriod", 14)
 		df.AddRSI(period)
+		tradeParams.RSIEnable = true
+		tradeParams.RSIPeriod = period
+		tradeParams.RSIBuyThread = 30.0
+		tradeParams.RSISellThread = 70.0
 	}
 
 	// MACD(Moving Average Convergence/Divergence, 移動平均・収束拡散)
@@ -85,6 +103,15 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 		period2 := getQueryUintDefault(r, "macdPeriod2", 26)
 		period3 := getQueryUintDefault(r, "macdPeriod3", 9)
 		df.AddMACD(period1, period2, period3)
+		tradeParams.MACDEnable = true
+		tradeParams.MACDFastPeriod = period1
+		tradeParams.MACDSlowPeriod = period2
+		tradeParams.MACDSignalPeriod = period3
+	}
+
+	backtest := r.URL.Query().Get("backtest")
+	if backtest == "true" {
+		df.BackTest(&tradeParams)
 	}
 
 	js, err := json.Marshal(df)

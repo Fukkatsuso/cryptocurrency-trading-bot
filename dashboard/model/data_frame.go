@@ -3,18 +3,21 @@ package model
 import (
 	"time"
 
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/config"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/lib/trading"
 	"github.com/markcheno/go-talib"
 )
 
 type DataFrame struct {
-	Candles       []Candle       `json:"candles"`
-	SMAs          []SMA          `json:"smas,omitempty"`
-	EMAs          []EMA          `json:"emas,omitempty"`
-	BBands        *BBands        `json:"bbands,omitempty"`
-	IchimokuCloud *IchimokuCloud `json:"ichimoku,omitempty"`
-	RSI           *RSI           `json:"rsi,omitempty"`
-	MACD          *MACD          `json:"macd,omitempty"`
+	ProductCode    string         `json:"productCode"`
+	Candles        []Candle       `json:"candles"`
+	SMAs           []SMA          `json:"smas,omitempty"`
+	EMAs           []EMA          `json:"emas,omitempty"`
+	BBands         *BBands        `json:"bbands,omitempty"`
+	IchimokuCloud  *IchimokuCloud `json:"ichimoku,omitempty"`
+	RSI            *RSI           `json:"rsi,omitempty"`
+	MACD           *MACD          `json:"macd,omitempty"`
+	BacktestEvents *SignalEvents  `json:"backtestEvents,omitempty"`
 }
 
 // 単純移動平均
@@ -196,4 +199,38 @@ func (df *DataFrame) AddMACD(inFastPeriod, inSlowPeriod, inSignalPeriod int) boo
 		return true
 	}
 	return false
+}
+
+type TradeParams struct {
+	SMAEnable        bool
+	SMAPeriod1       int
+	SMAPeriod2       int
+	SMAPeriod3       int
+	EMAEnable        bool
+	EMAPeriod1       int
+	EMAPeriod2       int
+	EMAPeriod3       int
+	BBandsEnable     bool
+	BBandsN          int
+	BBandsK          float64
+	RSIEnable        bool
+	RSIPeriod        int
+	RSIBuyThread     float64
+	RSISellThread    float64
+	MACDEnable       bool
+	MACDFastPeriod   int
+	MACDSlowPeriod   int
+	MACDSignalPeriod int
+}
+
+func (df *DataFrame) BackTest(params *TradeParams) {
+	events := NewSignalEvents()
+	events.Signals = append(events.Signals, SignalEvent{
+		Time:        time.Now().In(config.LocalTime),
+		ProductCode: df.ProductCode,
+		Side:        "BUY",
+		Price:       1.0,
+		Size:        1.0,
+	})
+	df.BacktestEvents = events
 }
