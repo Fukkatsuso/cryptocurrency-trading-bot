@@ -233,4 +233,5 @@ func (df *DataFrame) BackTest(params *TradeParams) {
 		Size:        1.0,
 	})
 	df.BacktestEvents = events
+	df.BacktestEvents.EstimateProfit()
 }

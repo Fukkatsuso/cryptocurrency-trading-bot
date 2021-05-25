@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/json"
 	"time"
 )
 
@@ -15,6 +14,7 @@ type SignalEvent struct {
 
 type SignalEvents struct {
 	Signals []SignalEvent `json:"signals,omitempty"`
+	Profit  float64       `json:"profit"`
 }
 
 func NewSignalEvents() *SignalEvents {
@@ -46,7 +46,7 @@ func (s *SignalEvents) Sell(productCode string, time time.Time, price, size floa
 }
 
 // 買って売ってを繰り返した履歴データから，利益が出るか検証
-func (s *SignalEvents) Profit() float64 {
+func (s *SignalEvents) EstimateProfit() {
 	total := 0.0
 	beforeSell := 0.0
 	isHolding := false
@@ -65,21 +65,7 @@ func (s *SignalEvents) Profit() float64 {
 		}
 	}
 	if isHolding {
-		return beforeSell
+		s.Profit = beforeSell
 	}
-	return total
-}
-
-func (s *SignalEvents) MarshalJSON() ([]byte, error) {
-	value, err := json.Marshal(&struct {
-		Signals []SignalEvent `json:"signals,omitempty"`
-		Profit  float64       `json:"profit,omitempty"`
-	}{
-		Signals: s.Signals,
-		Profit:  s.Profit(),
-	})
-	if err != nil {
-		return nil, err
-	}
-	return value, err
+	s.Profit = total
 }
