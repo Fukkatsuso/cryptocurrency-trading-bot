@@ -213,6 +213,7 @@ type TradeParams struct {
 	BBandsEnable     bool
 	BBandsN          int
 	BBandsK          float64
+	IchimokuEnable   bool
 	RSIEnable        bool
 	RSIPeriod        int
 	RSIBuyThread     float64

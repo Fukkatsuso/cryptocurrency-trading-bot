@@ -83,6 +83,7 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 	ichimoku := r.URL.Query().Get("ichimoku")
 	if ichimoku == "true" {
 		df.AddIchimoku()
+		tradeParams.IchimokuEnable = true
 	}
 
 	// RSI(Relative Strength Index, 相対力指数)
