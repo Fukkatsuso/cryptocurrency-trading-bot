@@ -47,10 +47,8 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 		period1 := getQueryUintDefault(r, "smaPeriod1", 7)
 		period2 := getQueryUintDefault(r, "smaPeriod2", 14)
 		period3 := getQueryUintDefault(r, "smaPeriod3", 50)
-		df.AddSMA(period1)
-		df.AddSMA(period2)
-		df.AddSMA(period3)
-		tradeParams.SMAEnable = true
+		enable := df.AddSMA(period1) && df.AddSMA(period2) && df.AddSMA(period3)
+		tradeParams.SMAEnable = enable
 		tradeParams.SMAPeriod1 = period1
 		tradeParams.SMAPeriod2 = period2
 		tradeParams.SMAPeriod3 = period3
@@ -62,10 +60,8 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 		period1 := getQueryUintDefault(r, "emaPeriod1", 7)
 		period2 := getQueryUintDefault(r, "emaPeriod2", 14)
 		period3 := getQueryUintDefault(r, "emaPeriod3", 50)
-		df.AddEMA(period1)
-		df.AddEMA(period2)
-		df.AddEMA(period3)
-		tradeParams.EMAEnable = true
+		enable := df.AddEMA(period1) && df.AddEMA(period2) && df.AddEMA(period3)
+		tradeParams.EMAEnable = enable
 		tradeParams.EMAPeriod1 = period1
 		tradeParams.EMAPeriod2 = period2
 		tradeParams.EMAPeriod3 = period3
@@ -76,8 +72,8 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 	if bbands == "true" {
 		n := getQueryUintDefault(r, "bbandsN", 20)
 		k := getQueryUintDefault(r, "bbandsK", 2)
-		df.AddBBands(n, float64(k))
-		tradeParams.BBandsEnable = true
+		enable := df.AddBBands(n, float64(k))
+		tradeParams.BBandsEnable = enable
 		tradeParams.BBandsN = n
 		tradeParams.BBandsK = float64(k)
 	}
@@ -85,16 +81,16 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 	// 一目均衡表
 	ichimoku := r.URL.Query().Get("ichimoku")
 	if ichimoku == "true" {
-		df.AddIchimoku()
-		tradeParams.IchimokuEnable = true
+		enable := df.AddIchimoku()
+		tradeParams.IchimokuEnable = enable
 	}
 
 	// RSI(Relative Strength Index, 相対力指数)
 	rsi := r.URL.Query().Get("rsi")
 	if rsi == "true" {
 		period := getQueryUintDefault(r, "rsiPeriod", 14)
-		df.AddRSI(period)
-		tradeParams.RSIEnable = true
+		enable := df.AddRSI(period)
+		tradeParams.RSIEnable = enable
 		tradeParams.RSIPeriod = period
 		tradeParams.RSIBuyThread = 30.0
 		tradeParams.RSISellThread = 70.0
@@ -106,8 +102,8 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 		period1 := getQueryUintDefault(r, "macdPeriod1", 12)
 		period2 := getQueryUintDefault(r, "macdPeriod2", 26)
 		period3 := getQueryUintDefault(r, "macdPeriod3", 9)
-		df.AddMACD(period1, period2, period3)
-		tradeParams.MACDEnable = true
+		enable := df.AddMACD(period1, period2, period3)
+		tradeParams.MACDEnable = enable
 		tradeParams.MACDFastPeriod = period1
 		tradeParams.MACDSlowPeriod = period2
 		tradeParams.MACDSignalPeriod = period3
