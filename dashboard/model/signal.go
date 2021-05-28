@@ -21,7 +21,32 @@ func NewSignalEvents() *SignalEvents {
 	return &SignalEvents{}
 }
 
+func (s *SignalEvents) CanBuy(time time.Time) bool {
+	lenSignals := len(s.Signals)
+	if lenSignals == 0 {
+		return true
+	}
+
+	lastSignal := s.Signals[lenSignals-1]
+	canBuy := lastSignal.Side == "SELL" && lastSignal.Time.Before(time)
+	return canBuy
+}
+
+func (s *SignalEvents) CanSell(time time.Time) bool {
+	lenSignals := len(s.Signals)
+	if lenSignals == 0 {
+		return false
+	}
+
+	lastSignal := s.Signals[lenSignals-1]
+	canSell := lastSignal.Side == "BUY" && lastSignal.Time.Before(time)
+	return canSell
+}
+
 func (s *SignalEvents) Buy(productCode string, time time.Time, price, size float64) bool {
+	if !s.CanBuy(time) {
+		return false
+	}
 	signalEvent := SignalEvent{
 		ProductCode: productCode,
 		Time:        time,
@@ -34,6 +59,9 @@ func (s *SignalEvents) Buy(productCode string, time time.Time, price, size float
 }
 
 func (s *SignalEvents) Sell(productCode string, time time.Time, price, size float64) bool {
+	if !s.CanSell(time) {
+		return false
+	}
 	signalEvent := SignalEvent{
 		ProductCode: productCode,
 		Time:        time,
@@ -50,10 +78,7 @@ func (s *SignalEvents) EstimateProfit() {
 	total := 0.0
 	beforeSell := 0.0
 	isHolding := false
-	for i, signalEvent := range s.Signals {
-		if i == 0 && signalEvent.Side == "SELL" {
-			continue
-		}
+	for _, signalEvent := range s.Signals {
 		if signalEvent.Side == "BUY" {
 			total -= signalEvent.Price * signalEvent.Size
 			isHolding = true

@@ -36,7 +36,10 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 		Candles:     candles,
 	}
 
-	tradeParams := model.TradeParams{}
+	tradeParams := model.TradeParams{
+		ProductCode: config.ProductCode,
+		Size:        0.01,
+	}
 
 	// 移動平均線
 	sma := r.URL.Query().Get("sma")

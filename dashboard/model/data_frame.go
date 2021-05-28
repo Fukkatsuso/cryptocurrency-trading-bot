@@ -201,6 +201,8 @@ func (df *DataFrame) AddMACD(inFastPeriod, inSlowPeriod, inSignalPeriod int) boo
 }
 
 type TradeParams struct {
+	ProductCode      string
+	Size             float64
 	SMAEnable        bool
 	SMAPeriod1       int
 	SMAPeriod2       int
@@ -291,6 +293,13 @@ func (df *DataFrame) BackTest(params *TradeParams) {
 			if macd > 0 && signal > 0 && macdPrev > signalPrev && macd <= signal {
 				sellPoint++
 			}
+		}
+
+		if buyPoint > sellPoint {
+			events.Buy(params.ProductCode, df.Candles[i].Time, df.Candles[i].Close, params.Size)
+		}
+		if sellPoint > buyPoint {
+			events.Sell(params.ProductCode, df.Candles[i].Time, df.Candles[i].Close, params.Size)
 		}
 	}
 	df.BacktestEvents = events
