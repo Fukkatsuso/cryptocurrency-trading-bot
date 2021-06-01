@@ -114,6 +114,21 @@ new Vue({
       return [{
         data: data,
       }]
+    },
+    // バックテストの結果，現在保有している通貨量
+    backtestCurrentHold() {
+      if (!this.candle.backtestEvents || !this.candle.backtestEvents.signals) {
+        return 0
+      }
+      let hold = 0
+      for (const signal of this.candle.backtestEvents.signals) {
+        if (signal.side == "BUY") {
+          hold -= signal.size
+        } else if (signal.side == "SELL") {
+          hold += signal.size
+        }
+      }
+      return hold
     }
   },
   mounted: async function() {
