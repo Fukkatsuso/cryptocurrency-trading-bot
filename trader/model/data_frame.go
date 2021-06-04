@@ -8,6 +8,7 @@ import (
 )
 
 type DataFrame struct {
+	ProductCode   string         `json:"productCode"`
 	Candles       []Candle       `json:"candles"`
 	SMAs          []SMA          `json:"smas,omitempty"`
 	EMAs          []EMA          `json:"emas,omitempty"`
@@ -115,7 +116,7 @@ func (df *DataFrame) AddSMA(period int) bool {
 	if df.SMAs == nil {
 		df.SMAs = make([]SMA, 0)
 	}
-	if len(df.Candles) > period {
+	if period < len(df.Candles) {
 		df.SMAs = append(df.SMAs, SMA{
 			Period: period,
 			Values: talib.Sma(df.Closes(), period),
@@ -129,7 +130,7 @@ func (df *DataFrame) AddEMA(period int) bool {
 	if df.EMAs == nil {
 		df.EMAs = make([]EMA, 0)
 	}
-	if len(df.Candles) > period {
+	if period < len(df.Candles) {
 		df.EMAs = append(df.EMAs, EMA{
 			Period: period,
 			Values: talib.Ema(df.Closes(), period),
@@ -140,7 +141,7 @@ func (df *DataFrame) AddEMA(period int) bool {
 }
 
 func (df *DataFrame) AddBBands(n int, k float64) bool {
-	if n <= len(df.Closes()) {
+	if n <= len(df.Candles) {
 		up, mid, down := talib.BBands(df.Closes(), n, k, k, 0)
 		df.BBands = &BBands{
 			N:    n,
@@ -156,7 +157,7 @@ func (df *DataFrame) AddBBands(n int, k float64) bool {
 
 func (df *DataFrame) AddIchimoku() bool {
 	tenkanN := 9
-	if len(df.Closes()) >= tenkanN {
+	if tenkanN <= len(df.Candles) {
 		tenkan, kijun, senkouA, senkouB, chikou := trading.IchimokuCloud(df.Closes())
 		df.IchimokuCloud = &IchimokuCloud{
 			Tenkan:  tenkan,
@@ -171,7 +172,7 @@ func (df *DataFrame) AddIchimoku() bool {
 }
 
 func (df *DataFrame) AddRSI(period int) bool {
-	if len(df.Candles) > period {
+	if period < len(df.Candles) {
 		values := talib.Rsi(df.Closes(), period)
 		df.RSI = &RSI{
 			Period: period,
@@ -183,7 +184,8 @@ func (df *DataFrame) AddRSI(period int) bool {
 }
 
 func (df *DataFrame) AddMACD(inFastPeriod, inSlowPeriod, inSignalPeriod int) bool {
-	if len(df.Candles) > 1 {
+	if len(df.Candles) > 1 &&
+		inFastPeriod < len(df.Candles) && inSlowPeriod < len(df.Candles) && inSignalPeriod < len(df.Candles) {
 		outMACD, outMACDSignal, outMACDHist := talib.Macd(df.Closes(), inFastPeriod, inSlowPeriod, inSignalPeriod)
 		df.MACD = &MACD{
 			FastPeriod:   inFastPeriod,
