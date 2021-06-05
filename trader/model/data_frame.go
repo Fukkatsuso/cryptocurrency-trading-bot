@@ -199,3 +199,28 @@ func (df *DataFrame) AddMACD(inFastPeriod, inSlowPeriod, inSignalPeriod int) boo
 	}
 	return false
 }
+
+type TradeParams struct {
+	ProductCode      string
+	Size             float64
+	SMAEnable        bool
+	SMAPeriod1       int
+	SMAPeriod2       int
+	SMAPeriod3       int
+	EMAEnable        bool
+	EMAPeriod1       int
+	EMAPeriod2       int
+	EMAPeriod3       int
+	BBandsEnable     bool
+	BBandsN          int
+	BBandsK          float64
+	IchimokuEnable   bool
+	RSIEnable        bool
+	RSIPeriod        int
+	RSIBuyThread     float64
+	RSISellThread    float64
+	MACDEnable       bool
+	MACDFastPeriod   int
+	MACDSlowPeriod   int
+	MACDSignalPeriod int
+}
