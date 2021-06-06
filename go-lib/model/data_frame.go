@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/trading"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/go-lib/trading"
 	"github.com/markcheno/go-talib"
 )
 
