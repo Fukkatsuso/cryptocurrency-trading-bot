@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/config"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/model"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/go-lib/model"
 )
 
 // URLクエリパラメータから非負整数を取り出す
@@ -29,7 +29,8 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 		limit = 1000
 	}
 
-	candles, _ := model.GetAllCandle(config.ProductCode, 24*time.Hour, limit)
+	candles, _ := model.GetAllCandle(config.DB, config.CandleTableName, config.TimeFormat,
+		config.ProductCode, 24*time.Hour, limit)
 
 	df := model.DataFrame{
 		ProductCode: config.ProductCode,
