@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/go-lib/bitflyer"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/go-lib/model"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/config"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/bitflyer"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/model"
 )
 
 // 相場を分析して取引実行する
