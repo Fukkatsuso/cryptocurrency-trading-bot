@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/go-lib/bitflyer"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/bitflyer"
 )
 
 type Candle struct {

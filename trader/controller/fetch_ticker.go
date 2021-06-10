@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/go-lib/bitflyer"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/go-lib/model"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/config"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/bitflyer"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/model"
 )
 
 func FetchTickerHandler(w http.ResponseWriter, r *http.Request) {

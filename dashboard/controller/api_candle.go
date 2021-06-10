@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/config"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/go-lib/model"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/model"
 )
 
 // URLクエリパラメータから非負整数を取り出す
