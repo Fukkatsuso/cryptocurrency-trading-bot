@@ -312,9 +312,15 @@
               :series="series"
             ></apexchart>
 
+            <div v-if="candle.candles">
+              <p class="text-body-1 font-weight-bold">
+                ETH/JPY: ${ candle.candles[candle.candles.length-1].close }
+              </p>
+            </div>
+
             <div v-if="candle.backtestEvents">
               <p class="text-body-1 font-weight-bold">
-                backtest profit: ${ candle.backtestEvents.profit } / hold: ${ backtestCurrentHold }
+                backtest profit: ${ candle.backtestEvents.profit } JPY / hold: ${ backtestCurrentHold } ETH
               </p>
             </div>
           </div>

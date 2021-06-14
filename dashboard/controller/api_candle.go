@@ -29,7 +29,8 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 		limit = 1000
 	}
 
-	candles, _ := model.GetAllCandle(config.ProductCode, 24*time.Hour, limit)
+	candles, _ := model.GetAllCandle(config.DB, config.CandleTableName, config.TimeFormat,
+		config.ProductCode, 24*time.Hour, limit)
 
 	df := model.DataFrame{
 		ProductCode: config.ProductCode,
