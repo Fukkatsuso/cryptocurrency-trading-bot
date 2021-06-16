@@ -1,5 +1,10 @@
 package model
 
+import (
+	"database/sql"
+	"fmt"
+)
+
 type TradeParams struct {
 	ProductCode      string
 	Size             float64
@@ -23,6 +28,80 @@ type TradeParams struct {
 	MACDFastPeriod   int
 	MACDSlowPeriod   int
 	MACDSignalPeriod int
+}
+
+func GetTradeParams(db *sql.DB, tradeParamTableName, productCode string) *TradeParams {
+	// 最後に作成されたパラメータを取得
+	// productCodeで絞り込み，そのうちcreated_atが最新のレコードを探す
+	cmd := fmt.Sprintf(`
+            SELECT
+                tp.size,
+                tp.sma_enable,
+                tp.sma_period1,
+                tp.sma_period2,
+                tp.sma_period3,
+                tp.ema_enable,
+                tp.ema_period1,
+                tp.ema_period2,
+                tp.ema_period3,
+                tp.bbands_enable,
+                tp.bbands_n,
+                tp.bbands_k,
+                tp.ichimoku_enable,
+                tp.rsi_enable,
+                tp.rsi_period,
+                tp.rsi_buy_thread,
+                tp.rsi_sell_thread,
+                tp.macd_enable,
+                tp.macd_fast_period,
+                tp.macd_slow_period,
+                tp.macd_signal_period
+            FROM
+                %s AS tp
+            WHERE
+                tp.product_code = ?
+                AND
+                tp.created_at = (
+                    SELECT
+                        MAX(sub_tp.created_at)
+                    FROM
+                        %s AS sub_tp
+                    WHERE
+                        sub_tp.product_code = ?
+                )`,
+		tradeParamTableName, tradeParamTableName)
+	row := db.QueryRow(cmd, productCode, productCode)
+
+	var tradeParams TradeParams
+	err := row.Scan(
+		&tradeParams.Size,
+		&tradeParams.SMAEnable,
+		&tradeParams.SMAPeriod1,
+		&tradeParams.SMAPeriod2,
+		&tradeParams.SMAPeriod3,
+		&tradeParams.EMAEnable,
+		&tradeParams.EMAPeriod1,
+		&tradeParams.EMAPeriod2,
+		&tradeParams.EMAPeriod3,
+		&tradeParams.BBandsEnable,
+		&tradeParams.BBandsN,
+		&tradeParams.BBandsK,
+		&tradeParams.IchimokuEnable,
+		&tradeParams.RSIEnable,
+		&tradeParams.RSIPeriod,
+		&tradeParams.RSIBuyThread,
+		&tradeParams.RSISellThread,
+		&tradeParams.MACDEnable,
+		&tradeParams.MACDFastPeriod,
+		&tradeParams.MACDSlowPeriod,
+		&tradeParams.MACDSignalPeriod,
+	)
+	if err != nil {
+		return nil
+	}
+
+	tradeParams.ProductCode = productCode
+	return &tradeParams
 }
 
 func (df *DataFrame) BackTest(params *TradeParams) {
