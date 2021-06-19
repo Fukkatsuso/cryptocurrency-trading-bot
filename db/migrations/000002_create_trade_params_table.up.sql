@@ -1,6 +1,7 @@
 USE trading_db;
 
 CREATE TABLE IF NOT EXISTS trade_params (
+  trade_enable BOOLEAN NOT NULL DEFAULT 1,
   product_code VARCHAR(50) NOT NULL,
   size FLOAT NOT NULL,
   sma_enable BOOLEAN NOT NULL DEFAULT 0,
