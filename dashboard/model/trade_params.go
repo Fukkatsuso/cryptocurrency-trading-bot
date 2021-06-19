@@ -6,6 +6,7 @@ import (
 )
 
 type TradeParams struct {
+	TradeEnable      bool
 	ProductCode      string
 	Size             float64
 	SMAEnable        bool
@@ -35,6 +36,7 @@ func GetTradeParams(db *sql.DB, tradeParamTableName, productCode string) *TradeP
 	// productCodeで絞り込み，そのうちcreated_atが最新のレコードを探す
 	cmd := fmt.Sprintf(`
             SELECT
+                tp.enable,
                 tp.size,
                 tp.sma_enable,
                 tp.sma_period1,
@@ -74,6 +76,7 @@ func GetTradeParams(db *sql.DB, tradeParamTableName, productCode string) *TradeP
 
 	var tradeParams TradeParams
 	err := row.Scan(
+		&tradeParams.TradeEnable,
 		&tradeParams.Size,
 		&tradeParams.SMAEnable,
 		&tradeParams.SMAPeriod1,
