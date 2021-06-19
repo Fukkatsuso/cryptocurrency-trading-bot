@@ -12,9 +12,13 @@ import (
 // 相場を分析して取引実行する
 func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	// 分析，売買のためのパラメータ
-	_ = model.TradeParams{
-		ProductCode: config.ProductCode,
-		Size:        0.01,
+	tradeParams := model.GetTradeParams(config.DB, config.TradeParamTableName, config.ProductCode)
+	fmt.Println("params:", tradeParams)
+	// パラメータが見つからなければ終了
+	if tradeParams == nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "trade_params has no param record which (productCode=%s)", config.ProductCode)
+		return
 	}
 
 	// 取引実行するクライアント
