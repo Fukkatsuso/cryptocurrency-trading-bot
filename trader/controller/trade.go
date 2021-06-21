@@ -17,7 +17,13 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	// パラメータが見つからなければ終了
 	if tradeParams == nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, "trade_params has no param record which (productCode=%s)", config.ProductCode)
+		fmt.Fprintf(w, "trade_params has no param record (productCode=%s)", config.ProductCode)
+		return
+	}
+	// 取引無効になっていたら終了
+	if !tradeParams.TradeEnable {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "trade is not enabled (productCode=%s)", config.ProductCode)
 		return
 	}
 
