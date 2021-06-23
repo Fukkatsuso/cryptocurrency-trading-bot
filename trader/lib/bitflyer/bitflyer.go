@@ -126,3 +126,68 @@ func (c *Client) GetTicker(productCode string) (*Ticker, error) {
 func (t *Ticker) GetMidPrice() float64 {
 	return (t.BestBid + t.BestAsk) / 2
 }
+
+// 新規注文リクエスト
+// 注文一覧レスポンス
+type Order struct {
+	ID                     int     `json:"id"`
+	ProductCode            string  `json:"product_code"`
+	ChildOrderType         string  `json:"child_order_type"`
+	Side                   string  `json:"side"`
+	Price                  float64 `json:"price"`
+	AveragePrice           int     `json:"average_price"`
+	Size                   float64 `json:"size"`
+	MinuteToExpires        int     `json:"minute_to_expire"`
+	TimeInForce            string  `json:"time_in_force"`
+	ChildOrderID           string  `json:"child_order_id"`
+	ChildOrderState        string  `json:"child_order_state"`
+	ExpireDate             string  `json:"expire_date"`
+	ChildOrderDate         string  `json:"child_order_date"`
+	ChildOrderAcceptanceID string  `json:"child_order_acceptance_id"`
+	OutstandingSize        float64 `json:"outstanding_size"`
+	CancelSize             float64 `json:"cancel_size"`
+	ExecutedSize           float64 `json:"executed_size"`
+	TotalCommission        float64 `json:"total_commission"`
+}
+
+type ResponseSendChildOrder struct {
+	ChildOrderAcceptanceID string `json:"child_order_acceptance_id"`
+}
+
+// 新規注文を出す
+func (c *Client) SendOrder(order *Order) (*ResponseSendChildOrder, error) {
+	// json化
+	data, err := json.Marshal(order)
+	if err != nil {
+		return nil, err
+	}
+
+	// リクエスト送信
+	url := "me/sendchildorder"
+	resp, err := c.doRequest("POST", url, map[string]string{}, data)
+	if err != nil {
+		return nil, err
+	}
+
+	// レスポンス処理
+	var response ResponseSendChildOrder
+	if err = json.Unmarshal(resp, &response); err != nil {
+		return nil, err
+	}
+	return &response, nil
+}
+
+func (c *Client) ListOrder(query map[string]string) ([]Order, error) {
+	// リクエスト送信
+	resp, err := c.doRequest("GET", "me/getchildorders", query, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// レスポンス処理
+	var responseListOrder []Order
+	if err = json.Unmarshal(resp, &responseListOrder); err != nil {
+		return nil, err
+	}
+	return responseListOrder, nil
+}
