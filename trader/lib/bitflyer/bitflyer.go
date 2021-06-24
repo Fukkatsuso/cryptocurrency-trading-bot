@@ -127,6 +127,27 @@ func (t *Ticker) GetMidPrice() float64 {
 	return (t.BestBid + t.BestAsk) / 2
 }
 
+type Balance struct {
+	CurrencyCode string  `json:"currency_code"`
+	Amount       float64 `json:"amount"`
+	Available    float64 `json:"available"`
+}
+
+func (c *Client) GetBalance() ([]Balance, error) {
+	path := "me/getbalance"
+	resp, err := c.doRequest("GET", path, map[string]string{}, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var balance []Balance
+	err = json.Unmarshal(resp, &balance)
+	if err != nil {
+		return nil, err
+	}
+	return balance, nil
+}
+
 // 新規注文リクエスト
 // 注文一覧レスポンス
 type Order struct {
