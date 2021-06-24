@@ -148,6 +148,25 @@ func (c *Client) GetBalance() ([]Balance, error) {
 	return balance, nil
 }
 
+// 利用可能な通貨量を返す
+// 仮想通貨, 現金の順
+func (c *Client) GetAvailableBalance(CoinCode, CurrencyCode string) (float64, float64) {
+	balances, err := c.GetBalance()
+	if err != nil {
+		return 0.0, 0.0
+	}
+
+	availableCoin, availableCurrency := 0.0, 0.0
+	for _, balance := range balances {
+		if balance.CurrencyCode == CoinCode {
+			availableCoin = balance.Available
+		} else if balance.CurrencyCode == CurrencyCode {
+			availableCurrency = balance.Available
+		}
+	}
+	return availableCoin, availableCurrency
+}
+
 // 新規注文リクエスト
 // 注文一覧レスポンス
 type Order struct {
