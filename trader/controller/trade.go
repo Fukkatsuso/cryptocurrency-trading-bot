@@ -3,9 +3,9 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/config"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/bitflyer"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/model"
 )
 
@@ -27,8 +27,8 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 取引実行するクライアント
-	_ = bitflyer.NewClient(config.APIKey, config.APISecret)
+	// 取引bot
+	_ = model.NewTradingBot(config.ProductCode, 24*time.Hour, 365)
 
 	// 分析，取引
 
