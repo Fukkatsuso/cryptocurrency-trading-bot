@@ -175,7 +175,7 @@ type Order struct {
 	ChildOrderType         string  `json:"child_order_type"`
 	Side                   string  `json:"side"`
 	Price                  float64 `json:"price"`
-	AveragePrice           int     `json:"average_price"`
+	AveragePrice           float64 `json:"average_price"`
 	Size                   float64 `json:"size"`
 	MinuteToExpires        int     `json:"minute_to_expire"`
 	TimeInForce            string  `json:"time_in_force"`
