@@ -1,12 +1,16 @@
 package model
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/config"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/bitflyer"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/trading"
+	"github.com/markcheno/go-talib"
 )
 
 type TradingBot struct {
@@ -171,4 +175,113 @@ func (bot *TradingBot) WaitUntilOrderComplete(childOrderAcceptanceID string, exe
 			}
 		}
 	}()
+}
+
+func (bot *TradingBot) Trade(db *sql.DB, candleTableName, timeFormat string) error {
+	params := bot.TradeParams
+	if params == nil {
+		return errors.New("[Trade] TradeParams is nil")
+	}
+
+	candles, _ := GetAllCandle(db, candleTableName, timeFormat, bot.ProductCode, bot.Duration, bot.PastPeriod)
+	lenCandles := len(candles)
+
+	df := DataFrame{
+		ProductCode: bot.ProductCode,
+		Candles:     candles,
+	}
+
+	var emaValues1 []float64
+	var emaValues2 []float64
+	if params.EMAEnable {
+		emaValues1 = talib.Ema(df.Closes(), params.EMAPeriod1)
+		emaValues2 = talib.Ema(df.Closes(), params.EMAPeriod2)
+	}
+
+	var bbUp []float64
+	var bbDown []float64
+	if params.BBandsEnable {
+		bbUp, _, bbDown = talib.BBands(df.Closes(), params.BBandsN, params.BBandsK, params.BBandsK, 0)
+	}
+
+	var tenkan, kijun, senkouA, senkouB, chikou []float64
+	if params.IchimokuEnable {
+		tenkan, kijun, senkouA, senkouB, chikou = trading.IchimokuCloud(df.Closes())
+	}
+
+	var outMACD, outMACDSignal []float64
+	if params.MACDEnable {
+		outMACD, outMACDSignal, _ = talib.Macd(df.Closes(), params.MACDFastPeriod, params.MACDSlowPeriod, params.MACDSignalPeriod)
+	}
+
+	var rsiValues []float64
+	if params.RSIEnable {
+		rsiValues = talib.Rsi(df.Closes(), params.RSIPeriod)
+	}
+
+	buyPoint, sellPoint := 0, 0
+	if params.EMAEnable && params.EMAPeriod1 < lenCandles && params.EMAPeriod2 < lenCandles {
+		if emaValues1[lenCandles-2] < emaValues2[lenCandles-2] && emaValues1[lenCandles-1] >= emaValues2[lenCandles-1] {
+			buyPoint++
+		}
+		if emaValues1[lenCandles-2] > emaValues2[lenCandles-2] && emaValues1[lenCandles-1] <= emaValues2[lenCandles-1] {
+			sellPoint++
+		}
+	}
+
+	if params.BBandsEnable && params.BBandsN < lenCandles {
+		if bbDown[lenCandles-2] > df.Candles[lenCandles-2].Close && bbDown[lenCandles-1] <= df.Candles[lenCandles-1].Close {
+			buyPoint++
+		}
+		if bbUp[lenCandles-2] < df.Candles[lenCandles-2].Close && bbUp[lenCandles-1] >= df.Candles[lenCandles-1].Close {
+			sellPoint++
+		}
+	}
+
+	if params.MACDEnable {
+		if outMACD[lenCandles-1] < 0 && outMACDSignal[lenCandles-1] < 0 && outMACD[lenCandles-2] < outMACDSignal[lenCandles-2] && outMACD[lenCandles-1] >= outMACDSignal[lenCandles-1] {
+			buyPoint++
+		}
+		if outMACD[lenCandles-1] > 0 && outMACDSignal[lenCandles-1] > 0 && outMACD[lenCandles-2] > outMACDSignal[lenCandles-2] && outMACD[lenCandles-1] <= outMACDSignal[lenCandles-1] {
+			sellPoint++
+		}
+	}
+
+	if params.IchimokuEnable {
+		if chikou[lenCandles-2] < df.Candles[lenCandles-2].High && chikou[lenCandles-1] >= df.Candles[lenCandles-1].High &&
+			senkouA[lenCandles-1] < df.Candles[lenCandles-1].Low && senkouB[lenCandles-1] < df.Candles[lenCandles-1].Low &&
+			tenkan[lenCandles-1] > kijun[lenCandles-1] {
+			buyPoint++
+		}
+		if chikou[lenCandles-2] > df.Candles[lenCandles-2].Low && chikou[lenCandles-1] <= df.Candles[lenCandles-1].Low &&
+			senkouA[lenCandles-1] > df.Candles[lenCandles-1].High && senkouB[lenCandles-1] > df.Candles[lenCandles-1].High &&
+			tenkan[lenCandles-1] < kijun[lenCandles-1] {
+			sellPoint++
+		}
+	}
+
+	if params.RSIEnable && rsiValues[lenCandles-2] != 0 && rsiValues[lenCandles-2] != 100 {
+		if rsiValues[lenCandles-2] < params.RSISellThread && rsiValues[lenCandles-1] >= params.RSIBuyThread {
+			buyPoint++
+		}
+		if rsiValues[lenCandles-2] > params.RSISellThread && rsiValues[lenCandles-1] <= params.RSISellThread {
+			sellPoint++
+		}
+	}
+
+	if buyPoint > 0 {
+		childOrderAcceptanceID, isOrderCompleted := bot.Buy(df.Candles[lenCandles-1])
+		if !isOrderCompleted {
+			return errors.New(fmt.Sprintf("[Trade] buy order is not completed, id=%s", childOrderAcceptanceID))
+		}
+	}
+
+	if sellPoint > 0 {
+		childOrderAcceptanceID, isOrderCompleted := bot.Sell(df.Candles[lenCandles-1])
+		if !isOrderCompleted {
+			return errors.New(fmt.Sprintf("[Trade] sell order is not completed, id=%s", childOrderAcceptanceID))
+		}
+	}
+
+	return nil
 }
