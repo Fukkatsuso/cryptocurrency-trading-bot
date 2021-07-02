@@ -28,7 +28,7 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 取引bot
-	_ = model.NewTradingBot(config.ProductCode, 24*time.Hour, 365)
+	bot := model.NewTradingBot(config.DB, config.ProductCode, 24*time.Hour, 365)
 
 	// 分析，取引
 

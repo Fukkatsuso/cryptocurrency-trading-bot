@@ -15,6 +15,7 @@ import (
 
 type TradingBot struct {
 	APIClient       *bitflyer.Client
+	DBClient        *sql.DB
 	ProductCode     string
 	CoinCode        string
 	CurrencyCode    string
@@ -25,7 +26,7 @@ type TradingBot struct {
 	MinuteToExpires int
 }
 
-func NewTradingBot(productCode string, duration time.Duration, pastPeriod int) *TradingBot {
+func NewTradingBot(db *sql.DB, productCode string, duration time.Duration, pastPeriod int) *TradingBot {
 	// 取引所のAPIクライアント
 	apiClient := bitflyer.NewClient(config.APIKey, config.APISecret)
 
@@ -33,6 +34,7 @@ func NewTradingBot(productCode string, duration time.Duration, pastPeriod int) *
 
 	bot := &TradingBot{
 		APIClient:       apiClient,
+		DBClient:        db,
 		ProductCode:     productCode,
 		CoinCode:        codes[0],
 		CurrencyCode:    codes[1],
