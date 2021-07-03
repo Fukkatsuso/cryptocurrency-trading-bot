@@ -45,9 +45,9 @@ func NewTradingBot(db *sql.DB, productCode string, duration time.Duration, pastP
 	return bot
 }
 
-func (bot *TradingBot) Buy(candle Candle) (childOrderAcceptanceID string, isOrderCompleted bool) {
+func (bot *TradingBot) Buy(candle Candle, timeFormat string) (string, bool) {
 	if !bot.SignalEvents.CanBuy(candle.Time) {
-		return
+		return "", false
 	}
 
 	// 所持中の現金
@@ -55,7 +55,7 @@ func (bot *TradingBot) Buy(candle Candle) (childOrderAcceptanceID string, isOrde
 	// 現在の価格
 	ticker, err := bot.APIClient.GetTicker(bot.ProductCode)
 	if err != nil {
-		return
+		return "", false
 	}
 
 	// 通貨購入サイズ
@@ -64,7 +64,7 @@ func (bot *TradingBot) Buy(candle Candle) (childOrderAcceptanceID string, isOrde
 
 	// お金が足りないときは購入しない
 	if availableCurrency < ticker.BestAsk*size {
-		return
+		return "", false
 	}
 
 	// 注文発行
@@ -80,23 +80,41 @@ func (bot *TradingBot) Buy(candle Candle) (childOrderAcceptanceID string, isOrde
 	resp, err := bot.APIClient.SendOrder(order)
 	if err != nil {
 		fmt.Println("[Buy]", err)
-		return
+		return "", false
 	}
 	if resp.ChildOrderAcceptanceID == "" {
 		fmt.Println("[Buy]", "order send, but child_order_acceptance_id is none")
-		return
+		return "", false
 	}
 
 	// 注文が完了するまで待つ
-	childOrderAcceptanceID = resp.ChildOrderAcceptanceID
-	isOrderCompleted = bot.WaitUntilOrderComplete(childOrderAcceptanceID, candle.Time)
+	childOrderAcceptanceID := resp.ChildOrderAcceptanceID
+	completedOrder := bot.WaitUntilOrderComplete(childOrderAcceptanceID, candle.Time)
 
-	return childOrderAcceptanceID, isOrderCompleted
+	// 注文失敗した場合
+	if completedOrder == nil {
+		return childOrderAcceptanceID, false
+	}
+
+	// 注文成功した場合
+	// SignalEventsに注文記録を追加
+	bot.SignalEvents.Buy(bot.ProductCode, candle.Time, order.AveragePrice, order.Size)
+	// SingalEventをDBに保存
+	signalEvent := SignalEvent{
+		ProductCode: bot.ProductCode,
+		Time:        candle.Time,
+		Side:        "BUY",
+		Price:       order.AveragePrice,
+		Size:        order.Size,
+	}
+	saved := signalEvent.Save(bot.DBClient, timeFormat)
+
+	return childOrderAcceptanceID, saved
 }
 
-func (bot *TradingBot) Sell(candle Candle) (childOrderAcceptanceID string, isOrderCompleted bool) {
+func (bot *TradingBot) Sell(candle Candle, timeFormat string) (string, bool) {
 	if !bot.SignalEvents.CanSell(candle.Time) {
-		return
+		return "", false
 	}
 
 	// 所持中の仮想通貨
@@ -118,21 +136,39 @@ func (bot *TradingBot) Sell(candle Candle) (childOrderAcceptanceID string, isOrd
 	resp, err := bot.APIClient.SendOrder(order)
 	if err != nil {
 		fmt.Println("[Sell]", err)
-		return
+		return "", false
 	}
 	if resp.ChildOrderAcceptanceID == "" {
 		fmt.Println("[Sell]", "order send, but child_order_acceptance_id is none")
-		return
+		return "", false
 	}
 
 	// 注文が完了するまで待つ
-	childOrderAcceptanceID = resp.ChildOrderAcceptanceID
-	isOrderCompleted = bot.WaitUntilOrderComplete(childOrderAcceptanceID, candle.Time)
+	childOrderAcceptanceID := resp.ChildOrderAcceptanceID
+	completedOrder := bot.WaitUntilOrderComplete(childOrderAcceptanceID, candle.Time)
 
-	return childOrderAcceptanceID, isOrderCompleted
+	// 注文失敗した場合
+	if completedOrder == nil {
+		return childOrderAcceptanceID, false
+	}
+
+	// 注文成功した場合
+	// SignalEventsに注文記録を追加
+	bot.SignalEvents.Sell(bot.ProductCode, candle.Time, order.AveragePrice, order.Size)
+	// SingalEventをDBに保存
+	signalEvent := SignalEvent{
+		ProductCode: bot.ProductCode,
+		Time:        candle.Time,
+		Side:        "SELL",
+		Price:       order.AveragePrice,
+		Size:        order.Size,
+	}
+	saved := signalEvent.Save(bot.DBClient, timeFormat)
+
+	return childOrderAcceptanceID, saved
 }
 
-func (bot *TradingBot) WaitUntilOrderComplete(childOrderAcceptanceID string, executeTime time.Time) bool {
+func (bot *TradingBot) WaitUntilOrderComplete(childOrderAcceptanceID string, executeTime time.Time) *bitflyer.Order {
 	params := map[string]string{
 		"product_code":              bot.ProductCode,
 		"child_order_acceptance_id": childOrderAcceptanceID,
@@ -143,36 +179,28 @@ func (bot *TradingBot) WaitUntilOrderComplete(childOrderAcceptanceID string, exe
 	// 15秒ごとに注文状況をポーリング
 	interval := time.Tick(15 * time.Second)
 
-	return func() bool {
+	return func() *bitflyer.Order {
 		for {
 			select {
 			case <-expire:
-				return false
+				return nil
 			case <-interval:
 				orders, err := bot.APIClient.ListOrder(params)
 				if err != nil {
-					return false
+					return nil
 				}
 				if len(orders) == 0 {
-					return false
+					return nil
 				}
 				order := orders[0]
 				if order.ChildOrderState == "COMPLETED" {
 					if order.Side == "BUY" {
-						couldBuy := bot.SignalEvents.Buy(bot.ProductCode, executeTime, order.AveragePrice, order.Size)
-						if !couldBuy {
-							fmt.Printf("[Buy] could not buy: childOrderAcceptanceID=%s order=%+v\n", childOrderAcceptanceID, order)
-						}
-						return couldBuy
+						return &order
 					}
 					if order.Side == "SELL" {
-						couldSell := bot.SignalEvents.Sell(bot.ProductCode, executeTime, order.AveragePrice, order.Size)
-						if !couldSell {
-							fmt.Printf("[Buy] could not sell: childOrderAcceptanceID=%s order=%+v\n", childOrderAcceptanceID, order)
-						}
-						return couldSell
+						return &order
 					}
-					return false
+					return nil
 				}
 			}
 		}
@@ -272,14 +300,14 @@ func (bot *TradingBot) Trade(db *sql.DB, candleTableName, timeFormat string) err
 	}
 
 	if buyPoint > 0 {
-		childOrderAcceptanceID, isOrderCompleted := bot.Buy(df.Candles[lenCandles-1])
+		childOrderAcceptanceID, isOrderCompleted := bot.Buy(df.Candles[lenCandles-1], timeFormat)
 		if !isOrderCompleted {
 			return errors.New(fmt.Sprintf("[Trade] buy order is not completed, id=%s", childOrderAcceptanceID))
 		}
 	}
 
 	if sellPoint > 0 {
-		childOrderAcceptanceID, isOrderCompleted := bot.Sell(df.Candles[lenCandles-1])
+		childOrderAcceptanceID, isOrderCompleted := bot.Sell(df.Candles[lenCandles-1], timeFormat)
 		if !isOrderCompleted {
 			return errors.New(fmt.Sprintf("[Trade] sell order is not completed, id=%s", childOrderAcceptanceID))
 		}
