@@ -29,8 +29,15 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 取引bot
 	bot := model.NewTradingBot(config.DB, config.ProductCode, 24*time.Hour, 365)
+	bot.TradeParams = tradeParams
 
 	// 分析，取引
+	err := bot.Trade(config.DB, config.CandleTableName, config.TimeFormat)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "failed to trade: %s", err.Error())
+		return
+	}
 
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Trade")
