@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/config"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/lib/bitflyer"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/lib/trading"
 	"github.com/markcheno/go-talib"
@@ -26,9 +25,9 @@ type TradingBot struct {
 	MinuteToExpires int
 }
 
-func NewTradingBot(db *sql.DB, productCode string, duration time.Duration, pastPeriod int) *TradingBot {
+func NewTradingBot(db *sql.DB, apiKey, apiSecret, productCode string, duration time.Duration, pastPeriod int) *TradingBot {
 	// 取引所のAPIクライアント
-	apiClient := bitflyer.NewClient(config.APIKey, config.APISecret)
+	apiClient := bitflyer.NewClient(apiKey, apiSecret)
 
 	codes := strings.Split(productCode, "_")
 
