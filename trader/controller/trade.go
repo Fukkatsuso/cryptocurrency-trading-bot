@@ -11,6 +11,15 @@ import (
 
 // 相場を分析して取引実行する
 func TradeHandler(w http.ResponseWriter, r *http.Request) {
+	// 取引履歴
+	signalEvents := model.GetSignalEventsByProductCode(config.DB, config.ProductCode)
+	// 見つからなければ終了
+	if signalEvents == nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "failed to get signal_events (productCode=%s)", config.ProductCode)
+		return
+	}
+
 	// 分析，売買のためのパラメータ
 	tradeParams := model.GetTradeParams(config.DB, config.TradeParamTableName, config.ProductCode)
 	fmt.Println("params:", tradeParams)
@@ -29,6 +38,7 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 取引bot
 	bot := model.NewTradingBot(config.DB, config.APIKey, config.APISecret, config.ProductCode, 24*time.Hour, 365)
+	bot.SignalEvents = signalEvents
 	bot.TradeParams = tradeParams
 
 	// 分析，取引
