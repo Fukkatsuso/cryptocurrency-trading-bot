@@ -21,8 +21,9 @@ var (
 )
 
 const (
-	CandleTableName = "eth_candles"
-	TimeFormat      = "2006-01-02 15:04:05"
+	CandleTableName     = "eth_candles"
+	TradeParamTableName = "trade_params"
+	TimeFormat          = "2006-01-02 15:04:05"
 )
 
 func DSN() string {

@@ -1,6 +1,9 @@
 package model
 
 import (
+	"database/sql"
+	"fmt"
+	"strings"
 	"time"
 )
 
@@ -12,6 +15,20 @@ type SignalEvent struct {
 	Size        float64   `json:"size"`
 }
 
+func (s *SignalEvent) Save(db *sql.DB, timeFormat string) bool {
+	cmd := "INSERT INTO signal_envents (time, product_code, side, price, size) VALUES (?, ?, ?, ?, ?)"
+	_, err := db.Exec(cmd, s.Time.Format(timeFormat), s.ProductCode, s.Side, s.Price, s.Size)
+	if err != nil {
+		fmt.Println("[Save]", err)
+		// 重複エラーであれば問題ない
+		if strings.Contains(err.Error(), "Duplicate entry") {
+			return true
+		}
+		return false
+	}
+	return true
+}
+
 type SignalEvents struct {
 	Signals []SignalEvent `json:"signals,omitempty"`
 	Profit  float64       `json:"profit"`
@@ -19,6 +36,28 @@ type SignalEvents struct {
 
 func NewSignalEvents() *SignalEvents {
 	return &SignalEvents{}
+}
+
+func GetSignalEventsByProductCode(db *sql.DB, productCode string) *SignalEvents {
+	cmd := "SELECT * FROM signal_events WHERE product_code = ? ORDER BY time ASC"
+	rows, err := db.Query(cmd, productCode)
+	if err != nil {
+		return nil
+	}
+	defer rows.Close()
+
+	var signalEvents SignalEvents
+	for rows.Next() {
+		var signalEvent SignalEvent
+		rows.Scan(&signalEvent.Time, &signalEvent.ProductCode, &signalEvent.Side, &signalEvent.Price, &signalEvent.Size)
+		signalEvents.Signals = append(signalEvents.Signals, signalEvent)
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil
+	}
+
+	return &signalEvents
 }
 
 func (s *SignalEvents) CanBuy(time time.Time) bool {
