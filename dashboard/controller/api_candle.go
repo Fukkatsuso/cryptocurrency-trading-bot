@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/config"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/model"
@@ -30,7 +29,7 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	candles, _ := model.GetAllCandle(config.DB, config.CandleTableName, config.TimeFormat,
-		config.ProductCode, 24*time.Hour, limit)
+		config.ProductCode, config.CandleDuration, limit)
 
 	df := model.DataFrame{
 		ProductCode: config.ProductCode,
