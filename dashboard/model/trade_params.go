@@ -1,7 +1,6 @@
 package model
 
 import (
-	"database/sql"
 	"fmt"
 )
 
@@ -31,7 +30,7 @@ type TradeParams struct {
 	MACDSignalPeriod int
 }
 
-func GetTradeParams(db *sql.DB, tradeParamTableName, productCode string) *TradeParams {
+func GetTradeParams(db DB, tradeParamTableName, productCode string) *TradeParams {
 	// 最後に作成されたパラメータを取得
 	// productCodeで絞り込み，そのうちcreated_atが最新のレコードを探す
 	cmd := fmt.Sprintf(`

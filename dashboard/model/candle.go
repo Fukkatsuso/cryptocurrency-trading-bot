@@ -1,7 +1,6 @@
 package model
 
 import (
-	"database/sql"
 	"fmt"
 	"time"
 
@@ -32,7 +31,7 @@ func NewCandle(productCode string, duration time.Duration, timeDate time.Time, o
 	}
 }
 
-func (c *Candle) Create(db *sql.DB, candleTableName, timeFormat string) error {
+func (c *Candle) Create(db DB, candleTableName, timeFormat string) error {
 	cmd := fmt.Sprintf("INSERT INTO %s (time, open, close, high, low, volume) VALUES (?, ?, ?, ?, ?, ?)", candleTableName)
 	_, err := db.Exec(cmd, c.Time.Format(timeFormat), c.Open, c.Close, c.High, c.Low, c.Volume)
 	if err != nil {
@@ -41,7 +40,7 @@ func (c *Candle) Create(db *sql.DB, candleTableName, timeFormat string) error {
 	return err
 }
 
-func (c *Candle) Save(db *sql.DB, candleTableName, timeFormat string) error {
+func (c *Candle) Save(db DB, candleTableName, timeFormat string) error {
 	cmd := fmt.Sprintf("UPDATE %s SET open = ?, close = ?, high = ?, low = ?, volume = ? WHERE time = ?", candleTableName)
 	_, err := db.Exec(cmd, c.Open, c.Close, c.High, c.Low, c.Volume, c.Time.Format(timeFormat))
 	if err != nil {
@@ -50,7 +49,7 @@ func (c *Candle) Save(db *sql.DB, candleTableName, timeFormat string) error {
 	return err
 }
 
-func GetCandle(db *sql.DB, candleTableName, timeFormat, productCode string,
+func GetCandle(db DB, candleTableName, timeFormat, productCode string,
 	duration time.Duration, dateTime time.Time) *Candle {
 	cmd := fmt.Sprintf("SELECT time, open, close, high, low, volume FROM %s WHERE time = ?", candleTableName)
 	row := db.QueryRow(cmd, dateTime.Format(timeFormat))
@@ -87,7 +86,7 @@ func TruncateDateTime(dateTime time.Time, hour int) time.Time {
 	return dateTime
 }
 
-func CreateCandleWithDuration(db *sql.DB, candleTableName, timeFormat string, localTime *time.Location, tradeHour int,
+func CreateCandleWithDuration(db DB, candleTableName, timeFormat string, localTime *time.Location, tradeHour int,
 	ticker *bitflyer.Ticker, productCode string, duration time.Duration) error {
 	// LocalTimeでTruncateしたものをUTCに戻す
 	dateTime := DateTimeUTC(ticker.Timestamp)
@@ -111,7 +110,7 @@ func CreateCandleWithDuration(db *sql.DB, candleTableName, timeFormat string, lo
 	return currentCandle.Save(db, candleTableName, timeFormat)
 }
 
-func GetAllCandle(db *sql.DB, candleTableName, timeFormat string,
+func GetAllCandle(db DB, candleTableName, timeFormat string,
 	productCode string, duration time.Duration, limit int) (candles []Candle, err error) {
 	cmd := fmt.Sprintf("SELECT * FROM (SELECT time, open, close, high, low, volume FROM %s ORDER BY time DESC LIMIT ?) AS candle ORDER BY time ASC", candleTableName)
 	rows, err := db.Query(cmd, limit)
