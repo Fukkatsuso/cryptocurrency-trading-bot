@@ -15,3 +15,15 @@
 - [GCPプロジェクトのセットアップ](doc/gcp_project.md)
 - [環境変数の設定](doc/env.md)
 - [DBのマイグレーション](doc/migration.md)
+
+## Running the app
+
+[ドキュメント](doc/env.md)を参考に環境変数を設定する．
+
+db, trader, dashboard, schedulerを起動．
+
+```bash
+$ docker compose up
+```
+
+http://localhost:8080 で管理画面を開ける．
