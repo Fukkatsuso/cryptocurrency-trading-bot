@@ -13,7 +13,7 @@ on:
       - '.gitignore'
 
 env:
-  PROXY_IMAGE: gcr.io/cloudsql-docker/gce-proxy:1.19.1
+  PROXY_IMAGE: gcr.io/cloudsql-docker/gce-proxy:latest
   GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
   GCP_REGION: ${{ secrets.GCP_REGION }}
   CLOUDSQL_INSTANCE_CONNECTION_NAME: ${{ secrets.GCP_PROJECT }}:${{ secrets.GCP_REGION }}:${{ secrets.CLOUDSQL_INSTANCE }}
