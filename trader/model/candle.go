@@ -106,7 +106,7 @@ func CreateCandleWithDuration(db *sql.DB, candleTableName, timeFormat string, lo
 	} else if currentCandle.Low >= price {
 		currentCandle.Low = price
 	}
-	currentCandle.Volume += ticker.Volume
+	currentCandle.Volume = ticker.Volume
 	currentCandle.Close = price
 	return currentCandle.Save(db, candleTableName, timeFormat)
 }
