@@ -179,3 +179,59 @@ User: (MYSQL_USERと同じ)
 Password: (MYSQL_PASSWORDと同じ)
 Database: (MYSQL_DATABASEと同じ)
 ```
+
+## Cloud Scheduler, Cloud Functinosを用いてCloud SQL データベースをエクスポート
+
+- https://cloud.google.com/solutions/scheduling-cloud-sql-database-exports-using-cloud-scheduler?hl=ja
+
+### APIの有効化
+
+```sh
+gcloud services enable \
+  sqladmin.googleapis.com \
+  cloudfunctions.googleapis.com \
+  cloudscheduler.googleapis.com \
+  appengine.googleapis.com
+```
+
+### カスタムロールを作成
+
+```sh
+export PROJECT_ID=trading-xxxxxx
+export STORAGE_ROLE="simpleStorageRole"
+export SQL_ROLE="sqlExporter"
+gcloud iam roles create ${STORAGE_ROLE} --project ${PROJECT_ID} \
+    --title "Simple Storage Role" \
+    --description "Grant permissions to view and create objects in Cloud Storage" \
+    --permissions "storage.objects.create,storage.objects.get"
+
+gcloud iam roles create ${SQL_ROLE} --project ${PROJECT_ID} \
+    --title "SQL Exporter Role" \
+    --description "Grant permissions to export data from a Cloud SQL instance to a Cloud Storage bucket as a SQL dump or CSV file" \
+    --permissions "cloudsql.instances.export"
+```
+
+### Cloud Storage バケットを作成する
+
+```sh
+export REGION=asia-northeast1
+export BUCKET_NAME=xxxxxx-bucket
+gsutil mb -l ${REGION} gs://${BUCKET_NAME}
+```
+
+### サービスアカウントに権限を付与する
+
+```sh
+# gcloud sql instances list
+export SQL_INSTANCE=trading-mysql
+export SQL_SA=(`gcloud sql instances describe ${SQL_INSTANCE} \
+  --project ${PROJECT_ID} \
+  --format "value(serviceAccountEmailAddress)"`)
+gsutil iam ch serviceAccount:${SQL_SA}:projects/${PROJECT_ID}/roles/${STORAGE_ROLE} gs://${BUCKET_NAME}
+
+# gcloud iam service-accounts list
+export GCF_NAME=github-actions
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+  --member="serviceAccount:${GCF_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role="projects/${PROJECT_ID}/roles/${SQL_ROLE}"
+```
