@@ -40,7 +40,8 @@ func ExportDatabaseToStorage(w http.ResponseWriter, r *http.Request) {
 
 	// "gs://bucketName/fileName"
 	uri := fmt.Sprintf("gs://%s/%s.%s.csv", GCS_BUCKET, DATABASE, CandleTableName)
-	selectQuery := fmt.Sprintf("SELECT * FROM %s.%s ORDER BY time ASC", DATABASE, CandleTableName)
+	columns := "time, open, close, high, low, volume"
+	selectQuery := fmt.Sprintf("SELECT %s FROM %s.%s ORDER BY time ASC", columns, DATABASE, CandleTableName)
 	rb := &sqladmin.InstancesExportRequest{
 		ExportContext: &sqladmin.ExportContext{
 			Kind:     "sql#exportContext",
@@ -51,6 +52,8 @@ func ExportDatabaseToStorage(w http.ResponseWriter, r *http.Request) {
 			},
 		},
 	}
+	fmt.Println("uri:", uri)
+	fmt.Println("selectQuery:", selectQuery)
 
 	resp, err := sqladminService.Instances.Export(GCP_PROJECT, CLOUDSQL_INSTANCE, rb).Context(ctx).Do()
 	if err != nil {
