@@ -40,16 +40,12 @@ func ExportDatabaseToStorage(w http.ResponseWriter, r *http.Request) {
 
 	// "gs://bucketName/fileName"
 	uri := fmt.Sprintf("gs://%s/%s.%s.csv", GCS_BUCKET, DATABASE, CandleTableName)
-	databases := []string{
-		DATABASE,
-	}
 	selectQuery := fmt.Sprintf("SELECT * FROM %s.%s ORDER BY time ASC", DATABASE, CandleTableName)
 	rb := &sqladmin.InstancesExportRequest{
 		ExportContext: &sqladmin.ExportContext{
-			Kind:      "sql#exportContext",
-			FileType:  "CSV",
-			Uri:       uri,
-			Databases: databases,
+			Kind:     "sql#exportContext",
+			FileType: "CSV",
+			Uri:      uri,
 			CsvExportOptions: &sqladmin.ExportContextCsvExportOptions{
 				SelectQuery: selectQuery,
 			},
