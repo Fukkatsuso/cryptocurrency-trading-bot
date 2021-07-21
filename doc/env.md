@@ -27,6 +27,7 @@ CLOUDSQL_INSTANCE: <Cloud SQLのインスタンス名>
 MYSQL_USER: <MySQLに作成したユーザ>
 MYSQL_PASSWORD: <ユーザのパスワード>
 MYSQL_DATABASE: <データベース名>
+GCS_BUCKET: <GCSのバケット名>
 BITFLYER_API_KEY: <bitflyerのAPIキー>
 BITFLYER_API_SECRET: <bitflyerのAPIシークレット>
 PRODUCT_CODE: ETH_JPY
