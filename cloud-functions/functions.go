@@ -17,6 +17,10 @@ var (
 	GCS_BUCKET        = os.Getenv("GCS_BUCKET")
 )
 
+const (
+	CandleTableName = "eth_candles"
+)
+
 func ExportDatabaseToStorage(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -35,16 +39,20 @@ func ExportDatabaseToStorage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// "gs://bucketName/fileName"
-	uri := fmt.Sprintf("gs://%s/%s.csv", GCS_BUCKET, DATABASE)
+	uri := fmt.Sprintf("gs://%s/%s.%s.csv", GCS_BUCKET, DATABASE, CandleTableName)
 	databases := []string{
 		DATABASE,
 	}
+	selectQuery := fmt.Sprintf("SELECT * FROM %s ORDER BY time ASC", CandleTableName)
 	rb := &sqladmin.InstancesExportRequest{
 		ExportContext: &sqladmin.ExportContext{
 			Kind:      "sql#exportContext",
 			FileType:  "CSV",
 			Uri:       uri,
 			Databases: databases,
+			CsvExportOptions: &sqladmin.ExportContextCsvExportOptions{
+				SelectQuery: selectQuery,
+			},
 		},
 	}
 
