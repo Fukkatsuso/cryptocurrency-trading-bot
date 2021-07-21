@@ -43,7 +43,7 @@ func ExportDatabaseToStorage(w http.ResponseWriter, r *http.Request) {
 	databases := []string{
 		DATABASE,
 	}
-	selectQuery := fmt.Sprintf("SELECT * FROM %s ORDER BY time ASC", CandleTableName)
+	selectQuery := fmt.Sprintf("SELECT * FROM %s.%s ORDER BY time ASC", DATABASE, CandleTableName)
 	rb := &sqladmin.InstancesExportRequest{
 		ExportContext: &sqladmin.ExportContext{
 			Kind:      "sql#exportContext",
