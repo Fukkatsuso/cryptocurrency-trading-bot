@@ -174,7 +174,7 @@ jobs:
             --runtime go113 \
             --update-env-vars GCP_PROJECT="$GCP_PROJECT" \
             --update-env-vars CLOUDSQL_INSTANCE="$CLOUDSQL_INSTANCE" \
-            --update-env-vars DATABASE="$MYSQL_DATABASE" \
+            --update-env-vars MYSQL_DATABASE="$MYSQL_DATABASE" \
             --update-env-vars GCS_BUCKET="$GCS_BUCKET" \
             --max-instances 1 \
             --trigger-http
