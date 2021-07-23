@@ -183,6 +183,7 @@ Database: (MYSQL_DATABASEと同じ)
 ## Cloud Scheduler, Cloud Functinosを用いてCloud SQL データベースをエクスポート
 
 - https://cloud.google.com/solutions/scheduling-cloud-sql-database-exports-using-cloud-scheduler?hl=ja
+- https://github.com/Fukkatsuso/cryptocurrency-trading-bot/issues/82
 
 ### APIの有効化
 
@@ -191,7 +192,8 @@ gcloud services enable \
   sqladmin.googleapis.com \
   cloudfunctions.googleapis.com \
   cloudscheduler.googleapis.com \
-  appengine.googleapis.com
+  appengine.googleapis.com \
+  cloudresourcemanager.googleapis.com
 ```
 
 ### カスタムロールを作成
@@ -234,4 +236,29 @@ export GCF_NAME=github-actions
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
   --member="serviceAccount:${GCF_NAME}@${PROJECT_ID}.iam.gserviceaccount.com" \
   --role="projects/${PROJECT_ID}/roles/${SQL_ROLE}"
+
+# デプロイ時発生した権限周りのエラーの対処
+export SA_NAME=github-actions
+export IAM_ACCOUNT=${SA_NAME}@${PROJECT_ID}.iam.gserviceaccount.com
+gcloud projects add-iam-policy-binding  ${PROJECT_ID} \
+  --member="serviceAccount:${IAM_ACCOUNT}" \
+  --role="roles/cloudfunctions.developer"
+gcloud iam service-accounts add-iam-policy-binding ${PROJECT_ID}@appspot.gserviceaccount.com \
+  --member="serviceAccount:${IAM_ACCOUNT}" \
+  --role="roles/iam.serviceAccountUser"
+```
+
+### Cloud Scheduler ジョブを作成
+
+```sh
+export JOB_NAME=export-db
+export FUNCTION_NAME=export-database-to-storage
+export SERVICE_URL="https://${REGION}-${PROJECT_ID}.cloudfunctions.net/${FUNCTION_NAME}"
+gcloud scheduler jobs create http ${JOB_NAME} \
+  --schedule "57 8 * * *" \
+  --http-method="POST" \
+  --uri="${SERVICE_URL}" \
+  --oidc-service-account-email="${IAM_ACCOUNT}" \
+  --oidc-token-audience="${SERVICE_URL}" \
+  --time-zone="Asia/Tokyo"
 ```
