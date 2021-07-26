@@ -34,6 +34,7 @@ services:
     tty: true
     volumes:
       - ./dashboard:/go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard
+      - ./sa_key:/sa_key
     working_dir: /go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard
 
   db:
