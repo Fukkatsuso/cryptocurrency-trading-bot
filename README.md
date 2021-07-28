@@ -20,10 +20,19 @@
 
 [ドキュメント](doc/env.md)を参考に環境変数を設定する．
 
+テストを実行する場合，GCPのサービスアカウントのキーを`sa_key`というファイルでプロジェクトルートに配置しておくこと．
+
 db, trader, dashboard, schedulerを起動．
 
 ```bash
 $ docker compose up
+```
+
+データベースのマイグレーション（詳しくは[ドキュメント](doc/migration.md)参照）
+
+```sh
+# example
+migrate -path db/migrations/ -database 'mysql://trading_app:password@tcp(localhost:3306)/trading_db' up
 ```
 
 http://localhost:8080 で管理画面を開ける．
