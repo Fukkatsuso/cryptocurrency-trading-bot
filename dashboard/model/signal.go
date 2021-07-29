@@ -15,7 +15,7 @@ type SignalEvent struct {
 }
 
 func (s *SignalEvent) Save(db DB, timeFormat string) bool {
-	cmd := "INSERT INTO signal_envents (time, product_code, side, price, size) VALUES (?, ?, ?, ?, ?)"
+	cmd := "INSERT INTO signal_events (time, product_code, side, price, size) VALUES (?, ?, ?, ?, ?)"
 	_, err := db.Exec(cmd, s.Time.Format(timeFormat), s.ProductCode, s.Side, s.Price, s.Size)
 	if err != nil {
 		fmt.Println("[Save]", err)
