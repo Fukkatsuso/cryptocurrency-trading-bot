@@ -44,7 +44,8 @@ func DSN() string {
 
 func init() {
 	dsn := DSN()
-	fmt.Println("dsn:", dsn)
+	// テスト時に出力しないほうがよさげ
+	// fmt.Println("dsn:", dsn)
 
 	var err error
 	DB, err = sql.Open("mysql", dsn)

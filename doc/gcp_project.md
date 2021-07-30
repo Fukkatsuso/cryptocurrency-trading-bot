@@ -164,7 +164,7 @@ Cloud SQL Proxyを立てる
 docker run \
   -v $PWD/sa_key:/config \
   -p 127.0.0.1:3306:3306 \
-  gcr.io/cloudsql-docker/gce-proxy:1.19.1 /cloud_sql_proxy \
+  gcr.io/cloudsql-docker/gce-proxy:latest /cloud_sql_proxy \
   -instances=$GCP_PROJECT:$GCP_REGION:$CLOUDSQL_INSTANCE=tcp:0.0.0.0:3306 \
   -credential_file=/config
 ```

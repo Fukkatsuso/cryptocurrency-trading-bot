@@ -1,7 +1,6 @@
 package model
 
 import (
-	"database/sql"
 	"fmt"
 	"strings"
 	"time"
@@ -15,8 +14,8 @@ type SignalEvent struct {
 	Size        float64   `json:"size"`
 }
 
-func (s *SignalEvent) Save(db *sql.DB, timeFormat string) bool {
-	cmd := "INSERT INTO signal_envents (time, product_code, side, price, size) VALUES (?, ?, ?, ?, ?)"
+func (s *SignalEvent) Save(db DB, timeFormat string) bool {
+	cmd := "INSERT INTO signal_events (time, product_code, side, price, size) VALUES (?, ?, ?, ?, ?)"
 	_, err := db.Exec(cmd, s.Time.Format(timeFormat), s.ProductCode, s.Side, s.Price, s.Size)
 	if err != nil {
 		fmt.Println("[Save]", err)
@@ -38,7 +37,7 @@ func NewSignalEvents() *SignalEvents {
 	return &SignalEvents{}
 }
 
-func GetSignalEventsByProductCode(db *sql.DB, productCode string) *SignalEvents {
+func GetSignalEventsByProductCode(db DB, productCode string) *SignalEvents {
 	cmd := "SELECT * FROM signal_events WHERE product_code = ? ORDER BY time ASC"
 	rows, err := db.Query(cmd, productCode)
 	if err != nil {

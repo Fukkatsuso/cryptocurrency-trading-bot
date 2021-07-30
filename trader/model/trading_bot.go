@@ -1,7 +1,6 @@
 package model
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
@@ -14,7 +13,7 @@ import (
 
 type TradingBot struct {
 	APIClient       *bitflyer.Client
-	DBClient        *sql.DB
+	DBClient        DB
 	ProductCode     string
 	CoinCode        string
 	CurrencyCode    string
@@ -25,7 +24,7 @@ type TradingBot struct {
 	MinuteToExpires int
 }
 
-func NewTradingBot(db *sql.DB, apiKey, apiSecret, productCode string, duration time.Duration, pastPeriod int) *TradingBot {
+func NewTradingBot(db DB, apiKey, apiSecret, productCode string, duration time.Duration, pastPeriod int) *TradingBot {
 	// 取引所のAPIクライアント
 	apiClient := bitflyer.NewClient(apiKey, apiSecret)
 
@@ -206,7 +205,7 @@ func (bot *TradingBot) WaitUntilOrderComplete(childOrderAcceptanceID string, exe
 	}()
 }
 
-func (bot *TradingBot) Trade(db *sql.DB, candleTableName, timeFormat string) error {
+func (bot *TradingBot) Trade(db DB, candleTableName, timeFormat string) error {
 	params := bot.TradeParams
 	if params == nil {
 		return errors.New("[Trade] TradeParams is nil")

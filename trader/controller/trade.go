@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/config"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/model"
@@ -37,7 +36,7 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 取引bot
-	bot := model.NewTradingBot(config.DB, config.APIKey, config.APISecret, config.ProductCode, 24*time.Hour, 365)
+	bot := model.NewTradingBot(config.DB, config.APIKey, config.APISecret, config.ProductCode, config.CandleDuration, 365)
 	bot.SignalEvents = signalEvents
 	bot.TradeParams = tradeParams
 
