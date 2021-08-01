@@ -80,6 +80,50 @@ func TestSignalEvents(t *testing.T) {
 			t.Fatalf("wrong number of SignalEvents. Expected 2, but %d", len(events.Signals))
 		}
 	})
+
+	t.Run("test CanBuy, Buy", func(t *testing.T) {
+		// can buy
+		now := time.Now()
+		if !events.CanBuy(now) {
+			t.Fatal("events should enable to buy:", events)
+		}
+		ok := events.Buy(config.ProductCode, now, 1200, 0.01)
+		if !ok || len(events.Signals) != 3 {
+			t.Fatal("Failed to add buy event")
+		}
+
+		// cannot buy
+		now = time.Now()
+		if events.CanBuy(now) {
+			t.Fatal("events should disable to buy:", events)
+		}
+		ok = events.Buy(config.ProductCode, now, 1200, 0.01)
+		if ok || len(events.Signals) != 3 {
+			t.Fatal("Failed to disable to add buy event")
+		}
+	})
+
+	t.Run("test CanSell, Sell", func(t *testing.T) {
+		// can sell
+		now := time.Now()
+		if !events.CanSell(now) {
+			t.Fatal("events should enable to sell:", events)
+		}
+		ok := events.Sell(config.ProductCode, now, 2000, 0.01)
+		if !ok || len(events.Signals) != 4 {
+			t.Fatal("Failed to add sell event")
+		}
+
+		// cannot sell
+		now = time.Now()
+		if events.CanSell(now) {
+			t.Fatal("events should disable to sell:", events)
+		}
+		ok = events.Sell(config.ProductCode, now, 2000, 0.01)
+		if ok || len(events.Signals) != 4 {
+			t.Fatal("Failed to disable to add sell event")
+		}
+	})
 }
 
 func deleteSignalEventAll(tx DB) error {
