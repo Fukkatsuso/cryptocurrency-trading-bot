@@ -124,6 +124,14 @@ func TestSignalEvents(t *testing.T) {
 			t.Fatal("Failed to disable to add sell event")
 		}
 	})
+
+	t.Run("test EstimateProfit", func(t *testing.T) {
+		events.EstimateProfit()
+		profit := events.Profit
+		if profit != 13 {
+			t.Fatalf("Wrong profit estimated. Expected 13 but %f", profit)
+		}
+	})
 }
 
 func deleteSignalEventAll(tx DB) error {
