@@ -30,6 +30,86 @@ type TradeParams struct {
 	MACDSignalPeriod int
 }
 
+func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error {
+	cmd := fmt.Sprintf(`
+        INSERT INTO %s (
+            trade_enable,
+            size,
+            sma_enable,
+            sma_period1,
+            sma_period2,
+            sma_period3,
+            ema_enable,
+            ema_period1,
+            ema_period2,
+            ema_period3,
+            bbands_enable,
+            bbands_n,
+            bbands_k,
+            ichimoku_enable,
+            rsi_enable,
+            rsi_period,
+            rsi_buy_thread,
+            rsi_sell_thread,
+            macd_enable,
+            macd_fast_period,
+            macd_slow_period,
+            macd_signal_period
+        ) VALUES (
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
+        )`,
+		tradeParamTableName)
+
+	_, err := db.Exec(cmd,
+		tradeParams.TradeEnable,
+		tradeParams.Size,
+		tradeParams.SMAEnable,
+		tradeParams.SMAPeriod1,
+		tradeParams.SMAPeriod2,
+		tradeParams.SMAPeriod3,
+		tradeParams.EMAEnable,
+		tradeParams.EMAPeriod1,
+		tradeParams.EMAPeriod2,
+		tradeParams.EMAPeriod3,
+		tradeParams.BBandsEnable,
+		tradeParams.BBandsN,
+		tradeParams.BBandsK,
+		tradeParams.IchimokuEnable,
+		tradeParams.RSIEnable,
+		tradeParams.RSIPeriod,
+		tradeParams.RSIBuyThread,
+		tradeParams.RSISellThread,
+		tradeParams.MACDEnable,
+		tradeParams.MACDFastPeriod,
+		tradeParams.MACDSlowPeriod,
+		tradeParams.MACDSignalPeriod,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func GetTradeParams(db DB, tradeParamTableName, productCode string) *TradeParams {
 	// 最後に作成されたパラメータを取得
 	// productCodeで絞り込み，そのうちcreated_atが最新のレコードを探す
