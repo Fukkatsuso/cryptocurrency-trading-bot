@@ -35,7 +35,7 @@ func GetTradeParams(db DB, tradeParamTableName, productCode string) *TradeParams
 	// productCodeで絞り込み，そのうちcreated_atが最新のレコードを探す
 	cmd := fmt.Sprintf(`
             SELECT
-                tp.enable,
+                tp.trade_enable,
                 tp.size,
                 tp.sma_enable,
                 tp.sma_period1,
