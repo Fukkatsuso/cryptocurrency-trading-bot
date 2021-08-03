@@ -34,6 +34,7 @@ func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error 
 	cmd := fmt.Sprintf(`
         INSERT INTO %s (
             trade_enable,
+            product_code,
             size,
             sma_enable,
             sma_period1,
@@ -76,12 +77,15 @@ func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error 
             ?,
             ?,
             ?,
+            ?,
+            ?,
             ?
         )`,
 		tradeParamTableName)
 
 	_, err := db.Exec(cmd,
 		tradeParams.TradeEnable,
+		tradeParams.ProductCode,
 		tradeParams.Size,
 		tradeParams.SMAEnable,
 		tradeParams.SMAPeriod1,
