@@ -1,5 +1,6 @@
 # cryptocurrency-trading-bot
 
+[![Test](https://github.com/Fukkatsuso/cryptocurrency-trading-bot/actions/workflows/test.yml/badge.svg)](https://github.com/Fukkatsuso/cryptocurrency-trading-bot/actions/workflows/test.yml)
 [![Deploy](https://github.com/Fukkatsuso/cryptocurrency-trading-bot/actions/workflows/deploy.yml/badge.svg)](https://github.com/Fukkatsuso/cryptocurrency-trading-bot/actions/workflows/deploy.yml)
 
 ## About
