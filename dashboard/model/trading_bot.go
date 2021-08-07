@@ -7,8 +7,6 @@ import (
 	"time"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/lib/bitflyer"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/lib/trading"
-	"github.com/markcheno/go-talib"
 )
 
 type TradingBot struct {
@@ -222,29 +220,56 @@ func (bot *TradingBot) Trade(db DB, candleTableName, timeFormat string) error {
 	var emaValues1 []float64
 	var emaValues2 []float64
 	if params.EMAEnable {
-		emaValues1 = talib.Ema(df.Closes(), params.EMAPeriod1)
-		emaValues2 = talib.Ema(df.Closes(), params.EMAPeriod2)
+		ok1 := df.AddEMA(params.EMAPeriod1)
+		ok2 := df.AddEMA(params.EMAPeriod2)
+		params.EMAEnable = ok1 && ok2
+	}
+	if params.EMAEnable {
+		emaValues1 = df.EMAs[0].Values
+		emaValues2 = df.EMAs[1].Values
 	}
 
 	var bbUp []float64
 	var bbDown []float64
 	if params.BBandsEnable {
-		bbUp, _, bbDown = talib.BBands(df.Closes(), params.BBandsN, params.BBandsK, params.BBandsK, 0)
+		ok := df.AddBBands(params.BBandsN, params.BBandsK)
+		params.BBandsEnable = ok
+	}
+	if params.BBandsEnable {
+		bbUp = df.BBands.Up
+		bbDown = df.BBands.Down
 	}
 
 	var tenkan, kijun, senkouA, senkouB, chikou []float64
 	if params.IchimokuEnable {
-		tenkan, kijun, senkouA, senkouB, chikou = trading.IchimokuCloud(df.Closes())
+		ok := df.AddIchimoku()
+		params.IchimokuEnable = ok
+	}
+	if params.IchimokuEnable {
+		tenkan = df.IchimokuCloud.Tenkan
+		kijun = df.IchimokuCloud.Kijun
+		senkouA = df.IchimokuCloud.SenkouA
+		senkouB = df.IchimokuCloud.SenkouB
+		chikou = df.IchimokuCloud.Chikou
 	}
 
 	var outMACD, outMACDSignal []float64
 	if params.MACDEnable {
-		outMACD, outMACDSignal, _ = talib.Macd(df.Closes(), params.MACDFastPeriod, params.MACDSlowPeriod, params.MACDSignalPeriod)
+		ok := df.AddMACD(params.MACDFastPeriod, params.MACDSlowPeriod, params.MACDSignalPeriod)
+		params.MACDEnable = ok
+	}
+	if params.MACDEnable {
+		outMACD = df.MACD.MACD
+		outMACDSignal = df.MACD.MACDSignal
 	}
 
 	var rsiValues []float64
 	if params.RSIEnable {
-		rsiValues = talib.Rsi(df.Closes(), params.RSIPeriod)
+		ok := df.AddRSI(params.RSIPeriod)
+		params.RSIEnable = ok
+	}
+	if params.RSIEnable {
+		rsiValues = df.RSI.Values
 	}
 
 	buyPoint, sellPoint := 0, 0
