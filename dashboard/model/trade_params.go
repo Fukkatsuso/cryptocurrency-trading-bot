@@ -199,10 +199,10 @@ func (df *DataFrame) BackTest(params *TradeParams) {
 	for i := 1; i < len(df.Candles); i++ {
 		buyPoint, sellPoint := df.Analyze(i, params)
 
-		if buyPoint > sellPoint {
+		if buyPoint > 0 {
 			events.Buy(params.ProductCode, df.Candles[i].Time, df.Candles[i].Close, params.Size)
 		}
-		if sellPoint > buyPoint {
+		if sellPoint > 0 {
 			events.Sell(params.ProductCode, df.Candles[i].Time, df.Candles[i].Close, params.Size)
 		}
 	}
