@@ -197,68 +197,7 @@ func (df *DataFrame) BackTest(params *TradeParams) {
 
 	events := NewSignalEvents()
 	for i := 1; i < len(df.Candles); i++ {
-		buyPoint, sellPoint := 0, 0
-
-		if params.EMAEnable && params.EMAPeriod1 <= i && params.EMAPeriod2 <= i {
-			emaValue1Prev, emaValue1 := df.EMAs[0].Values[i-1], df.EMAs[0].Values[i-1]
-			emaValue2Prev, emaValue2 := df.EMAs[1].Values[i-1], df.EMAs[1].Values[i-1]
-			if emaValue1Prev < emaValue2Prev && emaValue1 >= emaValue2 {
-				buyPoint++
-			}
-			if emaValue1Prev > emaValue2Prev && emaValue1 <= emaValue2 {
-				sellPoint++
-			}
-		}
-
-		if params.BBandsEnable && params.BBandsN <= i {
-			bbandsUpPrev, bbandsUp := df.BBands.Up[i-1], df.BBands.Up[i]
-			bbandsDownPrev, bbandsDown := df.BBands.Down[i-1], df.BBands.Down[i]
-			if bbandsDownPrev > df.Candles[i-1].Close && bbandsDown <= df.Candles[i].Close {
-				buyPoint++
-			}
-			if bbandsUpPrev < df.Candles[i-1].Close && bbandsUp >= df.Candles[i].Close {
-				sellPoint++
-			}
-		}
-
-		if params.IchimokuEnable {
-			tenkan := df.IchimokuCloud.Tenkan[i]
-			kijun := df.IchimokuCloud.Kijun[i]
-			senkouA := df.IchimokuCloud.SenkouA[i]
-			senkouB := df.IchimokuCloud.SenkouB[i]
-			chikouPrev, chikou := df.IchimokuCloud.Chikou[i-1], df.IchimokuCloud.Chikou[i]
-			if chikouPrev < df.Candles[i-1].High && chikou >= df.Candles[i].High &&
-				senkouA < df.Candles[i].Low && senkouB < df.Candles[i].Low &&
-				tenkan > kijun {
-				buyPoint++
-			}
-			if chikouPrev > df.Candles[i-1].Low && chikou <= df.Candles[i].Low &&
-				senkouA > df.Candles[i].High && senkouB > df.Candles[i].High &&
-				tenkan < kijun {
-				sellPoint++
-			}
-		}
-
-		if params.RSIEnable && df.RSI.Values[i-1] != 0 && df.RSI.Values[i-1] != 100 {
-			rsiPrev, rsi := df.RSI.Values[i-1], df.RSI.Values[i]
-			if rsiPrev < params.RSISellThread && rsi >= params.RSIBuyThread {
-				buyPoint++
-			}
-			if rsiPrev > params.RSISellThread && rsi <= params.RSISellThread {
-				sellPoint++
-			}
-		}
-
-		if params.MACDEnable {
-			macdPrev, macd := df.MACD.MACD[i-1], df.MACD.MACD[i]
-			signalPrev, signal := df.MACD.MACDSignal[i-1], df.MACD.MACDSignal[i]
-			if macd < 0 && signal < 0 && macdPrev < signalPrev && macd >= signal {
-				buyPoint++
-			}
-			if macd > 0 && signal > 0 && macdPrev > signalPrev && macd <= signal {
-				sellPoint++
-			}
-		}
+		buyPoint, sellPoint := df.Analyze(i, params)
 
 		if buyPoint > sellPoint {
 			events.Buy(params.ProductCode, df.Candles[i].Time, df.Candles[i].Close, params.Size)
@@ -270,4 +209,81 @@ func (df *DataFrame) BackTest(params *TradeParams) {
 	df.BacktestEvents = events
 
 	df.BacktestEvents.EstimateProfit()
+}
+
+// 各指標の時点"at"で分析する
+// buyPoint, sellPointを返す
+func (df *DataFrame) Analyze(at int, params *TradeParams) (int, int) {
+	buyPoint, sellPoint := 0, 0
+
+	if params.EMAEnable &&
+		params.EMAPeriod1 <= at && params.EMAPeriod2 <= at &&
+		0 < at && at < len(df.EMAs[0].Values) && at < len(df.EMAs[1].Values) {
+		emaValue1Prev, emaValue1 := df.EMAs[0].Values[at-1], df.EMAs[0].Values[at]
+		emaValue2Prev, emaValue2 := df.EMAs[1].Values[at-1], df.EMAs[1].Values[at]
+		if emaValue1Prev < emaValue2Prev && emaValue1 >= emaValue2 {
+			buyPoint++
+		}
+		if emaValue1Prev > emaValue2Prev && emaValue1 <= emaValue2 {
+			sellPoint++
+		}
+	}
+
+	if params.BBandsEnable &&
+		params.BBandsN <= at &&
+		0 < at && at < len(df.BBands.Up) && at < len(df.BBands.Down) && at < len(df.Candles) {
+		bbandsUpPrev, bbandsUp := df.BBands.Up[at-1], df.BBands.Up[at]
+		bbandsDownPrev, bbandsDown := df.BBands.Down[at-1], df.BBands.Down[at]
+		if bbandsDownPrev > df.Candles[at-1].Close && bbandsDown <= df.Candles[at].Close {
+			buyPoint++
+		}
+		if bbandsUpPrev < df.Candles[at-1].Close && bbandsUp >= df.Candles[at].Close {
+			sellPoint++
+		}
+	}
+
+	if params.IchimokuEnable &&
+		0 < at && at < len(df.IchimokuCloud.Tenkan) && at < len(df.IchimokuCloud.Kijun) && at < len(df.IchimokuCloud.SenkouA) && at < len(df.IchimokuCloud.SenkouB) && at < len(df.IchimokuCloud.Chikou) && at < len(df.Candles) {
+		tenkan := df.IchimokuCloud.Tenkan[at]
+		kijun := df.IchimokuCloud.Kijun[at]
+		senkouA := df.IchimokuCloud.SenkouA[at]
+		senkouB := df.IchimokuCloud.SenkouB[at]
+		chikouPrev, chikou := df.IchimokuCloud.Chikou[at-1], df.IchimokuCloud.Chikou[at]
+		if chikouPrev < df.Candles[at-1].High && chikou >= df.Candles[at].High &&
+			senkouA < df.Candles[at].Low && senkouB < df.Candles[at].Low &&
+			tenkan > kijun {
+			buyPoint++
+		}
+		if chikouPrev > df.Candles[at-1].Low && chikou <= df.Candles[at].Low &&
+			senkouA > df.Candles[at].High && senkouB > df.Candles[at].High &&
+			tenkan < kijun {
+			sellPoint++
+		}
+	}
+
+	if params.RSIEnable &&
+		0 < at && at < len(df.RSI.Values) &&
+		df.RSI.Values[at-1] != 0 && df.RSI.Values[at-1] != 100 {
+		rsiPrev, rsi := df.RSI.Values[at-1], df.RSI.Values[at]
+		if rsiPrev < params.RSIBuyThread && rsi >= params.RSIBuyThread {
+			buyPoint++
+		}
+		if rsiPrev > params.RSISellThread && rsi <= params.RSISellThread {
+			sellPoint++
+		}
+	}
+
+	if params.MACDEnable &&
+		0 < at && at < len(df.MACD.MACD) && at < len(df.MACD.MACDSignal) {
+		macdPrev, macd := df.MACD.MACD[at-1], df.MACD.MACD[at]
+		signalPrev, signal := df.MACD.MACDSignal[at-1], df.MACD.MACDSignal[at]
+		if macd < 0 && signal < 0 && macdPrev < signalPrev && macd >= signal {
+			buyPoint++
+		}
+		if macd > 0 && signal > 0 && macdPrev > signalPrev && macd <= signal {
+			sellPoint++
+		}
+	}
+
+	return buyPoint, sellPoint
 }

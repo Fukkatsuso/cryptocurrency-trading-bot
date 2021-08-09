@@ -217,120 +217,44 @@ func (bot *TradingBot) Trade(db DB, candleTableName, timeFormat string) error {
 		Candles:     candles,
 	}
 
-	var emaValues1 []float64
-	var emaValues2 []float64
 	if params.EMAEnable {
 		ok1 := df.AddEMA(params.EMAPeriod1)
 		ok2 := df.AddEMA(params.EMAPeriod2)
 		params.EMAEnable = ok1 && ok2
 	}
-	if params.EMAEnable {
-		emaValues1 = df.EMAs[0].Values
-		emaValues2 = df.EMAs[1].Values
-	}
 
-	var bbUp []float64
-	var bbDown []float64
 	if params.BBandsEnable {
 		ok := df.AddBBands(params.BBandsN, params.BBandsK)
 		params.BBandsEnable = ok
 	}
-	if params.BBandsEnable {
-		bbUp = df.BBands.Up
-		bbDown = df.BBands.Down
-	}
 
-	var tenkan, kijun, senkouA, senkouB, chikou []float64
 	if params.IchimokuEnable {
 		ok := df.AddIchimoku()
 		params.IchimokuEnable = ok
 	}
-	if params.IchimokuEnable {
-		tenkan = df.IchimokuCloud.Tenkan
-		kijun = df.IchimokuCloud.Kijun
-		senkouA = df.IchimokuCloud.SenkouA
-		senkouB = df.IchimokuCloud.SenkouB
-		chikou = df.IchimokuCloud.Chikou
-	}
 
-	var outMACD, outMACDSignal []float64
 	if params.MACDEnable {
 		ok := df.AddMACD(params.MACDFastPeriod, params.MACDSlowPeriod, params.MACDSignalPeriod)
 		params.MACDEnable = ok
 	}
-	if params.MACDEnable {
-		outMACD = df.MACD.MACD
-		outMACDSignal = df.MACD.MACDSignal
-	}
 
-	var rsiValues []float64
 	if params.RSIEnable {
 		ok := df.AddRSI(params.RSIPeriod)
 		params.RSIEnable = ok
 	}
-	if params.RSIEnable {
-		rsiValues = df.RSI.Values
-	}
 
-	buyPoint, sellPoint := 0, 0
-	if params.EMAEnable && params.EMAPeriod1 < lenCandles && params.EMAPeriod2 < lenCandles {
-		if emaValues1[lenCandles-2] < emaValues2[lenCandles-2] && emaValues1[lenCandles-1] >= emaValues2[lenCandles-1] {
-			buyPoint++
-		}
-		if emaValues1[lenCandles-2] > emaValues2[lenCandles-2] && emaValues1[lenCandles-1] <= emaValues2[lenCandles-1] {
-			sellPoint++
-		}
-	}
-
-	if params.BBandsEnable && params.BBandsN < lenCandles {
-		if bbDown[lenCandles-2] > df.Candles[lenCandles-2].Close && bbDown[lenCandles-1] <= df.Candles[lenCandles-1].Close {
-			buyPoint++
-		}
-		if bbUp[lenCandles-2] < df.Candles[lenCandles-2].Close && bbUp[lenCandles-1] >= df.Candles[lenCandles-1].Close {
-			sellPoint++
-		}
-	}
-
-	if params.MACDEnable {
-		if outMACD[lenCandles-1] < 0 && outMACDSignal[lenCandles-1] < 0 && outMACD[lenCandles-2] < outMACDSignal[lenCandles-2] && outMACD[lenCandles-1] >= outMACDSignal[lenCandles-1] {
-			buyPoint++
-		}
-		if outMACD[lenCandles-1] > 0 && outMACDSignal[lenCandles-1] > 0 && outMACD[lenCandles-2] > outMACDSignal[lenCandles-2] && outMACD[lenCandles-1] <= outMACDSignal[lenCandles-1] {
-			sellPoint++
-		}
-	}
-
-	if params.IchimokuEnable {
-		if chikou[lenCandles-2] < df.Candles[lenCandles-2].High && chikou[lenCandles-1] >= df.Candles[lenCandles-1].High &&
-			senkouA[lenCandles-1] < df.Candles[lenCandles-1].Low && senkouB[lenCandles-1] < df.Candles[lenCandles-1].Low &&
-			tenkan[lenCandles-1] > kijun[lenCandles-1] {
-			buyPoint++
-		}
-		if chikou[lenCandles-2] > df.Candles[lenCandles-2].Low && chikou[lenCandles-1] <= df.Candles[lenCandles-1].Low &&
-			senkouA[lenCandles-1] > df.Candles[lenCandles-1].High && senkouB[lenCandles-1] > df.Candles[lenCandles-1].High &&
-			tenkan[lenCandles-1] < kijun[lenCandles-1] {
-			sellPoint++
-		}
-	}
-
-	if params.RSIEnable && rsiValues[lenCandles-2] != 0 && rsiValues[lenCandles-2] != 100 {
-		if rsiValues[lenCandles-2] < params.RSISellThread && rsiValues[lenCandles-1] >= params.RSIBuyThread {
-			buyPoint++
-		}
-		if rsiValues[lenCandles-2] > params.RSISellThread && rsiValues[lenCandles-1] <= params.RSISellThread {
-			sellPoint++
-		}
-	}
+	now := lenCandles - 1
+	buyPoint, sellPoint := df.Analyze(now, params)
 
 	if buyPoint > 0 {
-		childOrderAcceptanceID, isOrderCompleted := bot.Buy(df.Candles[lenCandles-1], timeFormat)
+		childOrderAcceptanceID, isOrderCompleted := bot.Buy(df.Candles[now], timeFormat)
 		if !isOrderCompleted {
 			return errors.New(fmt.Sprintf("[Trade] buy order is not completed, id=%s", childOrderAcceptanceID))
 		}
 	}
 
 	if sellPoint > 0 {
-		childOrderAcceptanceID, isOrderCompleted := bot.Sell(df.Candles[lenCandles-1], timeFormat)
+		childOrderAcceptanceID, isOrderCompleted := bot.Sell(df.Candles[now], timeFormat)
 		if !isOrderCompleted {
 			return errors.New(fmt.Sprintf("[Trade] sell order is not completed, id=%s", childOrderAcceptanceID))
 		}
