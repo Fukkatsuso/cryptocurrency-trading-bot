@@ -28,6 +28,7 @@ type TradeParams struct {
 	MACDFastPeriod   int
 	MACDSlowPeriod   int
 	MACDSignalPeriod int
+	StopLimitPercent float64
 }
 
 func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error {
@@ -55,8 +56,10 @@ func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error 
             macd_enable,
             macd_fast_period,
             macd_slow_period,
-            macd_signal_period
+            macd_signal_period,
+            stop_limit_percent
         ) VALUES (
+            ?,
             ?,
             ?,
             ?,
@@ -107,6 +110,7 @@ func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error 
 		tradeParams.MACDFastPeriod,
 		tradeParams.MACDSlowPeriod,
 		tradeParams.MACDSignalPeriod,
+		tradeParams.StopLimitPercent,
 	)
 	if err != nil {
 		return err
@@ -140,7 +144,8 @@ func GetTradeParams(db DB, tradeParamTableName, productCode string) *TradeParams
                 tp.macd_enable,
                 tp.macd_fast_period,
                 tp.macd_slow_period,
-                tp.macd_signal_period
+                tp.macd_signal_period,
+                tp.stop_limit_percent
             FROM
                 %s AS tp
             WHERE
@@ -181,6 +186,7 @@ func GetTradeParams(db DB, tradeParamTableName, productCode string) *TradeParams
 		&tradeParams.MACDFastPeriod,
 		&tradeParams.MACDSlowPeriod,
 		&tradeParams.MACDSignalPeriod,
+		&tradeParams.StopLimitPercent,
 	)
 	if err != nil {
 		return nil
@@ -202,7 +208,9 @@ func (df *DataFrame) BackTest(params *TradeParams) {
 		if buyPoint > 0 {
 			events.Buy(params.ProductCode, df.Candles[i].Time, df.Candles[i].Close, params.Size)
 		}
-		if sellPoint > 0 {
+
+		currentPrice := df.Candles[i].Close
+		if sellPoint > 0 || ShouldCutLoss(events, currentPrice, params.StopLimitPercent) {
 			events.Sell(params.ProductCode, df.Candles[i].Time, df.Candles[i].Close, params.Size)
 		}
 	}
@@ -286,4 +294,25 @@ func (df *DataFrame) Analyze(at int, params *TradeParams) (int, int) {
 	}
 
 	return buyPoint, sellPoint
+}
+
+// 損切りすべきか判断する
+// 最近の買い注文の後，
+func ShouldCutLoss(events *SignalEvents, currentPrice, stopLimitPercent float64) bool {
+	if events == nil {
+		return false
+	}
+
+	signals := events.Signals
+	if len(signals) == 0 {
+		return false
+	}
+
+	lastSignal := signals[len(signals)-1]
+	if lastSignal.Side != "BUY" {
+		return false
+	}
+
+	stopLimit := lastSignal.Price * stopLimitPercent
+	return currentPrice < stopLimit
 }

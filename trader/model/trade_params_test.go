@@ -81,6 +81,7 @@ func TestBackTest(t *testing.T) {
 			MACDFastPeriod:   12,
 			MACDSlowPeriod:   26,
 			MACDSignalPeriod: 9,
+			StopLimitPercent: 0.75,
 		}
 
 		df.AddSMA(params.SMAPeriod1)
