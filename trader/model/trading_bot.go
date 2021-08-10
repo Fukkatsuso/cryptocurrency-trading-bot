@@ -253,7 +253,8 @@ func (bot *TradingBot) Trade(db DB, candleTableName, timeFormat string) error {
 		}
 	}
 
-	if sellPoint > 0 {
+	currentPrice := df.Candles[now].Close
+	if sellPoint > 0 || ShouldCutLoss(bot.SignalEvents, currentPrice, params.StopLimitPercent) {
 		childOrderAcceptanceID, isOrderCompleted := bot.Sell(df.Candles[now], timeFormat)
 		if !isOrderCompleted {
 			return errors.New(fmt.Sprintf("[Trade] sell order is not completed, id=%s", childOrderAcceptanceID))

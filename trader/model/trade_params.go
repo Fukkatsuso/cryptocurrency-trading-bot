@@ -208,7 +208,9 @@ func (df *DataFrame) BackTest(params *TradeParams) {
 		if buyPoint > 0 {
 			events.Buy(params.ProductCode, df.Candles[i].Time, df.Candles[i].Close, params.Size)
 		}
-		if sellPoint > 0 {
+
+		currentPrice := df.Candles[i].Close
+		if sellPoint > 0 || ShouldCutLoss(events, currentPrice, params.StopLimitPercent) {
 			events.Sell(params.ProductCode, df.Candles[i].Time, df.Candles[i].Close, params.Size)
 		}
 	}
@@ -292,4 +294,25 @@ func (df *DataFrame) Analyze(at int, params *TradeParams) (int, int) {
 	}
 
 	return buyPoint, sellPoint
+}
+
+// 損切りすべきか判断する
+// 最近の買い注文の後，
+func ShouldCutLoss(events *SignalEvents, currentPrice, stopLimitPercent float64) bool {
+	if events == nil {
+		return false
+	}
+
+	signals := events.Signals
+	if len(signals) == 0 {
+		return false
+	}
+
+	lastSignal := signals[len(signals)-1]
+	if lastSignal.Side != "BUY" {
+		return false
+	}
+
+	stopLimit := lastSignal.Price * stopLimitPercent
+	return currentPrice < stopLimit
 }
