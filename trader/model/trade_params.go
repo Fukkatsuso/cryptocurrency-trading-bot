@@ -28,6 +28,7 @@ type TradeParams struct {
 	MACDFastPeriod   int
 	MACDSlowPeriod   int
 	MACDSignalPeriod int
+	StopLimitPercent float64
 }
 
 func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error {
@@ -55,8 +56,10 @@ func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error 
             macd_enable,
             macd_fast_period,
             macd_slow_period,
-            macd_signal_period
+            macd_signal_period,
+            stop_limit_percent
         ) VALUES (
+            ?,
             ?,
             ?,
             ?,
@@ -107,6 +110,7 @@ func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error 
 		tradeParams.MACDFastPeriod,
 		tradeParams.MACDSlowPeriod,
 		tradeParams.MACDSignalPeriod,
+		tradeParams.StopLimitPercent,
 	)
 	if err != nil {
 		return err
@@ -140,7 +144,8 @@ func GetTradeParams(db DB, tradeParamTableName, productCode string) *TradeParams
                 tp.macd_enable,
                 tp.macd_fast_period,
                 tp.macd_slow_period,
-                tp.macd_signal_period
+                tp.macd_signal_period,
+                tp.stop_limit_percent
             FROM
                 %s AS tp
             WHERE
@@ -181,6 +186,7 @@ func GetTradeParams(db DB, tradeParamTableName, productCode string) *TradeParams
 		&tradeParams.MACDFastPeriod,
 		&tradeParams.MACDSlowPeriod,
 		&tradeParams.MACDSignalPeriod,
+		&tradeParams.StopLimitPercent,
 	)
 	if err != nil {
 		return nil
