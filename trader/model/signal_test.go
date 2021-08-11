@@ -126,8 +126,7 @@ func TestSignalEvents(t *testing.T) {
 	})
 
 	t.Run("test EstimateProfit", func(t *testing.T) {
-		events.EstimateProfit()
-		profit := events.Profit
+		profit := events.EstimateProfit()
 		if profit != 13 {
 			t.Fatalf("Wrong profit estimated. Expected 13 but %f", profit)
 		}

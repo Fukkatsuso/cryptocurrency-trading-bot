@@ -214,9 +214,9 @@ func (df *DataFrame) BackTest(params *TradeParams) {
 			events.Sell(params.ProductCode, df.Candles[i].Time, df.Candles[i].Close, params.Size)
 		}
 	}
-	df.BacktestEvents = events
+	events.Profit = events.EstimateProfit()
 
-	df.BacktestEvents.EstimateProfit()
+	df.BacktestEvents = events
 }
 
 // 各指標の時点"at"で分析する
