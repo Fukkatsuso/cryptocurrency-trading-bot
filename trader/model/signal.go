@@ -112,7 +112,7 @@ func (s *SignalEvents) Sell(productCode string, time time.Time, price, size floa
 }
 
 // 買って売ってを繰り返した履歴データから，利益が出るか検証
-func (s *SignalEvents) EstimateProfit() {
+func (s *SignalEvents) EstimateProfit() float64 {
 	total := 0.0
 	beforeSell := 0.0
 	isHolding := false
@@ -128,7 +128,7 @@ func (s *SignalEvents) EstimateProfit() {
 		}
 	}
 	if isHolding {
-		s.Profit = beforeSell
+		return beforeSell
 	}
-	s.Profit = total
+	return total
 }
