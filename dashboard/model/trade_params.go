@@ -316,3 +316,37 @@ func ShouldCutLoss(events *SignalEvents, currentPrice, stopLimitPercent float64)
 	stopLimit := lastSignal.Price * stopLimitPercent
 	return currentPrice < stopLimit
 }
+
+func (df *DataFrame) OptimizeTradeParams(params *TradeParams) *TradeParams {
+	emaPerformance, emaPeriod1, emaPeriod2 := df.OptimizeEMA(params.EMAPeriod1, params.EMAPeriod2, params.Size)
+	fmt.Printf("[OptimizeTradeParams] ")
+	fmt.Printf("ema: %f (%d,%d)", emaPerformance, emaPeriod1, emaPeriod2)
+
+	newParams := &TradeParams{
+		TradeEnable: params.TradeEnable,
+		ProductCode: params.ProductCode,
+		Size:        params.Size,
+		// SMAEnable:   params.SMAEnable,
+		// SMAPeriod1:  params.SMAPeriod1,
+		// SMAPeriod2:  params.SMAPeriod2,
+		// SMAPeriod3:  params.SMAPeriod3,
+		EMAEnable:  params.EMAEnable,
+		EMAPeriod1: emaPeriod1,
+		EMAPeriod2: emaPeriod2,
+		EMAPeriod3: params.EMAPeriod3,
+		// BBandsEnable:     false,
+		// BBandsN:          0,
+		// BBandsK:          0,
+		// IchimokuEnable:   false,
+		// RSIEnable:        false,
+		// RSIPeriod:        0,
+		// RSIBuyThread:     0,
+		// RSISellThread:    0,
+		// MACDEnable:       false,
+		// MACDFastPeriod:   0,
+		// MACDSlowPeriod:   0,
+		// MACDSignalPeriod: 0,
+		// StopLimitPercent: 0,
+	}
+	return newParams
+}

@@ -200,3 +200,50 @@ func (df *DataFrame) AddMACD(inFastPeriod, inSlowPeriod, inSignalPeriod int) boo
 	}
 	return false
 }
+
+func (df *DataFrame) BackTestEMA(period1, period2 int, size float64) *SignalEvents {
+	lenCandles := len(df.Candles)
+	if lenCandles <= period1 || lenCandles <= period2 {
+		return nil
+	}
+	signalEvents := NewSignalEvents()
+	emaValue1 := talib.Ema(df.Closes(), period1)
+	emaValue2 := talib.Ema(df.Closes(), period2)
+
+	for i := 1; i < lenCandles; i++ {
+		if i < period1 || i < period2 {
+			continue
+		}
+		// ゴールデンクロス
+		if emaValue1[i-1] < emaValue2[i-1] && emaValue1[i] >= emaValue2[i] {
+			signalEvents.Buy(df.ProductCode, df.Candles[i].Time, df.Candles[i].Close, size)
+		}
+		// デッドクロス
+		if emaValue1[i-1] > emaValue2[i-1] && emaValue1[i] <= emaValue2[i] {
+			signalEvents.Sell(df.ProductCode, df.Candles[i].Time, df.Candles[i].Close, size)
+		}
+	}
+	return signalEvents
+}
+
+func (df *DataFrame) OptimizeEMA(period1, period2 int, size float64) (float64, int, int) {
+	performance := float64(0)
+	bestPeriod1 := period1
+	bestPeriod2 := period2
+
+	for period1 = 5; period1 < 11; period1++ {
+		for period2 = 12; period2 < 20; period2++ {
+			signalEvents := df.BackTestEMA(period1, period2, size)
+			if signalEvents == nil {
+				continue
+			}
+			profit := signalEvents.EstimateProfit()
+			if performance < profit {
+				performance = profit
+				bestPeriod1 = period1
+				bestPeriod2 = period2
+			}
+		}
+	}
+	return performance, bestPeriod1, bestPeriod2
+}

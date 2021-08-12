@@ -102,6 +102,47 @@ func TestBackTest(t *testing.T) {
 	})
 }
 
+func TestOptimizeTradeParams(t *testing.T) {
+	candles, err := CandleMockData()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	df := DataFrame{
+		ProductCode: config.ProductCode,
+		Candles:     candles,
+	}
+
+	params := &TradeParams{
+		TradeEnable:      true,
+		ProductCode:      config.ProductCode,
+		Size:             0.01,
+		SMAEnable:        true,
+		SMAPeriod1:       7,
+		SMAPeriod2:       14,
+		SMAPeriod3:       50,
+		EMAEnable:        true,
+		EMAPeriod1:       7,
+		EMAPeriod2:       14,
+		EMAPeriod3:       50,
+		BBandsEnable:     true,
+		BBandsN:          20,
+		BBandsK:          2,
+		IchimokuEnable:   true,
+		RSIEnable:        true,
+		RSIPeriod:        14,
+		RSIBuyThread:     30,
+		RSISellThread:    70,
+		MACDEnable:       true,
+		MACDFastPeriod:   12,
+		MACDSlowPeriod:   26,
+		MACDSignalPeriod: 9,
+		StopLimitPercent: 0.75,
+	}
+
+	emaPerformance, emaPeriod1, emaPeriod2 := df.OptimizeEMA(params.EMAPeriod1, params.EMAPeriod2, params.Size)
+	t.Logf("optimized ema: %f (%d, %d)", emaPerformance, emaPeriod1, emaPeriod2)
+}
+
 func deleteTradeParamsAll(tx DB) error {
 	cmd := fmt.Sprintf("DELETE FROM %s", config.TradeParamTableName)
 	_, err := tx.Exec(cmd)
