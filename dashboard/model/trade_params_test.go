@@ -140,7 +140,10 @@ func TestOptimizeTradeParams(t *testing.T) {
 	}
 
 	emaPerformance, emaPeriod1, emaPeriod2 := df.OptimizeEMA(params.EMAPeriod1, params.EMAPeriod2, params.Size)
-	t.Logf("optimized ema: %f (%d, %d)", emaPerformance, emaPeriod1, emaPeriod2)
+	t.Logf("ema: %f (period1=%d, period2=%d)", emaPerformance, emaPeriod1, emaPeriod2)
+
+	bbandsPerformance, bbandsN, bbandsK := df.OptimizeBBands(params.BBandsN, params.BBandsK, params.Size)
+	t.Logf("bbands: %f (n=%d, k=%f)", bbandsPerformance, bbandsN, bbandsK)
 }
 
 func deleteTradeParamsAll(tx DB) error {

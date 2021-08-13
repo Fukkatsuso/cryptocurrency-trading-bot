@@ -318,9 +318,8 @@ func ShouldCutLoss(events *SignalEvents, currentPrice, stopLimitPercent float64)
 }
 
 func (df *DataFrame) OptimizeTradeParams(params *TradeParams) *TradeParams {
-	emaPerformance, emaPeriod1, emaPeriod2 := df.OptimizeEMA(params.EMAPeriod1, params.EMAPeriod2, params.Size)
-	fmt.Printf("[OptimizeTradeParams] ")
-	fmt.Printf("ema: %f (%d,%d)", emaPerformance, emaPeriod1, emaPeriod2)
+	_, emaPeriod1, emaPeriod2 := df.OptimizeEMA(params.EMAPeriod1, params.EMAPeriod2, params.Size)
+	_, bbandsN, bbandsK := df.OptimizeBBands(params.BBandsN, params.BBandsK, params.Size)
 
 	newParams := &TradeParams{
 		TradeEnable: params.TradeEnable,
@@ -330,13 +329,13 @@ func (df *DataFrame) OptimizeTradeParams(params *TradeParams) *TradeParams {
 		// SMAPeriod1:  params.SMAPeriod1,
 		// SMAPeriod2:  params.SMAPeriod2,
 		// SMAPeriod3:  params.SMAPeriod3,
-		EMAEnable:  params.EMAEnable,
-		EMAPeriod1: emaPeriod1,
-		EMAPeriod2: emaPeriod2,
-		EMAPeriod3: params.EMAPeriod3,
-		// BBandsEnable:     false,
-		// BBandsN:          0,
-		// BBandsK:          0,
+		EMAEnable:    params.EMAEnable,
+		EMAPeriod1:   emaPeriod1,
+		EMAPeriod2:   emaPeriod2,
+		EMAPeriod3:   params.EMAPeriod3,
+		BBandsEnable: params.BBandsEnable,
+		BBandsN:      bbandsN,
+		BBandsK:      bbandsK,
 		// IchimokuEnable:   false,
 		// RSIEnable:        false,
 		// RSIPeriod:        0,
