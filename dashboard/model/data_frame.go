@@ -291,3 +291,37 @@ func (df *DataFrame) OptimizeBBands(n int, k float64, size float64) (float64, in
 	}
 	return performance, bestN, bestK
 }
+
+func (df *DataFrame) BackTestIchimoku(size float64) *SignalEvents {
+	lenCandles := len(df.Candles)
+	if lenCandles <= 52 {
+		return nil
+	}
+
+	var signalEvents SignalEvents
+	tenkan, kijun, senkouA, senkouB, chikou := trading.IchimokuCloud(df.Closes())
+	for i := 1; i < lenCandles; i++ {
+		// 三役好転
+		if chikou[i-1] < df.Candles[i-1].High && chikou[i] >= df.Candles[i].High &&
+			senkouA[i] < df.Candles[i].Low && senkouB[i] < df.Candles[i].Low &&
+			tenkan[i] > kijun[i] {
+			signalEvents.Buy(df.ProductCode, df.Candles[i].Time, df.Candles[i].Close, size)
+		}
+		// 三役逆転
+		if chikou[i-1] > df.Candles[i-1].Low && chikou[i] <= df.Candles[i].Low &&
+			senkouA[i] > df.Candles[i].High && senkouB[i] > df.Candles[i].High &&
+			tenkan[i] < kijun[i] {
+			signalEvents.Sell(df.ProductCode, df.Candles[i].Time, df.Candles[i].Close, size)
+		}
+	}
+	return &signalEvents
+}
+
+func (df *DataFrame) OptimizeIchimoku(size float64) float64 {
+	signalEvents := df.BackTestIchimoku(size)
+	if signalEvents == nil {
+		return 0
+	}
+	performance := signalEvents.EstimateProfit()
+	return performance
+}

@@ -144,6 +144,9 @@ func TestOptimizeTradeParams(t *testing.T) {
 
 	bbandsPerformance, bbandsN, bbandsK := df.OptimizeBBands(params.BBandsN, params.BBandsK, params.Size)
 	t.Logf("bbands: %f (n=%d, k=%f)", bbandsPerformance, bbandsN, bbandsK)
+
+	ichimokuPerformance := df.OptimizeIchimoku(params.Size)
+	t.Logf("ichimoku: %f", ichimokuPerformance)
 }
 
 func deleteTradeParamsAll(tx DB) error {
