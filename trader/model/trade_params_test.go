@@ -147,6 +147,9 @@ func TestOptimizeTradeParams(t *testing.T) {
 
 	ichimokuPerformance := df.OptimizeIchimoku(params.Size)
 	t.Logf("ichimoku: %f", ichimokuPerformance)
+
+	rsiPerformance, rsiPeriod, rsiBuyThread, rsiSellThread := df.OptimizeRSI(params.RSIPeriod, params.RSIBuyThread, params.RSISellThread, params.Size)
+	t.Logf("rsi: %f (period=%d, buyThread=%f sellThread=%f)", rsiPerformance, rsiPeriod, rsiBuyThread, rsiSellThread)
 }
 
 func deleteTradeParamsAll(tx DB) error {

@@ -320,6 +320,7 @@ func ShouldCutLoss(events *SignalEvents, currentPrice, stopLimitPercent float64)
 func (df *DataFrame) OptimizeTradeParams(params *TradeParams) *TradeParams {
 	_, emaPeriod1, emaPeriod2 := df.OptimizeEMA(params.EMAPeriod1, params.EMAPeriod2, params.Size)
 	_, bbandsN, bbandsK := df.OptimizeBBands(params.BBandsN, params.BBandsK, params.Size)
+	_, rsiPeriod, rsiBuyThread, rsiSellThread := df.OptimizeRSI(params.RSIPeriod, params.RSIBuyThread, params.RSISellThread, params.Size)
 
 	newParams := &TradeParams{
 		TradeEnable: params.TradeEnable,
@@ -337,10 +338,10 @@ func (df *DataFrame) OptimizeTradeParams(params *TradeParams) *TradeParams {
 		BBandsN:        bbandsN,
 		BBandsK:        bbandsK,
 		IchimokuEnable: params.IchimokuEnable,
-		// RSIEnable:        false,
-		// RSIPeriod:        0,
-		// RSIBuyThread:     0,
-		// RSISellThread:    0,
+		RSIEnable:      params.RSIEnable,
+		RSIPeriod:      rsiPeriod,
+		RSIBuyThread:   rsiBuyThread,
+		RSISellThread:  rsiSellThread,
 		// MACDEnable:       false,
 		// MACDFastPeriod:   0,
 		// MACDSlowPeriod:   0,

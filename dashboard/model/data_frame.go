@@ -325,3 +325,50 @@ func (df *DataFrame) OptimizeIchimoku(size float64) float64 {
 	performance := signalEvents.EstimateProfit()
 	return performance
 }
+
+func (df *DataFrame) BackTestRSI(period int, buyThread, sellThread float64, size float64) *SignalEvents {
+	lenCandles := len(df.Candles)
+	if lenCandles <= period {
+		return nil
+	}
+
+	signalEvents := NewSignalEvents()
+	values := talib.Rsi(df.Closes(), period)
+	for i := 1; i < lenCandles; i++ {
+		if values[i-1] == 0 || values[i-1] == 100 {
+			continue
+		}
+		if values[i-1] < buyThread && values[i] >= buyThread {
+			signalEvents.Buy(df.ProductCode, df.Candles[i].Time, df.Candles[i].Close, size)
+		}
+		if values[i-1] > sellThread && values[i] <= sellThread {
+			signalEvents.Sell(df.ProductCode, df.Candles[i].Time, df.Candles[i].Close, size)
+		}
+	}
+	return signalEvents
+}
+
+func (df *DataFrame) OptimizeRSI(period int, buyThread, sellThread float64, size float64) (float64, int, float64, float64) {
+	performance := float64(0)
+	bestPeriod := period
+	bestBuyThread, bestSellThread := buyThread, sellThread
+
+	for period := 3; period < 30; period++ {
+		for buyThread := float64(20); buyThread <= 40; buyThread++ {
+			for sellThread := float64(60); sellThread <= 80; sellThread++ {
+				signalEvents := df.BackTestRSI(period, buyThread, sellThread, size)
+				if signalEvents == nil {
+					continue
+				}
+				profit := signalEvents.EstimateProfit()
+				if performance < profit {
+					performance = profit
+					bestPeriod = period
+					bestBuyThread = buyThread
+					bestSellThread = sellThread
+				}
+			}
+		}
+	}
+	return performance, bestPeriod, bestBuyThread, bestSellThread
+}
