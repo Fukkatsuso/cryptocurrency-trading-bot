@@ -321,6 +321,7 @@ func (df *DataFrame) OptimizeTradeParams(params *TradeParams) *TradeParams {
 	_, emaPeriod1, emaPeriod2 := df.OptimizeEMA(params.EMAPeriod1, params.EMAPeriod2, params.Size)
 	_, bbandsN, bbandsK := df.OptimizeBBands(params.BBandsN, params.BBandsK, params.Size)
 	_, rsiPeriod, rsiBuyThread, rsiSellThread := df.OptimizeRSI(params.RSIPeriod, params.RSIBuyThread, params.RSISellThread, params.Size)
+	_, macdFastPeriod, macdSlowPeriod, macdSignalPeriod := df.OptimizeMACD(params.MACDFastPeriod, params.MACDSlowPeriod, params.MACDSignalPeriod, params.Size)
 
 	newParams := &TradeParams{
 		TradeEnable: params.TradeEnable,
@@ -330,22 +331,22 @@ func (df *DataFrame) OptimizeTradeParams(params *TradeParams) *TradeParams {
 		// SMAPeriod1:  params.SMAPeriod1,
 		// SMAPeriod2:  params.SMAPeriod2,
 		// SMAPeriod3:  params.SMAPeriod3,
-		EMAEnable:      params.EMAEnable,
-		EMAPeriod1:     emaPeriod1,
-		EMAPeriod2:     emaPeriod2,
-		EMAPeriod3:     params.EMAPeriod3,
-		BBandsEnable:   params.BBandsEnable,
-		BBandsN:        bbandsN,
-		BBandsK:        bbandsK,
-		IchimokuEnable: params.IchimokuEnable,
-		RSIEnable:      params.RSIEnable,
-		RSIPeriod:      rsiPeriod,
-		RSIBuyThread:   rsiBuyThread,
-		RSISellThread:  rsiSellThread,
-		// MACDEnable:       false,
-		// MACDFastPeriod:   0,
-		// MACDSlowPeriod:   0,
-		// MACDSignalPeriod: 0,
+		EMAEnable:        params.EMAEnable,
+		EMAPeriod1:       emaPeriod1,
+		EMAPeriod2:       emaPeriod2,
+		EMAPeriod3:       params.EMAPeriod3,
+		BBandsEnable:     params.BBandsEnable,
+		BBandsN:          bbandsN,
+		BBandsK:          bbandsK,
+		IchimokuEnable:   params.IchimokuEnable,
+		RSIEnable:        params.RSIEnable,
+		RSIPeriod:        rsiPeriod,
+		RSIBuyThread:     rsiBuyThread,
+		RSISellThread:    rsiSellThread,
+		MACDEnable:       params.MACDEnable,
+		MACDFastPeriod:   macdFastPeriod,
+		MACDSlowPeriod:   macdSlowPeriod,
+		MACDSignalPeriod: macdSignalPeriod,
 		// StopLimitPercent: 0,
 	}
 	return newParams

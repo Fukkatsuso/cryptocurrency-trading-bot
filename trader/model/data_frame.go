@@ -372,3 +372,54 @@ func (df *DataFrame) OptimizeRSI(period int, buyThread, sellThread float64, size
 	}
 	return performance, bestPeriod, bestBuyThread, bestSellThread
 }
+
+func (df *DataFrame) BackTestMACD(macdFastPeriod, macdSlowPeriod, macdSignalPeriod int, size float64) *SignalEvents {
+	lenCandles := len(df.Candles)
+	if lenCandles <= macdFastPeriod || lenCandles <= macdSlowPeriod || lenCandles <= macdSignalPeriod {
+		return nil
+	}
+
+	signalEvents := &SignalEvents{}
+	outMACD, outMACDSignal, _ := talib.Macd(df.Closes(), macdFastPeriod, macdSlowPeriod, macdSignalPeriod)
+	for i := 1; i < lenCandles; i++ {
+		if outMACD[i] < 0 &&
+			outMACDSignal[i] < 0 &&
+			outMACD[i-1] < outMACDSignal[i-1] &&
+			outMACD[i] >= outMACDSignal[i] {
+			signalEvents.Buy(df.ProductCode, df.Candles[i].Time, df.Candles[i].Close, size)
+		}
+		if outMACD[i] > 0 &&
+			outMACDSignal[i] > 0 &&
+			outMACD[i-1] > outMACDSignal[i-1] &&
+			outMACD[i] <= outMACDSignal[i] {
+			signalEvents.Sell(df.ProductCode, df.Candles[i].Time, df.Candles[i].Close, size)
+		}
+	}
+	return signalEvents
+}
+
+func (df *DataFrame) OptimizeMACD(fastPeriod, slowPeriod, signalPeriod int, size float64) (float64, int, int, int) {
+	performance := float64(0)
+	bestMACDFastPeriod := 12
+	bestMACDSlowPeriod := 26
+	bestMACDSignalPeriod := 9
+
+	for fastPeriod := 5; fastPeriod < 20; fastPeriod++ {
+		for slowPeriod := 20; slowPeriod < 40; slowPeriod++ {
+			for signalPeriod := 5; signalPeriod < 15; signalPeriod++ {
+				signalEvents := df.BackTestMACD(fastPeriod, slowPeriod, signalPeriod, size)
+				if signalEvents == nil {
+					continue
+				}
+				profit := signalEvents.EstimateProfit()
+				if performance < profit {
+					performance = profit
+					bestMACDFastPeriod = fastPeriod
+					bestMACDSlowPeriod = slowPeriod
+					bestMACDSignalPeriod = signalPeriod
+				}
+			}
+		}
+	}
+	return performance, bestMACDFastPeriod, bestMACDSlowPeriod, bestMACDSignalPeriod
+}

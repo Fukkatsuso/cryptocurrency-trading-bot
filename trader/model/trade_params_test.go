@@ -150,6 +150,9 @@ func TestOptimizeTradeParams(t *testing.T) {
 
 	rsiPerformance, rsiPeriod, rsiBuyThread, rsiSellThread := df.OptimizeRSI(params.RSIPeriod, params.RSIBuyThread, params.RSISellThread, params.Size)
 	t.Logf("rsi: %f (period=%d, buyThread=%f sellThread=%f)", rsiPerformance, rsiPeriod, rsiBuyThread, rsiSellThread)
+
+	macdPerformance, macdFastPeriod, macdSlowPeriod, macdSignalPeriod := df.OptimizeMACD(params.MACDFastPeriod, params.MACDSlowPeriod, params.MACDSignalPeriod, params.Size)
+	t.Logf("macd: %f (fastPeriod=%d, slowPeriod=%d, signalPeriod=%d)", macdPerformance, macdFastPeriod, macdSlowPeriod, macdSignalPeriod)
 }
 
 func deleteTradeParamsAll(tx DB) error {
