@@ -324,13 +324,13 @@ func (df *DataFrame) OptimizeTradeParams(params *TradeParams) *TradeParams {
 	_, macdFastPeriod, macdSlowPeriod, macdSignalPeriod := df.OptimizeMACD(params.MACDFastPeriod, params.MACDSlowPeriod, params.MACDSignalPeriod, params.Size)
 
 	newParams := &TradeParams{
-		TradeEnable: params.TradeEnable,
-		ProductCode: params.ProductCode,
-		Size:        params.Size,
-		// SMAEnable:   params.SMAEnable,
-		// SMAPeriod1:  params.SMAPeriod1,
-		// SMAPeriod2:  params.SMAPeriod2,
-		// SMAPeriod3:  params.SMAPeriod3,
+		TradeEnable:      params.TradeEnable,
+		ProductCode:      params.ProductCode,
+		Size:             params.Size,
+		SMAEnable:        params.SMAEnable,
+		SMAPeriod1:       params.SMAPeriod1,
+		SMAPeriod2:       params.SMAPeriod2,
+		SMAPeriod3:       params.SMAPeriod3,
 		EMAEnable:        params.EMAEnable,
 		EMAPeriod1:       emaPeriod1,
 		EMAPeriod2:       emaPeriod2,
@@ -347,7 +347,7 @@ func (df *DataFrame) OptimizeTradeParams(params *TradeParams) *TradeParams {
 		MACDFastPeriod:   macdFastPeriod,
 		MACDSlowPeriod:   macdSlowPeriod,
 		MACDSignalPeriod: macdSignalPeriod,
-		// StopLimitPercent: 0,
+		StopLimitPercent: params.StopLimitPercent,
 	}
 	return newParams
 }
