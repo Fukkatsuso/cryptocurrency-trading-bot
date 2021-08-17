@@ -163,6 +163,37 @@ func TestOptimizeTradeParams(t *testing.T) {
 		macdPerformance, macdFastPeriod, macdSlowPeriod, macdSignalPeriod := df.OptimizeMACD(params.MACDFastPeriod, params.MACDSlowPeriod, params.MACDSignalPeriod, params.Size)
 		t.Logf("macd profit: %f (fastPeriod=%d, slowPeriod=%d, signalPeriod=%d)", macdPerformance, macdFastPeriod, macdSlowPeriod, macdSignalPeriod)
 	})
+
+	t.Run("optimize all", func(t *testing.T) {
+		optimizedParams := df.OptimizeTradeParams(params)
+
+		if optimizedParams.SMAEnable {
+			df.AddSMA(optimizedParams.SMAPeriod1)
+			df.AddSMA(optimizedParams.SMAPeriod2)
+			df.AddSMA(optimizedParams.SMAPeriod3)
+		}
+		if optimizedParams.EMAEnable {
+			df.AddEMA(optimizedParams.EMAPeriod1)
+			df.AddEMA(optimizedParams.EMAPeriod2)
+			df.AddEMA(optimizedParams.EMAPeriod3)
+		}
+		if optimizedParams.BBandsEnable {
+			df.AddBBands(optimizedParams.BBandsN, optimizedParams.BBandsK)
+		}
+		if optimizedParams.IchimokuEnable {
+			df.AddIchimoku()
+		}
+		if optimizedParams.RSIEnable {
+			df.AddRSI(optimizedParams.RSIPeriod)
+		}
+		if optimizedParams.MACDEnable {
+			df.AddMACD(optimizedParams.MACDFastPeriod, optimizedParams.MACDSlowPeriod, optimizedParams.MACDSignalPeriod)
+		}
+
+		df.BackTest(optimizedParams)
+		profit := df.BacktestEvents.Profit
+		t.Logf("profit: %f", profit)
+	})
 }
 
 func deleteTradeParamsAll(tx DB) error {
