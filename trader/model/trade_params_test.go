@@ -139,20 +139,30 @@ func TestOptimizeTradeParams(t *testing.T) {
 		StopLimitPercent: 0.75,
 	}
 
-	emaPerformance, emaPeriod1, emaPeriod2 := df.OptimizeEMA(params.EMAPeriod1, params.EMAPeriod2, params.Size)
-	t.Logf("ema: %f (period1=%d, period2=%d)", emaPerformance, emaPeriod1, emaPeriod2)
+	t.Run("optimize ema", func(t *testing.T) {
+		emaPerformance, emaPeriod1, emaPeriod2 := df.OptimizeEMA(params.EMAPeriod1, params.EMAPeriod2, params.Size)
+		t.Logf("ema profit: %f (period1=%d, period2=%d)", emaPerformance, emaPeriod1, emaPeriod2)
+	})
 
-	bbandsPerformance, bbandsN, bbandsK := df.OptimizeBBands(params.BBandsN, params.BBandsK, params.Size)
-	t.Logf("bbands: %f (n=%d, k=%f)", bbandsPerformance, bbandsN, bbandsK)
+	t.Run("optimize bbands", func(t *testing.T) {
+		bbandsPerformance, bbandsN, bbandsK := df.OptimizeBBands(params.BBandsN, params.BBandsK, params.Size)
+		t.Logf("bbands profit: %f (n=%d, k=%f)", bbandsPerformance, bbandsN, bbandsK)
+	})
 
-	ichimokuPerformance := df.OptimizeIchimoku(params.Size)
-	t.Logf("ichimoku: %f", ichimokuPerformance)
+	t.Run("optimize ichimoku (only backtest)", func(t *testing.T) {
+		ichimokuPerformance := df.OptimizeIchimoku(params.Size)
+		t.Logf("ichimoku profit: %f", ichimokuPerformance)
+	})
 
-	rsiPerformance, rsiPeriod, rsiBuyThread, rsiSellThread := df.OptimizeRSI(params.RSIPeriod, params.RSIBuyThread, params.RSISellThread, params.Size)
-	t.Logf("rsi: %f (period=%d, buyThread=%f sellThread=%f)", rsiPerformance, rsiPeriod, rsiBuyThread, rsiSellThread)
+	t.Run("optimize rsi", func(t *testing.T) {
+		rsiPerformance, rsiPeriod, rsiBuyThread, rsiSellThread := df.OptimizeRSI(params.RSIPeriod, params.RSIBuyThread, params.RSISellThread, params.Size)
+		t.Logf("rsi profit: %f (period=%d, buyThread=%f sellThread=%f)", rsiPerformance, rsiPeriod, rsiBuyThread, rsiSellThread)
+	})
 
-	macdPerformance, macdFastPeriod, macdSlowPeriod, macdSignalPeriod := df.OptimizeMACD(params.MACDFastPeriod, params.MACDSlowPeriod, params.MACDSignalPeriod, params.Size)
-	t.Logf("macd: %f (fastPeriod=%d, slowPeriod=%d, signalPeriod=%d)", macdPerformance, macdFastPeriod, macdSlowPeriod, macdSignalPeriod)
+	t.Run("optimize macd", func(t *testing.T) {
+		macdPerformance, macdFastPeriod, macdSlowPeriod, macdSignalPeriod := df.OptimizeMACD(params.MACDFastPeriod, params.MACDSlowPeriod, params.MACDSignalPeriod, params.Size)
+		t.Logf("macd profit: %f (fastPeriod=%d, slowPeriod=%d, signalPeriod=%d)", macdPerformance, macdFastPeriod, macdSlowPeriod, macdSignalPeriod)
+	})
 }
 
 func deleteTradeParamsAll(tx DB) error {
