@@ -41,7 +41,7 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	bot.TradeParams = tradeParams
 
 	// 分析，取引
-	err := bot.Trade(config.DB, config.CandleTableName, config.TimeFormat)
+	err := bot.Trade(config.DB, config.CandleTableName, config.TradeParamTableName, config.TimeFormat)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "failed to trade: %s", err.Error())
