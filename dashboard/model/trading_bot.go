@@ -203,7 +203,7 @@ func (bot *TradingBot) WaitUntilOrderComplete(childOrderAcceptanceID string, exe
 	}()
 }
 
-func (bot *TradingBot) Trade(db DB, candleTableName, tradeParamTableName, timeFormat string) error {
+func (bot *TradingBot) Trade(db DB, candleTableName, timeFormat string) error {
 	params := bot.TradeParams
 	if params == nil {
 		return errors.New("[Trade] TradeParams is nil")
@@ -259,13 +259,13 @@ func (bot *TradingBot) Trade(db DB, candleTableName, tradeParamTableName, timeFo
 		if !isOrderCompleted {
 			return errors.New(fmt.Sprintf("[Trade] sell order is not completed, id=%s", childOrderAcceptanceID))
 		}
-		bot.OptimizeTradeParams(candleTableName, tradeParamTableName, timeFormat)
+		bot.OptimizeTradeParams(candleTableName, timeFormat)
 	}
 
 	return nil
 }
 
-func (bot *TradingBot) OptimizeTradeParams(candleTableName, tradeParamTableName, timeFormat string) {
+func (bot *TradingBot) OptimizeTradeParams(candleTableName, timeFormat string) {
 	candles, _ := GetAllCandle(bot.DBClient, candleTableName, timeFormat, bot.ProductCode, bot.Duration, bot.PastPeriod)
 	df := DataFrame{
 		ProductCode: bot.ProductCode,
@@ -274,7 +274,7 @@ func (bot *TradingBot) OptimizeTradeParams(candleTableName, tradeParamTableName,
 
 	optimizedParams := df.OptimizeTradeParams(bot.TradeParams)
 	if *optimizedParams != *bot.TradeParams {
-		optimizedParams.Create(bot.DBClient, tradeParamTableName)
+		optimizedParams.Create(bot.DBClient)
 	}
 	bot.TradeParams = optimizedParams
 }

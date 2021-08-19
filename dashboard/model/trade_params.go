@@ -31,9 +31,9 @@ type TradeParams struct {
 	StopLimitPercent float64
 }
 
-func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error {
+func (tradeParams *TradeParams) Create(db DB) error {
 	cmd := fmt.Sprintf(`
-        INSERT INTO %s (
+        INSERT INTO trade_params (
             trade_enable,
             product_code,
             size,
@@ -84,7 +84,7 @@ func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error 
             ?,
             ?
         )`,
-		tradeParamTableName)
+	)
 
 	_, err := db.Exec(cmd,
 		tradeParams.TradeEnable,
@@ -118,7 +118,7 @@ func (tradeParams *TradeParams) Create(db DB, tradeParamTableName string) error 
 	return nil
 }
 
-func GetTradeParams(db DB, tradeParamTableName, productCode string) *TradeParams {
+func GetTradeParams(db DB, productCode string) *TradeParams {
 	// 最後に作成されたパラメータを取得
 	// productCodeで絞り込み，そのうちcreated_atが最新のレコードを探す
 	cmd := fmt.Sprintf(`
@@ -147,7 +147,7 @@ func GetTradeParams(db DB, tradeParamTableName, productCode string) *TradeParams
                 tp.macd_signal_period,
                 tp.stop_limit_percent
             FROM
-                %s AS tp
+                trade_params AS tp
             WHERE
                 tp.product_code = ?
                 AND
@@ -155,11 +155,11 @@ func GetTradeParams(db DB, tradeParamTableName, productCode string) *TradeParams
                     SELECT
                         MAX(sub_tp.created_at)
                     FROM
-                        %s AS sub_tp
+                        trade_params AS sub_tp
                     WHERE
                         sub_tp.product_code = ?
                 )`,
-		tradeParamTableName, tradeParamTableName)
+	)
 	row := db.QueryRow(cmd, productCode, productCode)
 
 	var tradeParams TradeParams
