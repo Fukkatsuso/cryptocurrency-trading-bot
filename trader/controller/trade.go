@@ -20,7 +20,7 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 分析，売買のためのパラメータ
-	tradeParams := model.GetTradeParams(config.DB, config.TradeParamTableName, config.ProductCode)
+	tradeParams := model.GetTradeParams(config.DB, config.ProductCode)
 	fmt.Println("params:", tradeParams)
 	// パラメータが見つからなければ終了
 	if tradeParams == nil {
@@ -41,7 +41,7 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	bot.TradeParams = tradeParams
 
 	// 分析，取引
-	err := bot.Trade(config.DB, config.CandleTableName, config.TradeParamTableName, config.TimeFormat)
+	err := bot.Trade(config.DB, config.CandleTableName, config.TimeFormat)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "failed to trade: %s", err.Error())

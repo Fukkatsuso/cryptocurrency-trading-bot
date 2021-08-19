@@ -25,14 +25,14 @@ func TestTradeParams(t *testing.T) {
 			Size:        0.01,
 		}
 
-		err := tradeParams.Create(tx, config.TradeParamTableName)
+		err := tradeParams.Create(tx)
 		if err != nil {
 			t.Fatal("Failed to Create TradeParams:", tradeParams, err.Error())
 		}
 	})
 
 	t.Run("get trade_params", func(t *testing.T) {
-		getTradeParams := GetTradeParams(tx, config.TradeParamTableName, config.ProductCode)
+		getTradeParams := GetTradeParams(tx, config.ProductCode)
 
 		if getTradeParams == nil {
 			t.Fatal("Failed to Get TradeParams")
@@ -197,7 +197,7 @@ func TestOptimizeTradeParams(t *testing.T) {
 }
 
 func deleteTradeParamsAll(tx DB) error {
-	cmd := fmt.Sprintf("DELETE FROM %s", config.TradeParamTableName)
+	cmd := fmt.Sprintf("DELETE FROM trade_params")
 	_, err := tx.Exec(cmd)
 	return err
 }
