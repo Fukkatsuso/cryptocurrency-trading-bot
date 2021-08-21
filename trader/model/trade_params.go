@@ -2,6 +2,8 @@ package model
 
 import (
 	"fmt"
+
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/bitflyer"
 )
 
 type TradeParams struct {
@@ -309,7 +311,7 @@ func ShouldCutLoss(events *SignalEvents, currentPrice, stopLimitPercent float64)
 	}
 
 	lastSignal := signals[len(signals)-1]
-	if lastSignal.Side != "BUY" {
+	if lastSignal.Side != string(bitflyer.OrderSideBuy) {
 		return false
 	}
 

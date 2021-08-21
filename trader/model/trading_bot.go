@@ -66,11 +66,11 @@ func (bot *TradingBot) Buy(candle Candle, timeFormat string) (string, bool) {
 	// 注文発行
 	order := &bitflyer.Order{
 		ProductCode:     bot.ProductCode,
-		ChildOrderType:  "MARKET",
-		Side:            "BUY",
+		ChildOrderType:  bitflyer.ChildOrderTypeMarket,
+		Side:            bitflyer.OrderSideBuy,
 		Size:            size,
 		MinuteToExpires: bot.MinuteToExpires,
-		TimeInForce:     "GTC",
+		TimeInForce:     bitflyer.TimeInForceGTC,
 	}
 	fmt.Println("[Order]", order)
 	resp, err := bot.APIClient.SendOrder(order)
@@ -99,7 +99,7 @@ func (bot *TradingBot) Buy(candle Candle, timeFormat string) (string, bool) {
 	signalEvent := SignalEvent{
 		ProductCode: bot.ProductCode,
 		Time:        candle.Time,
-		Side:        "BUY",
+		Side:        string(bitflyer.OrderSideBuy),
 		Price:       order.AveragePrice,
 		Size:        order.Size,
 	}
@@ -122,11 +122,11 @@ func (bot *TradingBot) Sell(candle Candle, timeFormat string) (string, bool) {
 	// 注文発行
 	order := &bitflyer.Order{
 		ProductCode:     bot.ProductCode,
-		ChildOrderType:  "MARKET",
-		Side:            "SELL",
+		ChildOrderType:  bitflyer.ChildOrderTypeMarket,
+		Side:            bitflyer.OrderSideSell,
 		Size:            size,
 		MinuteToExpires: bot.MinuteToExpires,
-		TimeInForce:     "GTC",
+		TimeInForce:     bitflyer.TimeInForceGTC,
 	}
 	fmt.Println("[Order]", order)
 	resp, err := bot.APIClient.SendOrder(order)
@@ -155,7 +155,7 @@ func (bot *TradingBot) Sell(candle Candle, timeFormat string) (string, bool) {
 	signalEvent := SignalEvent{
 		ProductCode: bot.ProductCode,
 		Time:        candle.Time,
-		Side:        "SELL",
+		Side:        string(bitflyer.OrderSideSell),
 		Price:       order.AveragePrice,
 		Size:        order.Size,
 	}
@@ -189,11 +189,11 @@ func (bot *TradingBot) WaitUntilOrderComplete(childOrderAcceptanceID string, exe
 					return nil
 				}
 				order := orders[0]
-				if order.ChildOrderState == "COMPLETED" {
-					if order.Side == "BUY" {
+				if order.ChildOrderState == bitflyer.OrderStateCompleted {
+					if order.Side == bitflyer.OrderSideBuy {
 						return &order
 					}
-					if order.Side == "SELL" {
+					if order.Side == bitflyer.OrderSideSell {
 						return &order
 					}
 					return nil

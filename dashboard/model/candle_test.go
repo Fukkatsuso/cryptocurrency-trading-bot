@@ -54,7 +54,7 @@ func TestCandle(t *testing.T) {
 	t.Run("create candle with duration", func(t *testing.T) {
 		ticker := bitflyer.Ticker{
 			ProductCode:     config.ProductCode,
-			State:           "RUNNING",
+			State:           bitflyer.BoardStateRunning,
 			Timestamp:       "2100-01-02T00:00:00.00",
 			TickID:          39481886,
 			BestBid:         238804,
