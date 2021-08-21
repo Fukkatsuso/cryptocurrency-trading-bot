@@ -31,13 +31,13 @@ env:
 
 jobs:
   migrate-db:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     defaults:
       run:
         working-directory: db
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Start Cloud SQL Proxy
         run: |
@@ -62,14 +62,14 @@ jobs:
           migrate -path "./migrations/" -database "$MYSQL_DSN" up
 
   deploy-trader:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: migrate-db
     defaults:
       run:
         working-directory: trader
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@master
@@ -105,14 +105,14 @@ jobs:
             --quiet
 
   deploy-dashboard:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: migrate-db
     defaults:
       run:
         working-directory: dashboard
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@master
@@ -149,14 +149,14 @@ jobs:
             --quiet
 
   deploy-functions:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: migrate-db
     defaults:
       run:
         working-directory: cloud-functions
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@master
