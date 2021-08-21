@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/bitflyer"
 )
 
 type SignalEvent struct {
@@ -66,7 +68,7 @@ func (s *SignalEvents) CanBuy(time time.Time) bool {
 	}
 
 	lastSignal := s.Signals[lenSignals-1]
-	canBuy := lastSignal.Side == "SELL" && lastSignal.Time.Before(time)
+	canBuy := lastSignal.Side == string(bitflyer.OrderSideSell) && lastSignal.Time.Before(time)
 	return canBuy
 }
 
@@ -77,7 +79,7 @@ func (s *SignalEvents) CanSell(time time.Time) bool {
 	}
 
 	lastSignal := s.Signals[lenSignals-1]
-	canSell := lastSignal.Side == "BUY" && lastSignal.Time.Before(time)
+	canSell := lastSignal.Side == string(bitflyer.OrderSideBuy) && lastSignal.Time.Before(time)
 	return canSell
 }
 
@@ -88,7 +90,7 @@ func (s *SignalEvents) Buy(productCode string, time time.Time, price, size float
 	signalEvent := SignalEvent{
 		ProductCode: productCode,
 		Time:        time,
-		Side:        "BUY",
+		Side:        string(bitflyer.OrderSideBuy),
 		Price:       price,
 		Size:        size,
 	}
@@ -103,7 +105,7 @@ func (s *SignalEvents) Sell(productCode string, time time.Time, price, size floa
 	signalEvent := SignalEvent{
 		ProductCode: productCode,
 		Time:        time,
-		Side:        "SELL",
+		Side:        string(bitflyer.OrderSideSell),
 		Price:       price,
 		Size:        size,
 	}
@@ -117,11 +119,11 @@ func (s *SignalEvents) EstimateProfit() float64 {
 	beforeSell := 0.0
 	isHolding := false
 	for _, signalEvent := range s.Signals {
-		if signalEvent.Side == "BUY" {
+		if signalEvent.Side == string(bitflyer.OrderSideBuy) {
 			total -= signalEvent.Price * signalEvent.Size
 			isHolding = true
 		}
-		if signalEvent.Side == "SELL" {
+		if signalEvent.Side == string(bitflyer.OrderSideSell) {
 			total += signalEvent.Price * signalEvent.Size
 			isHolding = false
 			beforeSell = total

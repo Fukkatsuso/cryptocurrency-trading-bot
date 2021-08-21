@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/config"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/bitflyer"
 )
 
 func TestSignalEventSave(t *testing.T) {
@@ -16,7 +17,7 @@ func TestSignalEventSave(t *testing.T) {
 	event := &SignalEvent{
 		Time:        timeDate,
 		ProductCode: config.ProductCode,
-		Side:        "BUY",
+		Side:        string(bitflyer.OrderSideBuy),
 		Price:       1000,
 		Size:        0.01,
 	}
@@ -43,7 +44,7 @@ func TestSignalEvents(t *testing.T) {
 		event := &SignalEvent{
 			Time:        timeDate,
 			ProductCode: config.ProductCode,
-			Side:        "BUY",
+			Side:        string(bitflyer.OrderSideBuy),
 			Price:       1000,
 			Size:        0.01,
 		}
@@ -57,7 +58,7 @@ func TestSignalEvents(t *testing.T) {
 		event = &SignalEvent{
 			Time:        timeDate,
 			ProductCode: config.ProductCode,
-			Side:        "SELL",
+			Side:        string(bitflyer.OrderSideSell),
 			Price:       1500,
 			Size:        0.01,
 		}
