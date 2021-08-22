@@ -19,7 +19,19 @@
           color="green"
           dark
         >
-          <v-toolbar-title>cryptocurrency trading bot</v-toolbar-title>
+          <v-app-bar-title>cryptocurrency trading bot</v-app-bar-title>
+
+          <template
+            v-slot:extension
+            v-if="candle"
+          >
+            <v-tabs>
+              <v-tab
+                style="white-space: pre-line;"
+              >ETH/JPY
+               ${ candle.candles[candle.candles.length-1].close }</v-tab>
+            </v-tabs>
+          </template>
         </v-app-bar>
 
         <v-container>
@@ -311,12 +323,6 @@
               :options="chartOptions"
               :series="series"
             ></apexchart>
-
-            <div v-if="candle.candles">
-              <p class="text-body-1 font-weight-bold">
-                ETH/JPY: ${ candle.candles[candle.candles.length-1].close }
-              </p>
-            </div>
 
             <div v-if="candle.backtestEvents">
               <p class="text-body-1 font-weight-bold">
