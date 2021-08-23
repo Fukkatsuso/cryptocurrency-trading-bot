@@ -39,7 +39,7 @@ func NewSignalEvents() *SignalEvents {
 	return &SignalEvents{}
 }
 
-func GetSignalEventsByProductCode(db DB, productCode string) *SignalEvents {
+func GetSignalEvents(db DB, productCode string) *SignalEvents {
 	cmd := "SELECT * FROM signal_events WHERE product_code = ? ORDER BY time ASC"
 	rows, err := db.Query(cmd, productCode)
 	if err != nil {

@@ -71,7 +71,7 @@ func TestSignalEvents(t *testing.T) {
 	var events *SignalEvents
 
 	t.Run("get signal_events by product_code", func(t *testing.T) {
-		events = GetSignalEventsByProductCode(tx, config.ProductCode)
+		events = GetSignalEvents(tx, config.ProductCode)
 
 		if events == nil {
 			t.Fatal("Failed to GetSignalEventsByProductCode")
