@@ -27,7 +27,6 @@ new Vue({
   data() {
     return {
       candle: null,
-      chartOptions: chartOptionsBase,
       config: {
         limit: 30,
         sma: {
@@ -96,9 +95,28 @@ new Vue({
     async update() {
       // キャンドルデータとインディケータを取得
       this.candle = await this.getCandle()
-
+    },
+  },
+  computed: {
+    series() {
+      if (!this.candle || !this.candle.candles) {
+        return [{
+          data: []
+        }]
+      }
+      const data = this.candle.candles.map(c => {
+        return {
+          x: new Date(c['time']).getTime(),
+          y: [c['open'], c['high'], c['low'], c['close']],
+        }
+      })
+      return [{
+        data: data,
+      }]
+    },
+    chartOptions() {
       let annotations = {}
-      if (this.config.backtest && this.candle && this.candle.backtestEvents && this.candle.backtestEvents.signals) {
+      if (this.candle && this.candle.backtestEvents && this.candle.backtestEvents.signals) {
         const xaxis = this.candle.backtestEvents.signals.map(s => {
           const color = '#00E396'
           return {
@@ -119,29 +137,11 @@ new Vue({
         })
         annotations['xaxis'] = xaxis
       }
-
-      this.chartOptions = {
+      const options = {
         ...chartOptionsBase,
         annotations: annotations,
       }
-    },
-  },
-  computed: {
-    series() {
-      if (!this.candle || !this.candle.candles) {
-        return [{
-          data: []
-        }]
-      }
-      const data = this.candle.candles.map(c => {
-        return {
-          x: new Date(c['time']).getTime(),
-          y: [c['open'], c['high'], c['low'], c['close']],
-        }
-      })
-      return [{
-        data: data,
-      }]
+      return options
     },
     // バックテストの結果，現在保有している通貨量
     backtestCurrentHold() {
