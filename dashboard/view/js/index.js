@@ -1,7 +1,7 @@
-const chartOptions = {
+const chartOptionsBase = {
   chart: {
     type: 'candlestick',
-    height: 350,
+    height: 400,
   },
   title: {
     text: 'CandleStick Chart',
@@ -27,7 +27,7 @@ new Vue({
   data() {
     return {
       candle: null,
-      chartOptions: chartOptions,
+      chartOptions: chartOptionsBase,
       config: {
         limit: 30,
         sma: {
@@ -96,7 +96,35 @@ new Vue({
     async update() {
       // キャンドルデータとインディケータを取得
       this.candle = await this.getCandle()
-    }
+
+      let annotations = {}
+      if (this.config.backtest && this.candle && this.candle.backtestEvents && this.candle.backtestEvents.signals) {
+        const xaxis = this.candle.backtestEvents.signals.map(s => {
+          const color = '#00E396'
+          return {
+            x: new Date(s['time']).getTime(),
+            borderColor: color,
+            label: {
+              borderColor: color,
+              style: {
+                fontSize: '12px',
+                color: '#fff',
+                background: color,
+              },
+              orientation: 'horizontal',
+              offsetY: chartOptionsBase.chart.height-92,
+              text: s['side'],
+            },
+          }
+        })
+        annotations['xaxis'] = xaxis
+      }
+
+      this.chartOptions = {
+        ...chartOptionsBase,
+        annotations: annotations,
+      }
+    },
   },
   computed: {
     series() {
@@ -107,7 +135,7 @@ new Vue({
       }
       const data = this.candle.candles.map(c => {
         return {
-          x: new Date(c['time']),
+          x: new Date(c['time']).getTime(),
           y: [c['open'], c['high'], c['low'], c['close']],
         }
       })
