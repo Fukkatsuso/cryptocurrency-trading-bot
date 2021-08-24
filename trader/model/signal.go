@@ -61,6 +61,27 @@ func GetSignalEvents(db DB, productCode string) *SignalEvents {
 	return &signalEvents
 }
 
+func GetSignalEventsAfterTime(db DB, productCode string, timeTime time.Time, timeFormat string) *SignalEvents {
+	cmd := `SELECT * FROM signal_events WHERE (product_code = ?) AND (time >= ?) ORDER BY time ASC`
+	rows, err := db.Query(cmd, productCode, timeTime.Format(timeFormat))
+	if err != nil {
+		return nil
+	}
+	defer rows.Close()
+
+	var signalEvents SignalEvents
+	for rows.Next() {
+		var signalEvent SignalEvent
+		rows.Scan(&signalEvent.Time, &signalEvent.ProductCode, &signalEvent.Side, &signalEvent.Price, &signalEvent.Size)
+		signalEvents.Signals = append(signalEvents.Signals, signalEvent)
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil
+	}
+	return &signalEvents
+}
+
 func (s *SignalEvents) CanBuy(time time.Time) bool {
 	lenSignals := len(s.Signals)
 	if lenSignals == 0 {
