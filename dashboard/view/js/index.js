@@ -115,10 +115,46 @@ new Vue({
       }]
     },
     chartOptions() {
-      let annotations = {}
+      const annotations = {
+        xaxis: [
+          ...this.tradeEventAnnotationXaxis,
+          ...this.backTestEventAnnotationXaxis,
+        ],
+      }
+      const options = {
+        ...chartOptionsBase,
+        annotations: annotations,
+      }
+      return options
+    },
+    tradeEventAnnotationXaxis() {
+      const color = '#00E396'
+      if (this.candle && this.candle.events && this.candle.events.signals) {
+        const xaxis = this.candle.events.signals.map(s => {
+          return {
+            x: new Date(s['time']).getTime(),
+            borderColor: color,
+            label: {
+              borderColor: color,
+              style: {
+                fontSize: '12px',
+                color: '#fff',
+                background: color,
+              },
+              orientation: 'horizontal',
+              offsetY: 10,
+              text: s['side'],
+            },
+          }
+        })
+        return xaxis
+      }
+      return []
+    },
+    backTestEventAnnotationXaxis() {
+      const color = '#3C90EB'
       if (this.candle && this.candle.backtestEvents && this.candle.backtestEvents.signals) {
         const xaxis = this.candle.backtestEvents.signals.map(s => {
-          const color = '#00E396'
           return {
             x: new Date(s['time']).getTime(),
             borderColor: color,
@@ -135,13 +171,9 @@ new Vue({
             },
           }
         })
-        annotations['xaxis'] = xaxis
+        return xaxis
       }
-      const options = {
-        ...chartOptionsBase,
-        annotations: annotations,
-      }
-      return options
+      return []
     },
     // バックテストの結果，現在保有している通貨量
     backtestCurrentHold() {

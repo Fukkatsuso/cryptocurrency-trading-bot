@@ -31,9 +31,16 @@ func APICandleHandler(w http.ResponseWriter, r *http.Request) {
 	candles, _ := model.GetAllCandle(config.DB, config.CandleTableName, config.TimeFormat,
 		config.ProductCode, config.CandleDuration, limit)
 
+	var events *model.SignalEvents
+	if len(candles) > 0 {
+		timeTime := candles[0].Time
+		events = model.GetSignalEventsAfterTime(config.DB, config.ProductCode, timeTime, config.TimeFormat)
+	}
+
 	df := model.DataFrame{
 		ProductCode: config.ProductCode,
 		Candles:     candles,
+		Events:      events,
 	}
 
 	tradeParams := model.TradeParams{

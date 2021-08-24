@@ -70,15 +70,28 @@ func TestSignalEvents(t *testing.T) {
 
 	var events *SignalEvents
 
-	t.Run("get signal_events by product_code", func(t *testing.T) {
-		events = GetSignalEventsByProductCode(tx, config.ProductCode)
+	t.Run("get signal_events", func(t *testing.T) {
+		events = GetSignalEvents(tx, config.ProductCode)
 
 		if events == nil {
-			t.Fatal("Failed to GetSignalEventsByProductCode")
+			t.Fatal("Failed to GetSignalEvents")
 		}
 
 		if len(events.Signals) != 2 {
 			t.Fatalf("wrong number of SignalEvents. Expected 2, but %d", len(events.Signals))
+		}
+	})
+
+	t.Run("get signal_events after time", func(t *testing.T) {
+		timeDate := time.Date(2021, 1, 1, 12, 0, 0, 0, time.UTC)
+		events := GetSignalEventsAfterTime(tx, config.ProductCode, timeDate, config.TimeFormat)
+
+		if events == nil {
+			t.Fatal("Failed to GetSignalEventsAfterTime")
+		}
+
+		if len(events.Signals) != 1 {
+			t.Fatalf("wrong number of SignalEvents. Expected 1, but %d", len(events.Signals))
 		}
 	})
 

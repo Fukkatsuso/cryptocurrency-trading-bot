@@ -11,7 +11,7 @@ import (
 // 相場を分析して取引実行する
 func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	// 取引履歴
-	signalEvents := model.GetSignalEventsByProductCode(config.DB, config.ProductCode)
+	signalEvents := model.GetSignalEvents(config.DB, config.ProductCode)
 	// 見つからなければ終了
 	if signalEvents == nil {
 		w.WriteHeader(http.StatusInternalServerError)

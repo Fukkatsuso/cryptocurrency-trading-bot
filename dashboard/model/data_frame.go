@@ -10,6 +10,7 @@ import (
 type DataFrame struct {
 	ProductCode    string         `json:"productCode"`
 	Candles        []Candle       `json:"candles"`
+	Events         *SignalEvents  `json:"events"`
 	SMAs           []SMA          `json:"smas,omitempty"`
 	EMAs           []EMA          `json:"emas,omitempty"`
 	BBands         *BBands        `json:"bbands,omitempty"`
