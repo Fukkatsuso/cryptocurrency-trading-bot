@@ -115,7 +115,9 @@ new Vue({
       }]
     },
     chartOptions() {
-      let annotations = {}
+      let annotations = {
+        xaxis: [],
+      }
       if (this.candle && this.candle.backtestEvents && this.candle.backtestEvents.signals) {
         const xaxis = this.candle.backtestEvents.signals.map(s => {
           const color = '#00E396'
@@ -135,7 +137,7 @@ new Vue({
             },
           }
         })
-        annotations['xaxis'] = xaxis
+        annotations.xaxis = xaxis
       }
       const options = {
         ...chartOptionsBase,
