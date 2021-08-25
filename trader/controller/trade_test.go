@@ -19,6 +19,6 @@ func TestSlackNotifySignalEvent(t *testing.T) {
 	}
 	err := SlackNotifySignalEvent(signal)
 	if err != nil {
-		t.Log(err.Error())
+		t.Fatal(err.Error())
 	}
 }
