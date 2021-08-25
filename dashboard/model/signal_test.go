@@ -97,7 +97,7 @@ func TestSignalEvents(t *testing.T) {
 
 	t.Run("test CanBuy, Buy", func(t *testing.T) {
 		// can buy
-		now := time.Now()
+		now := time.Now().UTC()
 		if !events.CanBuy(now) {
 			t.Fatal("events should enable to buy:", events)
 		}
@@ -107,7 +107,7 @@ func TestSignalEvents(t *testing.T) {
 		}
 
 		// cannot buy
-		now = time.Now()
+		now = time.Now().UTC()
 		if events.CanBuy(now) {
 			t.Fatal("events should disable to buy:", events)
 		}
@@ -119,7 +119,7 @@ func TestSignalEvents(t *testing.T) {
 
 	t.Run("test CanSell, Sell", func(t *testing.T) {
 		// can sell
-		now := time.Now()
+		now := time.Now().UTC()
 		if !events.CanSell(now) {
 			t.Fatal("events should enable to sell:", events)
 		}
@@ -129,7 +129,7 @@ func TestSignalEvents(t *testing.T) {
 		}
 
 		// cannot sell
-		now = time.Now()
+		now = time.Now().UTC()
 		if events.CanSell(now) {
 			t.Fatal("events should disable to sell:", events)
 		}
