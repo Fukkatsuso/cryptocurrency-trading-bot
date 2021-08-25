@@ -26,6 +26,8 @@ env:
   BITFLYER_API_KEY: ${{ secrets.BITFLYER_API_KEY }}
   BITFLYER_API_SECRET: ${{ secrets.BITFLYER_API_SECRET }}
   PRODUCT_CODE: ${{ secrets.PRODUCT_CODE }}
+  SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+  SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
   TRADER_IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/trader:${{ github.sha }}
   DASHBOARD_IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/dashboard:${{ github.sha }}
 
@@ -102,6 +104,8 @@ jobs:
             --update-env-vars BITFLYER_API_KEY="$BITFLYER_API_KEY" \
             --update-env-vars BITFLYER_API_SECRET="$BITFLYER_API_SECRET" \
             --update-env-vars PRODUCT_CODE="$PRODUCT_CODE" \
+            --update-env-vars SLACK_BOT_TOKEN="#SLACK_BOT_TOKEN" \
+            --update-env-vars SLACK_CHANNEL_ID="$SLACK_CHANNEL_ID" \
             --quiet
 
   deploy-dashboard:
