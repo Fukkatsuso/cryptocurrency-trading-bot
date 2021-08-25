@@ -13,6 +13,8 @@ MYSQL_DATABASE=<データベース名>
 BITFLYER_API_KEY=<bitflyerのAPIキー>
 BITFLYER_API_SECRET=<bitflyerのAPIシークレット>
 PRODUCT_CODE=ETH_JPY
+SLACK_BOT_TOKEN=<Slack Botのトークン>
+SLACK_CHANNEL_ID=<SlackのチャンネルID>
 ```
 
 ## 本番環境(GCP)
@@ -31,4 +33,6 @@ GCS_BUCKET: <GCSのバケット名>
 BITFLYER_API_KEY: <bitflyerのAPIキー>
 BITFLYER_API_SECRET: <bitflyerのAPIシークレット>
 PRODUCT_CODE: ETH_JPY
+SLACK_BOT_TOKEN: <Slack Botのトークン>
+SLACK_CHANNEL_ID: <SlackのチャンネルID>
 ```
