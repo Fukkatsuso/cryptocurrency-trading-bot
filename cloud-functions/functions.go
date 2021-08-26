@@ -49,6 +49,7 @@ func ExportDatabaseToStorage(w http.ResponseWriter, r *http.Request) {
 		ExportContext: &sqladmin.ExportContext{
 			Kind:     "sql#exportContext",
 			FileType: "CSV",
+			Offload:  true,
 			Uri:      uri,
 			CsvExportOptions: &sqladmin.ExportContextCsvExportOptions{
 				SelectQuery: selectQuery,
