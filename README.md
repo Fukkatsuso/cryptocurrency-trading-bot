@@ -9,6 +9,7 @@
 
 - bitflyer APIを使ってイーサリアムを取引するbot
 - チャート表示やバックテストができる管理画面付き
+  - https://dashboard-qboqrrfuaq-an.a.run.app
 - GCPで動かす
 
 ## Documents
