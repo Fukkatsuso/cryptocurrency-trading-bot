@@ -55,8 +55,7 @@ func (bot *TradingBot) Buy(timeTime time.Time, timeFormat string) (string, bool)
 	}
 
 	// 通貨購入サイズ
-	// とりあえず0.01で固定
-	size := 0.01
+	size := bot.TradeParams.Size
 
 	// お金が足りないときは購入しない
 	if availableCurrency < ticker.BestAsk*size {
@@ -117,7 +116,12 @@ func (bot *TradingBot) Sell(timeTime time.Time, timeFormat string) (string, bool
 	availableCoin, _ := bot.APIClient.GetAvailableBalance(bot.CoinCode, bot.CurrencyCode)
 
 	// 通貨売却サイズ
-	size := availableCoin
+	size := bot.TradeParams.Size
+
+	// 仮想通貨が足りないときは売却しない
+	if availableCoin < size {
+		return "", false
+	}
 
 	// 注文発行
 	order := &bitflyer.Order{
