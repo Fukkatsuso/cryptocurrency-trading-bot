@@ -38,6 +38,20 @@ func TestSignalEvents(t *testing.T) {
 		t.Fatal("failed to exec deleteSignalEventAll")
 	}
 
+	var events *SignalEvents
+
+	t.Run("get zero signal_event", func(t *testing.T) {
+		events = GetSignalEvents(tx, config.ProductCode)
+
+		if events == nil {
+			t.Fatal("Failed to GetSignalEvents")
+		}
+
+		if len(events.Signals) != 0 {
+			t.Fatalf("wrong number of SignalEvents. Expected 0, but %d", len(events.Signals))
+		}
+	})
+
 	t.Run("save some signal_event", func(t *testing.T) {
 		// 2021/01/01 00:00:00.00 UTC
 		timeDate := time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -67,8 +81,6 @@ func TestSignalEvents(t *testing.T) {
 			t.Fatal("Failed to Save SignalEvent:", event)
 		}
 	})
-
-	var events *SignalEvents
 
 	t.Run("get signal_events", func(t *testing.T) {
 		events = GetSignalEvents(tx, config.ProductCode)

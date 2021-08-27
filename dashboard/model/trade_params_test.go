@@ -16,6 +16,14 @@ func TestTradeParams(t *testing.T) {
 		t.Fatal("failed to exec deleteTradeParamsAll")
 	}
 
+	t.Run("get nil trade_params", func(t *testing.T) {
+		getTradeParams := GetTradeParams(tx, config.ProductCode)
+
+		if getTradeParams != nil {
+			t.Fatalf("Failed to Get TradeParams: should nil, but %v", getTradeParams)
+		}
+	})
+
 	var tradeParams *TradeParams
 
 	t.Run("create trade_params", func(t *testing.T) {
