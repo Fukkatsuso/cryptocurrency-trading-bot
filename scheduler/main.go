@@ -42,7 +42,8 @@ func traderTrade() {
 func main() {
 	c := cron.New()
 	c.AddFunc("*/5 * * * *", traderFetchTicker)
-	c.AddFunc("*/10 * * * *", traderTrade)
+	// 予期せぬ取引を避けるため，ローカルで動かすのはやめておく
+	// c.AddFunc("*/10 * * * *", traderTrade)
 	c.Start()
 
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {})
