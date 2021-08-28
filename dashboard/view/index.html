@@ -323,12 +323,68 @@
               :options="chartOptions"
               :series="series"
             ></apexchart>
+          </div>
 
-            <div v-if="candle.backtestEvents">
-              <p class="text-body-1 font-weight-bold">
-                backtest profit: ${ candle.backtestEvents.profit } JPY / hold: ${ backtestCurrentHold } ETH
-              </p>
-            </div>
+          <!-- 実際の取引履歴 -->
+          <div class="history">
+            <span class="text-h6">Trade History</span>
+            <v-simple-table>
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-left">Date</th>
+                    <th class="text-left">Price</th>
+                    <th class="text-left">Side</th>
+                    <th class="text-left">Size</th>
+                  </tr>
+                </thead>
+                <tbody v-if="candle && candle.events && candle.events.signals">
+                  <tr
+                    v-for="item in candle.events.signals"
+                    :key="item.time"
+                  >
+                    <td>${ item.time }</td>
+                    <td>${ item.price }</td>
+                    <td>${ item.side }</td>
+                    <td>${ item.size }</td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+          </div>
+
+          <!-- バックテストの取引履歴 -->
+          <div class="history">
+            <span class="text-h6">Backtest History</span>
+            <v-simple-table>
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-left">Date</th>
+                    <th class="text-left">Price</th>
+                    <th class="text-left">Side</th>
+                    <th class="text-left">Size</th>
+                  </tr>
+                </thead>
+                <tbody v-if="candle && candle.backtestEvents && candle.backtestEvents.signals">
+                  <tr
+                    v-for="item in candle.backtestEvents.signals"
+                    :key="item.time"
+                  >
+                    <td>${ item.time }</td>
+                    <td>${ item.price }</td>
+                    <td>${ item.side }</td>
+                    <td>${ item.size }</td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+            <p
+              v-if="candle && candle.backtestEvents"
+              class="text-body-1 font-weight-bold"
+            >
+              backtest profit: ${ candle.backtestEvents.profit } JPY / hold: ${ backtestCurrentHold } ETH
+            </p>
           </div>
 
         </v-container>
