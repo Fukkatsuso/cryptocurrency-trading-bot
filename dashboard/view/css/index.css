@@ -9,6 +9,10 @@
   vertical-align: middle;
 }
 
+#app-bar {
+  z-index: 20;
+}
+
 #chart {
   padding-top: 1em;
 }
