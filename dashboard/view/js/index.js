@@ -4,7 +4,6 @@ const chartOptionsBase = {
     height: 400,
   },
   title: {
-    text: 'CandleStick Chart',
     align: 'left',
   },
   xaxis: { // https://apexcharts.com/docs/options/xaxis/

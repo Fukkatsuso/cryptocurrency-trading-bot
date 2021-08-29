@@ -37,294 +37,298 @@
         </v-app-bar>
 
         <v-container>
-          <!-- パラメータ入力フォーム．enterでリロードされるのを回避 -->
-          <v-form @submit.prevent>
-            <v-container>
-              <!-- limit -->
-              <v-row>
-                <v-col
-                  cols="1"
-                ></v-col>
-                <v-col
-                  cols="2"
-                  md="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <p class="vertical-middle text-body-2 text-md-body-1">
-                      limit
-                    </p>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="6"
-                  md="3"
-                >
-                  <v-text-field
-                    v-model="config.limit"
-                    dense
-                    hide-details
-                    outlined
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <!-- sma -->
-              <v-row>
-                <v-col
-                  cols="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <v-simple-checkbox
-                      v-model="config.sma.enable"
-                      color="primary"
-                      class="vertical-middle"
-                    ></v-simple-checkbox>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="2"
-                  md="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <p class="vertical-middle text-body-2 text-md-body-1">
-                      SMA
-                    </p>
-                  </div>
-                </v-col>
-                <v-col
-                  v-for="(smaPeriod, smaIndex) in config.sma.periods"
-                  :key="smaPeriod.id"
-                  cols="3"
-                >
-                  <v-text-field
-                    v-model="config.sma.periods[smaIndex]"
-                    dense
-                    hide-details
-                    outlined
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <!-- ema -->
-              <v-row>
-                <v-col
-                  cols="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <v-simple-checkbox
-                      v-model="config.ema.enable"
-                      color="primary"
-                      class="vertical-middle"
-                    ></v-simple-checkbox>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="2"
-                  md="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <p class="vertical-middle text-body-2 text-md-body-1">
-                      EMA
-                    </p>
-                  </div>
-                </v-col>
-                <v-col
-                  v-for="(emaPeriod, emaIndex) in config.ema.periods"
-                  :key="emaPeriod.id"
-                  cols="3"
-                >
-                  <v-text-field
-                    v-model="config.ema.periods[emaIndex]"
-                    dense
-                    hide-details
-                    outlined
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <!-- bbands -->
-              <v-row>
-                <v-col
-                  cols="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <v-simple-checkbox
-                      v-model="config.bbands.enable"
-                      color="primary"
-                      class="vertical-middle"
-                    ></v-simple-checkbox>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="2"
-                  md="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <p class="vertical-middle text-body-2 text-md-body-1">
-                      BBands
-                    </p>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="3"
-                >
-                  <v-text-field
-                    v-model="config.bbands.n"
-                    dense
-                    hide-details
-                    outlined
-                  ></v-text-field>
-                </v-col>
-                <v-col
-                  cols="3"
-                >
-                  <v-text-field
-                    v-model="config.bbands.k"
-                    dense
-                    hide-details
-                    outlined
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <!-- ichimoku -->
-              <v-row>
-                <v-col
-                  cols="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <v-simple-checkbox
-                      v-model="config.ichimoku.enable"
-                      color="primary"
-                      class="vertical-middle"
-                    ></v-simple-checkbox>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="2"
-                  md="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <p class="vertical-middle text-body-2 text-md-body-1">
-                      Ichimoku
-                    </p>
-                  </div>
-                </v-col>
-              </v-row>
-              <!-- rsi -->
-              <v-row>
-                <v-col
-                  cols="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <v-simple-checkbox
-                      v-model="config.rsi.enable"
-                      color="primary"
-                      class="vertical-middle"
-                    ></v-simple-checkbox>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="2"
-                  md="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <p class="vertical-middle text-body-2 text-md-body-1">
-                      RSI
-                    </p>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="3"
-                >
-                  <v-text-field
-                    v-model="config.rsi.period"
-                    dense
-                    hide-details
-                    outlined
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <!-- macd -->
-              <v-row>
-                <v-col
-                  cols="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <v-simple-checkbox
-                      v-model="config.macd.enable"
-                      color="primary"
-                      class="vertical-middle"
-                    ></v-simple-checkbox>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="2"
-                  md="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <p class="vertical-middle text-body-2 text-md-body-1">
-                      MACD
-                    </p>
-                  </div>
-                </v-col>
-                <v-col
-                  v-for="(macdPeriod, macdIndex) in config.macd.periods"
-                  :key="macdPeriod.id"
-                  cols="3"
-                >
-                  <v-text-field
-                    v-model="config.macd.periods[macdIndex]"
-                    dense
-                    hide-details
-                    outlined
-                  ></v-text-field>
-                </v-col>
-              </v-row>
-              <!-- backtest -->
-              <v-row>
-                <v-col
-                  cols="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <v-simple-checkbox
-                      v-model="config.backtest.enable"
-                      color="primary"
-                      class="vertical-middle"
-                    ></v-simple-checkbox>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="2"
-                  md="1"
-                >
-                  <div class="vertical-middle-wrapper">
-                    <p class="vertical-middle text-body-2 text-md-body-1">
-                      backtest
-                    </p>
-                  </div>
-                </v-col>
-              </v-row>
-              <!-- update button -->
-              <v-row>
-                <v-col
-                  cols="8"
-                  md="4"
-                >
-                  <v-btn
-                    block
-                    @click="update"
-                  >
-                    update chart
-                  </v-btn>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
-
-          <!-- ${ candle } -->
+          <!-- チャート -->
           <div id="chart" v-if="candle">
+            <span class="text-h6">Chart</span>
             <apexchart
               height="400"
               :options="chartOptions"
               :series="series"
             ></apexchart>
+          </div>
+
+          <!-- パラメータ入力フォーム．enterでリロードされるのを回避 -->
+          <div class="indicator">
+            <span class="text-h6">Indicator</span>
+            <v-form @submit.prevent>
+              <v-container>
+                <!-- limit -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  ></v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        limit
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="6"
+                    md="3"
+                  >
+                    <v-text-field
+                      v-model="config.limit"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- sma -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="config.sma.enable"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        SMA
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    v-for="(smaPeriod, smaIndex) in config.sma.periods"
+                    :key="smaPeriod.id"
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="config.sma.periods[smaIndex]"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- ema -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="config.ema.enable"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        EMA
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    v-for="(emaPeriod, emaIndex) in config.ema.periods"
+                    :key="emaPeriod.id"
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="config.ema.periods[emaIndex]"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- bbands -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="config.bbands.enable"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        BBands
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="config.bbands.n"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="config.bbands.k"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- ichimoku -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="config.ichimoku.enable"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        Ichimoku
+                      </p>
+                    </div>
+                  </v-col>
+                </v-row>
+                <!-- rsi -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="config.rsi.enable"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        RSI
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="config.rsi.period"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- macd -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="config.macd.enable"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        MACD
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    v-for="(macdPeriod, macdIndex) in config.macd.periods"
+                    :key="macdPeriod.id"
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="config.macd.periods[macdIndex]"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- backtest -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="config.backtest.enable"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        backtest
+                      </p>
+                    </div>
+                  </v-col>
+                </v-row>
+                <!-- update button -->
+                <v-row>
+                  <v-col
+                    cols="8"
+                    md="4"
+                  >
+                    <v-btn
+                      block
+                      @click="update"
+                    >
+                      update chart
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
           </div>
 
           <!-- 実際の取引履歴 -->
