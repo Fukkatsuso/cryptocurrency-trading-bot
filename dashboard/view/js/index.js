@@ -191,6 +191,6 @@ new Vue({
     }
   },
   mounted: async function() {
-    this.update()
+    await this.update()
   },
 })
