@@ -165,7 +165,7 @@ new Vue({
                 background: color,
               },
               orientation: 'horizontal',
-              offsetY: chartOptionsBase.chart.height-92,
+              offsetY: chartOptionsBase.chart.height-70,
               text: s['side'],
             },
           }
