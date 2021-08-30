@@ -9,6 +9,18 @@
   vertical-align: middle;
 }
 
+#app-bar {
+  z-index: 20;
+}
+
 #chart {
   padding-top: 1em;
+}
+
+.indicator {
+  padding-top: 2em;
+}
+
+.history {
+  padding-top: 2em;
 }

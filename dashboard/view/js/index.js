@@ -4,7 +4,6 @@ const chartOptionsBase = {
     height: 400,
   },
   title: {
-    text: 'CandleStick Chart',
     align: 'left',
   },
   xaxis: { // https://apexcharts.com/docs/options/xaxis/
@@ -192,6 +191,6 @@ new Vue({
     }
   },
   mounted: async function() {
-    this.update()
+    await this.update()
   },
 })
