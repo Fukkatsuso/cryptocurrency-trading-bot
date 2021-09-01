@@ -17,7 +17,8 @@ func TestSlackNotifySignalEvent(t *testing.T) {
 		Price:       1000,
 		Size:        0.1,
 	}
-	err := SlackNotifySignalEvent(signal)
+	msg := SignalEventToSlackTextMessage(signal)
+	err := PostSlackTextMessage(msg)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

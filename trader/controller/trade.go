@@ -57,7 +57,8 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	// slack通知
 	for _, signal := range bot.SignalEvents.Signals {
 		if signal.Time.After(beforeTradeTime) {
-			err := SlackNotifySignalEvent(&signal)
+			slackMsg := SignalEventToSlackTextMessage(&signal)
+			err := PostSlackTextMessage(slackMsg)
 			if err != nil {
 				fmt.Println(err.Error())
 			}
@@ -68,17 +69,19 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Trade")
 }
 
-func SlackNotifySignalEvent(signal *model.SignalEvent) error {
+func PostSlackTextMessage(msg string) error {
 	slackBot := slack.New(config.SlackBotToken)
+	_, _, err := slackBot.PostMessage(config.SlackChannelID, slack.MsgOptionText(msg, true))
+	return err
+}
 
-	textMsg := fmt.Sprintf(":coin: *%s*: %s\nAt: %s\nPrice: %f\nSize: %f",
+func SignalEventToSlackTextMessage(signal *model.SignalEvent) string {
+	msg := fmt.Sprintf(":coin: *%s*: %s\nAt: %s\nPrice: %f\nSize: %f",
 		signal.Side,
 		signal.ProductCode,
 		signal.Time.In(config.LocalTime).Format(config.TimeFormat),
 		signal.Price,
 		signal.Size,
 	)
-
-	_, _, err := slackBot.PostMessage(config.SlackChannelID, slack.MsgOptionText(textMsg, true))
-	return err
+	return msg
 }
