@@ -16,6 +16,11 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	signalEvents := model.GetSignalEvents(config.DB, config.ProductCode)
 	// 見つからなければ終了
 	if signalEvents == nil {
+		slackMsg := fmt.Sprintf(":dizzy_face:（%s）\nSignalEventsが取得できません", config.ProductCode)
+		err := PostSlackTextMessage(slackMsg)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "failed to get signal_events (productCode=%s)", config.ProductCode)
 		return
@@ -26,12 +31,22 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("params:", tradeParams)
 	// パラメータが見つからなければ終了
 	if tradeParams == nil {
+		slackMsg := fmt.Sprintf(":dizzy_face:（%s）\nTradeParamsが取得できません", config.ProductCode)
+		err := PostSlackTextMessage(slackMsg)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "trade_params has no param record (productCode=%s)", config.ProductCode)
 		return
 	}
 	// 取引無効になっていたら終了
 	if !tradeParams.TradeEnable {
+		slackMsg := fmt.Sprintf(":dizzy_face:（%s）\n取引が無効に設定されています", config.ProductCode)
+		err := PostSlackTextMessage(slackMsg)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "trade is not enabled (productCode=%s)", config.ProductCode)
 		return
@@ -49,6 +64,11 @@ func TradeHandler(w http.ResponseWriter, r *http.Request) {
 	// 分析，取引
 	err := bot.Trade(config.DB, config.CandleTableName, config.TimeFormat)
 	if err != nil {
+		slackMsg := fmt.Sprintf(":dizzy_face:（%s）\n取引時にエラーが生じました\n```%s```", config.ProductCode, err.Error())
+		err := PostSlackTextMessage(slackMsg)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "failed to trade: %s", err.Error())
 		return
