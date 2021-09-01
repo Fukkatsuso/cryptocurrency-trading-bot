@@ -95,6 +95,15 @@ new Vue({
       // キャンドルデータとインディケータを取得
       this.candle = await this.getCandle()
     },
+    dateInJST(date) {
+      const minuteOffset = new Date().getTimezoneOffset() + 9*60
+      const timeOffset = minuteOffset * 60 * 1000
+      return new Date(date.getTime() + timeOffset)
+    },
+    timeToString(time) {
+      const date = new Date(time)
+      return date.toLocaleString("ja")
+    },
   },
   computed: {
     series() {
@@ -165,7 +174,7 @@ new Vue({
                 background: color,
               },
               orientation: 'horizontal',
-              offsetY: chartOptionsBase.chart.height-92,
+              offsetY: chartOptionsBase.chart.height-70,
               text: s['side'],
             },
           }

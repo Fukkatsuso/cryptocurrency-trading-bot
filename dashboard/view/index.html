@@ -349,7 +349,7 @@
                     v-for="item in candle.events.signals"
                     :key="item.time"
                   >
-                    <td>${ item.time }</td>
+                    <td>${ timeToString(item.time) }</td>
                     <td>${ item.price }</td>
                     <td>${ item.side }</td>
                     <td>${ item.size }</td>
@@ -377,7 +377,7 @@
                     v-for="item in candle.backtestEvents.signals"
                     :key="item.time"
                   >
-                    <td>${ item.time }</td>
+                    <td>${ timeToString(item.time) }</td>
                     <td>${ item.price }</td>
                     <td>${ item.side }</td>
                     <td>${ item.size }</td>
