@@ -6,6 +6,7 @@ import (
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/config"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/bitflyer"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/lib/slack"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/model"
 )
 
@@ -17,7 +18,8 @@ func TestSlackNotifySignalEvent(t *testing.T) {
 		Price:       1000,
 		Size:        0.1,
 	}
-	err := SlackNotifySignalEvent(signal)
+	msg := SignalEventToSlackTextMessage(signal)
+	err := slack.PostTextMessage(config.SlackBotToken, config.SlackChannelID, msg)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
