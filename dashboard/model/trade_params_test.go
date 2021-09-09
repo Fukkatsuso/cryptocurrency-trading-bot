@@ -28,9 +28,30 @@ func TestTradeParams(t *testing.T) {
 
 	t.Run("create trade_params", func(t *testing.T) {
 		tradeParams = &TradeParams{
-			TradeEnable: true,
-			ProductCode: config.ProductCode,
-			Size:        0.01,
+			TradeEnable:      true,
+			ProductCode:      config.ProductCode,
+			Size:             0.01,
+			SMAEnable:        true,
+			SMAPeriod1:       7,
+			SMAPeriod2:       14,
+			SMAPeriod3:       50,
+			EMAEnable:        true,
+			EMAPeriod1:       7,
+			EMAPeriod2:       14,
+			EMAPeriod3:       50,
+			BBandsEnable:     true,
+			BBandsN:          20,
+			BBandsK:          2.2,
+			IchimokuEnable:   true,
+			RSIEnable:        true,
+			RSIPeriod:        14,
+			RSIBuyThread:     30.5,
+			RSISellThread:    70.5,
+			MACDEnable:       true,
+			MACDFastPeriod:   12,
+			MACDSlowPeriod:   26,
+			MACDSignalPeriod: 9,
+			StopLimitPercent: 0.75,
 		}
 
 		err := tradeParams.Create(tx)
