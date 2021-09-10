@@ -94,15 +94,11 @@ func (bot *TradingBot) Buy(timeTime time.Time, timeFormat string) (string, error
 
 	// 注文成功した場合
 	// SignalEventsに注文記録を追加
-	bot.SignalEvents.Buy(bot.ProductCode, timeTime, order.AveragePrice, order.Size)
-	// SingalEventをDBに保存
-	signalEvent := SignalEvent{
-		ProductCode: bot.ProductCode,
-		Time:        timeTime,
-		Side:        string(bitflyer.OrderSideBuy),
-		Price:       order.AveragePrice,
-		Size:        order.Size,
+	signalEvent := bot.SignalEvents.Buy(bot.ProductCode, timeTime, order.AveragePrice, order.Size)
+	if signalEvent == nil {
+		return childOrderAcceptanceID, errors.New("[Sell] order send, but signal_event is nil")
 	}
+	// SingalEventをDBに保存
 	saved := signalEvent.Save(bot.DBClient, timeFormat)
 
 	if !saved {
@@ -158,15 +154,11 @@ func (bot *TradingBot) Sell(timeTime time.Time, timeFormat string) (string, erro
 
 	// 注文成功した場合
 	// SignalEventsに注文記録を追加
-	bot.SignalEvents.Sell(bot.ProductCode, timeTime, order.AveragePrice, order.Size)
-	// SingalEventをDBに保存
-	signalEvent := SignalEvent{
-		ProductCode: bot.ProductCode,
-		Time:        timeTime,
-		Side:        string(bitflyer.OrderSideSell),
-		Price:       order.AveragePrice,
-		Size:        order.Size,
+	signalEvent := bot.SignalEvents.Sell(bot.ProductCode, timeTime, order.AveragePrice, order.Size)
+	if signalEvent == nil {
+		return childOrderAcceptanceID, errors.New("[Sell] order send, but signal_event is nil")
 	}
+	// SingalEventをDBに保存
 	saved := signalEvent.Save(bot.DBClient, timeFormat)
 
 	if !saved {

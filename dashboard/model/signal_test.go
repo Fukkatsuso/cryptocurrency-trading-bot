@@ -113,8 +113,8 @@ func TestSignalEvents(t *testing.T) {
 		if !events.CanBuy(now) {
 			t.Fatal("events should enable to buy:", events)
 		}
-		ok := events.Buy(config.ProductCode, now, 1200, 0.01)
-		if !ok || len(events.Signals) != 3 {
+		event := events.Buy(config.ProductCode, now, 1200, 0.01)
+		if event == nil || len(events.Signals) != 3 {
 			t.Fatal("Failed to add buy event")
 		}
 
@@ -123,8 +123,8 @@ func TestSignalEvents(t *testing.T) {
 		if events.CanBuy(now) {
 			t.Fatal("events should disable to buy:", events)
 		}
-		ok = events.Buy(config.ProductCode, now, 1200, 0.01)
-		if ok || len(events.Signals) != 3 {
+		event = events.Buy(config.ProductCode, now, 1200, 0.01)
+		if event != nil || len(events.Signals) != 3 {
 			t.Fatal("Failed to disable to add buy event")
 		}
 	})
@@ -135,8 +135,8 @@ func TestSignalEvents(t *testing.T) {
 		if !events.CanSell(now) {
 			t.Fatal("events should enable to sell:", events)
 		}
-		ok := events.Sell(config.ProductCode, now, 2000, 0.01)
-		if !ok || len(events.Signals) != 4 {
+		event := events.Sell(config.ProductCode, now, 2000, 0.01)
+		if event == nil || len(events.Signals) != 4 {
 			t.Fatal("Failed to add sell event")
 		}
 
@@ -145,8 +145,8 @@ func TestSignalEvents(t *testing.T) {
 		if events.CanSell(now) {
 			t.Fatal("events should disable to sell:", events)
 		}
-		ok = events.Sell(config.ProductCode, now, 2000, 0.01)
-		if ok || len(events.Signals) != 4 {
+		event = events.Sell(config.ProductCode, now, 2000, 0.01)
+		if event != nil || len(events.Signals) != 4 {
 			t.Fatal("Failed to disable to add sell event")
 		}
 	})
