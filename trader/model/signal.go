@@ -104,9 +104,9 @@ func (s *SignalEvents) CanSell(time time.Time) bool {
 	return canSell
 }
 
-func (s *SignalEvents) Buy(productCode string, time time.Time, price, size float64) bool {
+func (s *SignalEvents) Buy(productCode string, time time.Time, price, size float64) *SignalEvent {
 	if !s.CanBuy(time) {
-		return false
+		return nil
 	}
 	signalEvent := SignalEvent{
 		ProductCode: productCode,
@@ -116,12 +116,12 @@ func (s *SignalEvents) Buy(productCode string, time time.Time, price, size float
 		Size:        size,
 	}
 	s.Signals = append(s.Signals, signalEvent)
-	return true
+	return &signalEvent
 }
 
-func (s *SignalEvents) Sell(productCode string, time time.Time, price, size float64) bool {
+func (s *SignalEvents) Sell(productCode string, time time.Time, price, size float64) *SignalEvent {
 	if !s.CanSell(time) {
-		return false
+		return nil
 	}
 	signalEvent := SignalEvent{
 		ProductCode: productCode,
@@ -131,7 +131,7 @@ func (s *SignalEvents) Sell(productCode string, time time.Time, price, size floa
 		Size:        size,
 	}
 	s.Signals = append(s.Signals, signalEvent)
-	return true
+	return &signalEvent
 }
 
 // 買って売ってを繰り返した履歴データから，利益が出るか検証
