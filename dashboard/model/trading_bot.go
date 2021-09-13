@@ -86,6 +86,7 @@ func (bot *TradingBot) Buy(timeTime time.Time, timeFormat string) (string, error
 	// 注文が完了するまで待つ
 	childOrderAcceptanceID := resp.ChildOrderAcceptanceID
 	completedOrder := bot.WaitUntilOrderComplete(childOrderAcceptanceID, timeTime)
+	fmt.Printf("[Buy] order completed: %v", completedOrder)
 
 	// 注文失敗した場合
 	if completedOrder == nil {
@@ -94,7 +95,7 @@ func (bot *TradingBot) Buy(timeTime time.Time, timeFormat string) (string, error
 
 	// 注文成功した場合
 	// SignalEventsに注文記録を追加
-	signalEvent := bot.SignalEvents.Buy(bot.ProductCode, timeTime, order.AveragePrice, order.Size)
+	signalEvent := bot.SignalEvents.Buy(bot.ProductCode, timeTime, completedOrder.Price, completedOrder.Size)
 	if signalEvent == nil {
 		return childOrderAcceptanceID, errors.New("[Sell] order send, but signal_event is nil")
 	}
@@ -146,6 +147,7 @@ func (bot *TradingBot) Sell(timeTime time.Time, timeFormat string) (string, erro
 	// 注文が完了するまで待つ
 	childOrderAcceptanceID := resp.ChildOrderAcceptanceID
 	completedOrder := bot.WaitUntilOrderComplete(childOrderAcceptanceID, timeTime)
+	fmt.Printf("[Sell] order completed: %v", completedOrder)
 
 	// 注文失敗した場合
 	if completedOrder == nil {
@@ -154,7 +156,7 @@ func (bot *TradingBot) Sell(timeTime time.Time, timeFormat string) (string, erro
 
 	// 注文成功した場合
 	// SignalEventsに注文記録を追加
-	signalEvent := bot.SignalEvents.Sell(bot.ProductCode, timeTime, order.AveragePrice, order.Size)
+	signalEvent := bot.SignalEvents.Sell(bot.ProductCode, timeTime, completedOrder.Price, completedOrder.Size)
 	if signalEvent == nil {
 		return childOrderAcceptanceID, errors.New("[Sell] order send, but signal_event is nil")
 	}
