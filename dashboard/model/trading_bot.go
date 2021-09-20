@@ -118,10 +118,9 @@ func (bot *TradingBot) Sell(timeTime time.Time, timeFormat string) (string, erro
 
 	// 通貨売却サイズ
 	size := bot.TradeParams.Size
-
-	// 仮想通貨が足りないときは売却しない
+	// パラメータに設定したサイズよりも保有量が足りないときは保有量だけ使う
 	if availableCoin < size {
-		return "", errors.New(fmt.Sprintf("[Sell] you don't have enough coin. available: %f, need: %f", availableCoin, size))
+		size = availableCoin
 	}
 
 	// 注文発行
@@ -167,6 +166,13 @@ func (bot *TradingBot) Sell(timeTime time.Time, timeFormat string) (string, erro
 		return childOrderAcceptanceID, errors.New(fmt.Sprintf("[Sell] couldn't save signal_event: %v", signalEvent))
 	}
 	return childOrderAcceptanceID, nil
+}
+
+// 取引手数料
+// 過去30日間の取引量によって変わる
+// とりあえずETH/JPYで最大の0.15%としておく
+func TradingFee(productCode string, amount float64) float64 {
+	return amount * 0.0015
 }
 
 func (bot *TradingBot) WaitUntilOrderComplete(childOrderAcceptanceID string, executeTime time.Time) *bitflyer.Order {
