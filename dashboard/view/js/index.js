@@ -95,10 +95,11 @@ new Vue({
       // キャンドルデータとインディケータを取得
       this.candle = await this.getCandle()
     },
-    dateInJST(date) {
-      const minuteOffset = new Date().getTimezoneOffset() + 9*60
+    timeInJST(dateString) {
+      const localTime = new Date(dateString).getTime()
+      const minuteOffset = new Date().getTimezoneOffset()
       const timeOffset = minuteOffset * 60 * 1000
-      return new Date(date.getTime() + timeOffset)
+      return localTime - timeOffset
     },
     timeToString(time) {
       const date = new Date(time)
@@ -114,7 +115,7 @@ new Vue({
       }
       const data = this.candle.candles.map(c => {
         return {
-          x: new Date(c['time']).getTime(),
+          x: this.timeInJST(c['time']),
           y: [c['open'], c['high'], c['low'], c['close']],
         }
       })
@@ -140,7 +141,7 @@ new Vue({
       if (this.candle && this.candle.events && this.candle.events.signals) {
         const xaxis = this.candle.events.signals.map(s => {
           return {
-            x: new Date(s['time']).getTime(),
+            x: this.timeInJST(s['time']),
             borderColor: color,
             label: {
               borderColor: color,
@@ -164,7 +165,7 @@ new Vue({
       if (this.candle && this.candle.backtestEvents && this.candle.backtestEvents.signals) {
         const xaxis = this.candle.backtestEvents.signals.map(s => {
           return {
-            x: new Date(s['time']).getTime(),
+            x: this.timeInJST(s['time']),
             borderColor: color,
             label: {
               borderColor: color,
