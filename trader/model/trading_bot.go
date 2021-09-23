@@ -86,7 +86,7 @@ func (bot *TradingBot) Buy(timeTime time.Time, timeFormat string) (string, error
 	// 注文が完了するまで待つ
 	childOrderAcceptanceID := resp.ChildOrderAcceptanceID
 	completedOrder := bot.WaitUntilOrderComplete(childOrderAcceptanceID, timeTime)
-	fmt.Printf("[Buy] order completed: %v", completedOrder)
+	fmt.Printf("[Buy] order completed: %+v", completedOrder)
 
 	// 注文失敗した場合
 	if completedOrder == nil {
@@ -95,7 +95,7 @@ func (bot *TradingBot) Buy(timeTime time.Time, timeFormat string) (string, error
 
 	// 注文成功した場合
 	// SignalEventsに注文記録を追加
-	signalEvent := bot.SignalEvents.Buy(bot.ProductCode, timeTime, completedOrder.Price, completedOrder.Size)
+	signalEvent := bot.SignalEvents.Buy(bot.ProductCode, timeTime, completedOrder.AveragePrice, completedOrder.ExecutedSize)
 	if signalEvent == nil {
 		return childOrderAcceptanceID, errors.New("[Sell] order send, but signal_event is nil")
 	}
@@ -103,7 +103,7 @@ func (bot *TradingBot) Buy(timeTime time.Time, timeFormat string) (string, error
 	saved := signalEvent.Save(bot.DBClient, timeFormat)
 
 	if !saved {
-		return childOrderAcceptanceID, errors.New(fmt.Sprintf("[Buy] couldn't save signal_event: %v", signalEvent))
+		return childOrderAcceptanceID, errors.New(fmt.Sprintf("[Buy] couldn't save signal_event: %+v", signalEvent))
 	}
 	return childOrderAcceptanceID, nil
 }
@@ -146,7 +146,7 @@ func (bot *TradingBot) Sell(timeTime time.Time, timeFormat string) (string, erro
 	// 注文が完了するまで待つ
 	childOrderAcceptanceID := resp.ChildOrderAcceptanceID
 	completedOrder := bot.WaitUntilOrderComplete(childOrderAcceptanceID, timeTime)
-	fmt.Printf("[Sell] order completed: %v", completedOrder)
+	fmt.Printf("[Sell] order completed: %+v", completedOrder)
 
 	// 注文失敗した場合
 	if completedOrder == nil {
@@ -155,7 +155,7 @@ func (bot *TradingBot) Sell(timeTime time.Time, timeFormat string) (string, erro
 
 	// 注文成功した場合
 	// SignalEventsに注文記録を追加
-	signalEvent := bot.SignalEvents.Sell(bot.ProductCode, timeTime, completedOrder.Price, completedOrder.Size)
+	signalEvent := bot.SignalEvents.Sell(bot.ProductCode, timeTime, completedOrder.AveragePrice, completedOrder.ExecutedSize)
 	if signalEvent == nil {
 		return childOrderAcceptanceID, errors.New("[Sell] order send, but signal_event is nil")
 	}
@@ -163,7 +163,7 @@ func (bot *TradingBot) Sell(timeTime time.Time, timeFormat string) (string, erro
 	saved := signalEvent.Save(bot.DBClient, timeFormat)
 
 	if !saved {
-		return childOrderAcceptanceID, errors.New(fmt.Sprintf("[Sell] couldn't save signal_event: %v", signalEvent))
+		return childOrderAcceptanceID, errors.New(fmt.Sprintf("[Sell] couldn't save signal_event: %+v", signalEvent))
 	}
 	return childOrderAcceptanceID, nil
 }
