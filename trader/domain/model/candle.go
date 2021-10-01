@@ -38,7 +38,7 @@ func NewCandle(productCode string, duration time.Duration, candleTime CandleTime
 		return nil
 	}
 
-	if volume <= 0 {
+	if volume < 0 {
 		return nil
 	}
 
