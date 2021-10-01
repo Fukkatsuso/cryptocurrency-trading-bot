@@ -30,6 +30,10 @@ func (candleTime CandleTime) Format(layout string) string {
 	return candleTime.Time().Format(layout)
 }
 
+func (candleTime CandleTime) Equal(compateTime CandleTime) bool {
+	return candleTime.Time().Equal(candleTime.Time())
+}
+
 // hour時を境に切り捨てた時間
 func (candleTime CandleTime) TruncateHour(localTime *time.Location, hour int) CandleTime {
 	truncateTime := candleTime.Time().In(localTime).Truncate(time.Hour)

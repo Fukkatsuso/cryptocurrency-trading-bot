@@ -97,15 +97,3 @@ func (candle *Candle) Low() float64 {
 func (candle *Candle) Volume() float64 {
 	return candle.volume
 }
-
-func (candle *Candle) UpdateHigh(price float64) {
-	if candle.high < price {
-		candle.high = price
-	}
-}
-
-func (candle *Candle) UpdateLow(price float64) {
-	if candle.low > price {
-		candle.low = price
-	}
-}
