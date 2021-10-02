@@ -106,6 +106,10 @@ func (s *SignalEvents) CanSellAt(timeTime time.Time) bool {
 }
 
 func (s *SignalEvents) AddBuySignal(signal SignalEvent) bool {
+	if signal.side != OrderSideBuy {
+		return false
+	}
+
 	if s.CanBuyAt(signal.time) {
 		return false
 	}
@@ -115,6 +119,10 @@ func (s *SignalEvents) AddBuySignal(signal SignalEvent) bool {
 }
 
 func (s *SignalEvents) AddSellSignal(signal SignalEvent) bool {
+	if signal.side != OrderSideSell {
+		return false
+	}
+
 	if s.CanSellAt(signal.time) {
 		return false
 	}
