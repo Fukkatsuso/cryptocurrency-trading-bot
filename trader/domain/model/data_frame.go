@@ -1,0 +1,130 @@
+package model
+
+type DataFrame struct {
+	productCode    string
+	candles        []Candle
+	events         *SignalEvents
+	smas           []SMA
+	emas           []EMA
+	bbands         *BBands
+	ichimokuCloud  *IchimokuCloud
+	rsi            *RSI
+	macd           *MACD
+	backtestEvents *SignalEvents
+}
+
+func (df *DataFrame) Times() []CandleTime {
+	s := make([]CandleTime, len(df.candles))
+	for i, candle := range df.candles {
+		s[i] = candle.Time()
+	}
+	return s
+}
+
+func (df *DataFrame) Opens() []float64 {
+	s := make([]float64, len(df.candles))
+	for i, candle := range df.candles {
+		s[i] = candle.Open()
+	}
+	return s
+}
+
+func (df *DataFrame) Closes() []float64 {
+	s := make([]float64, len(df.candles))
+	for i, candle := range df.candles {
+		s[i] = candle.Close()
+	}
+	return s
+}
+
+func (df *DataFrame) Highs() []float64 {
+	s := make([]float64, len(df.candles))
+	for i, candle := range df.candles {
+		s[i] = candle.High()
+	}
+	return s
+}
+
+func (df *DataFrame) Lows() []float64 {
+	s := make([]float64, len(df.candles))
+	for i, candle := range df.candles {
+		s[i] = candle.Low()
+	}
+	return s
+}
+
+func (df *DataFrame) Volumes() []float64 {
+	s := make([]float64, len(df.candles))
+	for i, candle := range df.candles {
+		s[i] = candle.Volume()
+	}
+	return s
+}
+
+func (df *DataFrame) AddSMA(period int) bool {
+	if df.smas == nil {
+		df.smas = make([]SMA, 0)
+	}
+
+	sma := NewSMA(df.Closes(), period)
+	if sma == nil {
+		return false
+	}
+
+	df.smas = append(df.smas, *sma)
+	return true
+}
+
+func (df *DataFrame) AddEMA(period int) bool {
+	if df.emas == nil {
+		df.emas = make([]EMA, 0)
+	}
+
+	ema := NewEMA(df.Closes(), period)
+	if ema == nil {
+		return false
+	}
+
+	df.emas = append(df.emas, *ema)
+	return true
+}
+
+func (df *DataFrame) AddBBands(n int, k float64) bool {
+	bbands := NewBBands(df.Closes(), n, k)
+	if bbands == nil {
+		return false
+	}
+
+	df.bbands = bbands
+	return true
+}
+
+func (df *DataFrame) AddIchimoku() bool {
+	ichimoku := NewIchimokuCloud(df.Closes())
+	if ichimoku == nil {
+		return false
+	}
+
+	df.ichimokuCloud = ichimoku
+	return true
+}
+
+func (df *DataFrame) AddRSI(period int) bool {
+	rsi := NewRSI(df.Closes(), period)
+	if rsi == nil {
+		return false
+	}
+
+	df.rsi = rsi
+	return true
+}
+
+func (df *DataFrame) AddMACD(inFastPeriod, inSlowPeriod, inSignalPeriod int) bool {
+	macd := NewMACD(df.Closes(), inFastPeriod, inSlowPeriod, inSignalPeriod)
+	if macd == nil {
+		return false
+	}
+
+	df.macd = macd
+	return true
+}
