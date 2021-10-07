@@ -13,6 +13,10 @@ type DataFrame struct {
 	backtestEvents *SignalEvents
 }
 
+func (df *DataFrame) ProductCode() string {
+	return df.productCode
+}
+
 func (df *DataFrame) Candles() []Candle {
 	return df.candles
 }
