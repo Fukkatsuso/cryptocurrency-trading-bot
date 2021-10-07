@@ -13,6 +13,10 @@ type DataFrame struct {
 	backtestEvents *SignalEvents
 }
 
+func (df *DataFrame) Candles() []Candle {
+	return df.candles
+}
+
 func (df *DataFrame) Times() []CandleTime {
 	s := make([]CandleTime, len(df.candles))
 	for i, candle := range df.candles {

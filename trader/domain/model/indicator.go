@@ -46,6 +46,14 @@ func NewEMA(inReal []float64, period int) *EMA {
 	}
 }
 
+func (ema *EMA) Period() int {
+	return ema.period
+}
+
+func (ema *EMA) Values() []float64 {
+	return ema.values
+}
+
 // ボリンジャーバンド
 type BBands struct {
 	n    int
@@ -73,6 +81,26 @@ func NewBBands(inReal []float64, n int, k float64) *BBands {
 		mid:  mid,
 		down: down,
 	}
+}
+
+func (bbands *BBands) N() int {
+	return bbands.n
+}
+
+func (bbands *BBands) K() float64 {
+	return bbands.k
+}
+
+func (bbands *BBands) Up() []float64 {
+	return bbands.up
+}
+
+func (bbands *BBands) Mid() []float64 {
+	return bbands.mid
+}
+
+func (bbands *BBands) Down() []float64 {
+	return bbands.down
 }
 
 // 一目均衡表
@@ -107,7 +135,7 @@ func min(x, y int) int {
 
 func NewIchimokuCloud(inReal []float64) *IchimokuCloud {
 	length := len(inReal)
-	if tenkanN := 9; tenkanN > length {
+	if length < 52 {
 		return nil
 	}
 
@@ -143,6 +171,26 @@ func NewIchimokuCloud(inReal []float64) *IchimokuCloud {
 	}
 }
 
+func (ichimokuCloud *IchimokuCloud) Tenkan() []float64 {
+	return ichimokuCloud.tenkan
+}
+
+func (ichimokuCloud *IchimokuCloud) Kijun() []float64 {
+	return ichimokuCloud.kijun
+}
+
+func (ichimokuCloud *IchimokuCloud) SenkouA() []float64 {
+	return ichimokuCloud.senkouA
+}
+
+func (ichimokuCloud *IchimokuCloud) SenkouB() []float64 {
+	return ichimokuCloud.senkouB
+}
+
+func (ichimokuCloud *IchimokuCloud) Chikou() []float64 {
+	return ichimokuCloud.chikou
+}
+
 // Relative Strength Index
 type RSI struct {
 	period int
@@ -160,6 +208,10 @@ func NewRSI(inReal []float64, period int) *RSI {
 		period: period,
 		values: values,
 	}
+}
+
+func (rsi *RSI) Values() []float64 {
+	return rsi.values
 }
 
 // Moving Average Convergence/Divergence: 移動平均・収束拡散
@@ -199,4 +251,16 @@ func NewMACD(inReal []float64, inFastPeriod, inSlowPeriod, inSignalPeriod int) *
 		macdSignal:   outMACDSignal,
 		macdHist:     outMACDHist,
 	}
+}
+
+func (macd *MACD) Macd() []float64 {
+	return macd.macd
+}
+
+func (macd *MACD) MacdSignal() []float64 {
+	return macd.macdSignal
+}
+
+func (macd *MACD) MacdHist() []float64 {
+	return macd.macdHist
 }
