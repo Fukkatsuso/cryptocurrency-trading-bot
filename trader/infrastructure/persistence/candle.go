@@ -66,6 +66,9 @@ func (cr candleRepository) FindByCandleTime(productCode string, duration time.Du
 	}
 
 	candle := model.NewCandle(productCode, duration, candleTime, candleOpen, candleClose, candleHigh, candleLow, candleVolume)
+	if candle == nil {
+		return nil, errors.New(fmt.Sprint("invalid candle:", productCode, duration, candleTime, candleOpen, candleClose, candleHigh, candleLow, candleVolume))
+	}
 	return candle, nil
 }
 
