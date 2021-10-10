@@ -6,21 +6,13 @@ import (
 
 type DataFrameService interface {
 	BacktestEMA(df *model.DataFrame, fastPeriod, slowPeriod int, size float64) *model.SignalEvents
-	OptimizeEMA(df *model.DataFrame, fastPeriod, slowPeriod int, size float64) (float64, int, int)
-
 	BacktestBBands(df *model.DataFrame, n int, k float64, size float64) *model.SignalEvents
-	OptimizeBBands(df *model.DataFrame, n int, k float64, size float64) (float64, int, float64)
-
 	BacktestIchimoku(df *model.DataFrame, size float64) *model.SignalEvents
-	OptimizeIchimoku(df *model.DataFrame, size float64) float64
-
 	BacktestRSI(df *model.DataFrame, period int, buyThread, sellThread float64, size float64) *model.SignalEvents
-	OptimizeRSI(df *model.DataFrame, period int, buyThread, sellThread float64, size float64) (float64, int, float64, float64)
-
 	BacktestMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) *model.SignalEvents
-	OptimizeMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) (float64, int, int, int)
 
 	Backtest(df *model.DataFrame, tp *model.TradeParams)
+	Analyze(df *model.DataFrame, at int, params *model.TradeParams) (int, int)
 }
 
 type dataFrameService struct {
@@ -64,29 +56,6 @@ func (ds *dataFrameService) BacktestEMA(df *model.DataFrame, fastPeriod, slowPer
 	return signalEvents
 }
 
-func (ds *dataFrameService) OptimizeEMA(df *model.DataFrame, fastPeriod, slowPeriod int, size float64) (float64, int, int) {
-	performance := float64(0)
-	bestFastPeriod := fastPeriod
-	bestSlowPeriod := slowPeriod
-
-	for fastPeriod = 5; fastPeriod < 11; fastPeriod++ {
-		for slowPeriod = 12; slowPeriod < 20; slowPeriod++ {
-			signalEvents := ds.BacktestEMA(df, fastPeriod, slowPeriod, size)
-			if signalEvents == nil {
-				continue
-			}
-			profit := signalEvents.EstimateProfit()
-			if performance < profit {
-				performance = profit
-				bestFastPeriod = fastPeriod
-				bestSlowPeriod = slowPeriod
-			}
-		}
-	}
-
-	return performance, bestFastPeriod, bestSlowPeriod
-}
-
 func (ds *dataFrameService) BacktestBBands(df *model.DataFrame, n int, k float64, size float64) *model.SignalEvents {
 	bbands := model.NewBBands(df.Closes(), n, k)
 	if bbands == nil {
@@ -112,29 +81,6 @@ func (ds *dataFrameService) BacktestBBands(df *model.DataFrame, n int, k float64
 	}
 
 	return signalEvents
-}
-
-func (ds *dataFrameService) OptimizeBBands(df *model.DataFrame, n int, k float64, size float64) (float64, int, float64) {
-	performance := float64(0)
-	bestN := n
-	bestK := k
-
-	for n := 10; n <= 30; n++ {
-		for k := 1.8; k <= 2.2; k += 0.1 {
-			signalEvents := ds.BacktestBBands(df, n, k, size)
-			if signalEvents == nil {
-				continue
-			}
-			profit := signalEvents.EstimateProfit()
-			if performance < profit {
-				performance = profit
-				bestN = n
-				bestK = k
-			}
-		}
-	}
-
-	return performance, bestN, bestK
 }
 
 func (ds *dataFrameService) BacktestIchimoku(df *model.DataFrame, size float64) *model.SignalEvents {
@@ -164,16 +110,6 @@ func (ds *dataFrameService) BacktestIchimoku(df *model.DataFrame, size float64) 
 	return signalEvents
 }
 
-func (ds *dataFrameService) OptimizeIchimoku(df *model.DataFrame, size float64) float64 {
-	signalEvents := ds.BacktestIchimoku(df, size)
-	if signalEvents == nil {
-		return 0
-	}
-	performance := signalEvents.EstimateProfit()
-
-	return performance
-}
-
 func (ds *dataFrameService) BacktestRSI(df *model.DataFrame, period int, buyThread, sellThread float64, size float64) *model.SignalEvents {
 	rsi := model.NewRSI(df.Closes(), period)
 	if rsi == nil {
@@ -201,32 +137,6 @@ func (ds *dataFrameService) BacktestRSI(df *model.DataFrame, period int, buyThre
 	return signalEvents
 }
 
-func (ds *dataFrameService) OptimizeRSI(df *model.DataFrame, period int, buyThread, sellThread float64, size float64) (float64, int, float64, float64) {
-	performance := float64(0)
-	bestPeriod := period
-	bestBuyThread, bestSellThread := buyThread, sellThread
-
-	for period := 3; period < 30; period++ {
-		for buyThread := float64(20); buyThread <= 40; buyThread++ {
-			for sellThread := float64(60); sellThread <= 80; sellThread++ {
-				signalEvents := ds.BacktestRSI(df, period, buyThread, sellThread, size)
-				if signalEvents == nil {
-					continue
-				}
-				profit := signalEvents.EstimateProfit()
-				if performance < profit {
-					performance = profit
-					bestPeriod = period
-					bestBuyThread = buyThread
-					bestSellThread = sellThread
-				}
-			}
-		}
-	}
-
-	return performance, bestPeriod, bestBuyThread, bestSellThread
-}
-
 func (ds *dataFrameService) BacktestMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) *model.SignalEvents {
 	macd := model.NewMACD(df.Closes(), fastPeriod, slowPeriod, signalPeriod)
 	if macd == nil {
@@ -252,33 +162,6 @@ func (ds *dataFrameService) BacktestMACD(df *model.DataFrame, fastPeriod, slowPe
 	}
 
 	return signalEvents
-}
-
-func (ds *dataFrameService) OptimizeMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) (float64, int, int, int) {
-	performance := float64(0)
-	bestFastPeriod := fastPeriod
-	bestSlowPeriod := slowPeriod
-	bestSignalPeriod := signalPeriod
-
-	for fastPeriod := 5; fastPeriod < 20; fastPeriod++ {
-		for slowPeriod := 20; slowPeriod < 40; slowPeriod++ {
-			for signalPeriod := 5; signalPeriod < 15; signalPeriod++ {
-				signalEvents := ds.BacktestMACD(df, fastPeriod, slowPeriod, signalPeriod, size)
-				if signalEvents == nil {
-					continue
-				}
-				profit := signalEvents.EstimateProfit()
-				if performance < profit {
-					performance = profit
-					bestFastPeriod = fastPeriod
-					bestSlowPeriod = slowPeriod
-					bestSignalPeriod = signalPeriod
-				}
-			}
-		}
-	}
-
-	return performance, bestFastPeriod, bestSlowPeriod, bestSignalPeriod
 }
 
 func (ds *dataFrameService) Backtest(df *model.DataFrame, params *model.TradeParams) {
