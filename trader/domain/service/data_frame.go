@@ -19,6 +19,8 @@ type DataFrameService interface {
 
 	BacktestMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) *model.SignalEvents
 	OptimizeMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) (float64, int, int, int)
+
+	Backtest(df *model.DataFrame, tp *model.TradeParams)
 }
 
 type dataFrameService struct {
@@ -181,14 +183,14 @@ func (ds *dataFrameService) BacktestRSI(df *model.DataFrame, period int, buyThre
 	signals := make([]model.SignalEvent, 0)
 	signalEvents := model.NewSignalEvents(signals)
 	for i, candle := range df.Candles() {
-		if ds.indicatorService.BuySignalOfRSI(rsi, buyThread, sellThread, i) {
+		if ds.indicatorService.BuySignalOfRSI(rsi, buyThread, i) {
 			signal := model.NewSignalEvent(candle.Time().Time(), df.ProductCode(), model.OrderSideBuy, candle.Close(), size)
 			if signal != nil {
 				signalEvents.AddBuySignal(*signal)
 			}
 		}
 
-		if ds.indicatorService.SellSignalOfRSI(rsi, buyThread, sellThread, i) {
+		if ds.indicatorService.SellSignalOfRSI(rsi, sellThread, i) {
 			signal := model.NewSignalEvent(candle.Time().Time(), df.ProductCode(), model.OrderSideSell, candle.Close(), size)
 			if signal != nil {
 				signalEvents.AddSellSignal(*signal)
@@ -277,4 +279,99 @@ func (ds *dataFrameService) OptimizeMACD(df *model.DataFrame, fastPeriod, slowPe
 	}
 
 	return performance, bestFastPeriod, bestSlowPeriod, bestSignalPeriod
+}
+
+func (ds *dataFrameService) Backtest(df *model.DataFrame, params *model.TradeParams) {
+	if df == nil || params == nil {
+		return
+	}
+
+	signals := make([]model.SignalEvent, 0)
+	signalEvents := model.NewSignalEvents(signals)
+	for i, candle := range df.Candles() {
+		buyPoint, sellPoint := ds.Analyze(df, i, params)
+
+		if buyPoint > 0 {
+			signal := model.NewSignalEvent(candle.Time().Time(), df.ProductCode(), model.OrderSideBuy, candle.Close(), params.Size())
+			if signal != nil {
+				signalEvents.AddBuySignal(*signal)
+			}
+		}
+
+		if sellPoint > 0 ||
+			signalEvents.ShouldCutLoss(candle.Close(), params.StopLimitPercent()) {
+			signal := model.NewSignalEvent(candle.Time().Time(), df.ProductCode(), model.OrderSideSell, candle.Close(), params.Size())
+			if signal != nil {
+				signalEvents.AddSellSignal(*signal)
+			}
+		}
+	}
+
+	signalEvents.EstimateProfit()
+
+	df.AddBacktestEvents(signalEvents)
+}
+
+// 各指標の時点"at"で分析する
+// buyPoint, sellPointを返す
+func (ds *dataFrameService) Analyze(df *model.DataFrame, at int, params *model.TradeParams) (int, int) {
+	buyPoint, sellPoint := 0, 0
+
+	if at <= 0 {
+		return buyPoint, sellPoint
+	}
+
+	if params.EMAEnable() &&
+		len(df.EMAs()) >= 2 {
+		emaFast := df.EMAs()[0]
+		emaSlow := df.EMAs()[1]
+		if ds.indicatorService.BuySignalOfEMA(&emaFast, &emaSlow, at) {
+			buyPoint++
+		}
+		if ds.indicatorService.SellSignalOfEMA(&emaFast, &emaSlow, at) {
+			sellPoint++
+		}
+	}
+
+	if params.BBandsEnable() {
+		bbands := df.BBands()
+		if ds.indicatorService.BuySignalOfBBands(bbands, df.Candles(), at) {
+			buyPoint++
+		}
+		if ds.indicatorService.SellSignalOfBBands(bbands, df.Candles(), at) {
+			sellPoint++
+		}
+	}
+
+	if params.IchimokuEnable() {
+		ichomoku := df.IchimokuCloud()
+		if ds.indicatorService.BuySignalOfIchimoku(ichomoku, df.Candles(), at) {
+			buyPoint++
+		}
+		if ds.indicatorService.SellSignalOfIchimoku(ichomoku, df.Candles(), at) {
+			sellPoint++
+		}
+	}
+
+	if params.RSIEnable() {
+		rsi := df.RSI()
+		if ds.indicatorService.BuySignalOfRSI(rsi, params.RSIBuyThread(), at) {
+			buyPoint++
+		}
+		if ds.indicatorService.SellSignalOfRSI(rsi, params.RSISellThread(), at) {
+			sellPoint++
+		}
+	}
+
+	if params.MACDEnable() {
+		macd := df.MACD()
+		if ds.indicatorService.BuySignalOfMACD(macd, at) {
+			buyPoint++
+		}
+		if ds.indicatorService.SellSignalOfMACD(macd, at) {
+			sellPoint++
+		}
+	}
+
+	return buyPoint, sellPoint
 }

@@ -9,8 +9,8 @@ type IndicatorService interface {
 	SellSignalOfBBands(bbands *model.BBands, candles []model.Candle, at int) bool
 	BuySignalOfIchimoku(ichimoku *model.IchimokuCloud, candles []model.Candle, at int) bool
 	SellSignalOfIchimoku(ichimoku *model.IchimokuCloud, candles []model.Candle, at int) bool
-	BuySignalOfRSI(rsi *model.RSI, buyThread, sellThread float64, at int) bool
-	SellSignalOfRSI(rsi *model.RSI, buyThread, sellThread float64, at int) bool
+	BuySignalOfRSI(rsi *model.RSI, buyThread float64, at int) bool
+	SellSignalOfRSI(rsi *model.RSI, sellThread float64, at int) bool
 	BuySignalOfMACD(macd *model.MACD, at int) bool
 	SellSignalOfMACD(macd *model.MACD, at int) bool
 }
@@ -89,7 +89,7 @@ func (is *indicatorService) SellSignalOfIchimoku(ichimoku *model.IchimokuCloud, 
 		ichimoku.Tenkan()[at] < ichimoku.Kijun()[at]
 }
 
-func (is *indicatorService) BuySignalOfRSI(rsi *model.RSI, buyThread, sellThread float64, at int) bool {
+func (is *indicatorService) BuySignalOfRSI(rsi *model.RSI, buyThread float64, at int) bool {
 	if at < 1 {
 		return false
 	}
@@ -98,7 +98,7 @@ func (is *indicatorService) BuySignalOfRSI(rsi *model.RSI, buyThread, sellThread
 		rsi.Values()[at] >= buyThread
 }
 
-func (is *indicatorService) SellSignalOfRSI(rsi *model.RSI, buyThread, sellThread float64, at int) bool {
+func (is *indicatorService) SellSignalOfRSI(rsi *model.RSI, sellThread float64, at int) bool {
 	if at < 1 {
 		return false
 	}

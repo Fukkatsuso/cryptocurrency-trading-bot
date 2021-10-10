@@ -62,6 +62,7 @@ func (s *SignalEvent) Size() float64 {
 
 type SignalEvents struct {
 	signals []SignalEvent
+	profit  float64
 }
 
 func NewSignalEvents(signals []SignalEvent) *SignalEvents {
@@ -71,6 +72,7 @@ func NewSignalEvents(signals []SignalEvent) *SignalEvents {
 
 	return &SignalEvents{
 		signals: signals,
+		profit:  0,
 	}
 }
 
@@ -81,6 +83,10 @@ func (s *SignalEvents) LastSignal() *SignalEvent {
 	}
 
 	return &s.signals[lenSignals-1]
+}
+
+func (s *SignalEvents) Profit() float64 {
+	return s.profit
 }
 
 func (s *SignalEvents) CanBuyAt(timeTime time.Time) bool {
@@ -148,8 +154,30 @@ func (s *SignalEvents) EstimateProfit() float64 {
 		}
 	}
 
+	var profit float64
 	if isHolding {
-		return beforeSell
+		profit = beforeSell
+	} else {
+		profit = total
 	}
-	return total
+
+	s.profit = profit
+	return profit
+}
+
+// 損切りすべきか判断する
+// 最近の買い注文の後
+func (s *SignalEvents) ShouldCutLoss(currentPrice, stopLimitPercent float64) bool {
+	if s == nil {
+		return false
+	}
+
+	lastSignal := s.LastSignal()
+	if lastSignal == nil ||
+		lastSignal.Side() != OrderSideBuy {
+		return false
+	}
+
+	stopLimit := lastSignal.Price() * stopLimitPercent
+	return currentPrice < stopLimit
 }

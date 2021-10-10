@@ -69,6 +69,30 @@ func (df *DataFrame) Volumes() []float64 {
 	return s
 }
 
+func (df *DataFrame) SMAs() []SMA {
+	return df.smas
+}
+
+func (df *DataFrame) EMAs() []EMA {
+	return df.emas
+}
+
+func (df *DataFrame) BBands() *BBands {
+	return df.bbands
+}
+
+func (df *DataFrame) IchimokuCloud() *IchimokuCloud {
+	return df.ichimokuCloud
+}
+
+func (df *DataFrame) RSI() *RSI {
+	return df.rsi
+}
+
+func (df *DataFrame) MACD() *MACD {
+	return df.macd
+}
+
 func (df *DataFrame) AddSMA(period int) bool {
 	if df.smas == nil {
 		df.smas = make([]SMA, 0)
@@ -135,4 +159,8 @@ func (df *DataFrame) AddMACD(inFastPeriod, inSlowPeriod, inSignalPeriod int) boo
 
 	df.macd = macd
 	return true
+}
+
+func (df *DataFrame) AddBacktestEvents(events *SignalEvents) {
+	df.backtestEvents = events
 }
