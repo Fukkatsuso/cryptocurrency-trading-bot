@@ -16,7 +16,7 @@ type candleUsecase struct {
 	tickerRepository repository.TickerRepository
 }
 
-func NewCandleUsecase(cs service.CandleService, tr repository.TickerRepository) *candleUsecase {
+func NewCandleUsecase(cs service.CandleService, tr repository.TickerRepository) CandleUsecase {
 	return &candleUsecase{
 		candleService:    cs,
 		tickerRepository: tr,
