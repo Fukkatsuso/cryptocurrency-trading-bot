@@ -110,6 +110,14 @@ func (t *Ticker) ProductCode() string {
 	return t.productCode
 }
 
+func (t *Ticker) BestAsk() float64 {
+	return t.bestAsk
+}
+
+func (t *Ticker) BestBid() float64 {
+	return t.bestBid
+}
+
 func (t *Ticker) Volume() float64 {
 	return t.volume
 }

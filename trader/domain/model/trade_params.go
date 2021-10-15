@@ -199,3 +199,27 @@ func (tp *TradeParams) MACDSignalPeriod() int {
 func (tp *TradeParams) StopLimitPercent() float64 {
 	return tp.stopLimitPercent
 }
+
+func (tp *TradeParams) EnableSMA(enable bool) {
+	tp.smaEnable = enable
+}
+
+func (tp *TradeParams) EnableEMA(enable bool) {
+	tp.emaEnable = enable
+}
+
+func (tp *TradeParams) EnableBBands(enable bool) {
+	tp.bbandsEnable = enable
+}
+
+func (tp *TradeParams) EnableIchimoku(enable bool) {
+	tp.ichimokuEnable = enable
+}
+
+func (tp *TradeParams) EnableRSI(enable bool) {
+	tp.rsiEnable = enable
+}
+
+func (tp *TradeParams) EnableMACD(enable bool) {
+	tp.macdEnable = enable
+}

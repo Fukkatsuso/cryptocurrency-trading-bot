@@ -55,3 +55,41 @@ type Order struct {
 	ExecutedSize           float64        `json:"executed_size"`
 	TotalCommission        float64        `json:"total_commission"`
 }
+
+func NewBuyOrder(productCode string, size float64) *Order {
+	if productCode == "" {
+		return nil
+	}
+
+	if size <= 0 {
+		return nil
+	}
+
+	return &Order{
+		ProductCode:     productCode,
+		ChildOrderType:  ChildOrderTypeMarket,
+		Side:            OrderSideBuy,
+		Size:            size,
+		MinuteToExpires: 2,
+		TimeInForce:     TimeInForceGTC,
+	}
+}
+
+func NewSellOrder(productCode string, size float64) *Order {
+	if productCode == "" {
+		return nil
+	}
+
+	if size <= 0 {
+		return nil
+	}
+
+	return &Order{
+		ProductCode:     productCode,
+		ChildOrderType:  ChildOrderTypeMarket,
+		Side:            OrderSideSell,
+		Size:            size,
+		MinuteToExpires: 2,
+		TimeInForce:     TimeInForceGTC,
+	}
+}

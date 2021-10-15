@@ -13,6 +13,18 @@ type DataFrame struct {
 	backtestEvents *SignalEvents
 }
 
+func NewDataFrame(productCode string, candles []Candle, events *SignalEvents) *DataFrame {
+	if productCode == "" {
+		return nil
+	}
+
+	return &DataFrame{
+		productCode: productCode,
+		candles:     candles,
+		events:      events,
+	}
+}
+
 func (df *DataFrame) ProductCode() string {
 	return df.productCode
 }

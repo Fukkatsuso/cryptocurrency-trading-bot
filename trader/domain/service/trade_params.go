@@ -1,28 +1,44 @@
 package service
 
-import "github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/domain/model"
+import (
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/domain/model"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/domain/repository"
+)
 
 type TradeParamsService interface {
-	OptimizeEMA(df *model.DataFrame, fastPeriod, slowPeriod int, size float64) (float64, int, int)
-	OptimizeBBands(df *model.DataFrame, n int, k float64, size float64) (float64, int, float64)
-	OptimizeIchimoku(df *model.DataFrame, size float64) float64
-	OptimizeRSI(df *model.DataFrame, period int, buyThread, sellThread float64, size float64) (float64, int, float64, float64)
-	OptimizeMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) (float64, int, int, int)
+	Save(params model.TradeParams) error
+	Find(productCode string) (*model.TradeParams, error)
 
-	OptimizeAll(df *model.DataFrame, params *model.TradeParams) *model.TradeParams
+	OptimizeEMA(df *model.DataFrame, fastPeriod, slowPeriod int, size float64) (float64, int, int, bool)
+	OptimizeBBands(df *model.DataFrame, n int, k float64, size float64) (float64, int, float64, bool)
+	OptimizeIchimoku(df *model.DataFrame, size float64) (float64, bool)
+	OptimizeRSI(df *model.DataFrame, period int, buyThread, sellThread float64, size float64) (float64, int, float64, float64, bool)
+	OptimizeMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) (float64, int, int, int, bool)
+
+	OptimizeAll(df *model.DataFrame, params *model.TradeParams) (*model.TradeParams, bool)
 }
 
 type tradeParamsService struct {
-	dataFrameService DataFrameService
+	tradeParamsRepository repository.TradeParamsRepository
+	dataFrameService      DataFrameService
 }
 
-func NewTradeParamsService(ds DataFrameService) TradeParamsService {
+func NewTradeParamsService(ts repository.TradeParamsRepository, ds DataFrameService) TradeParamsService {
 	return &tradeParamsService{
-		dataFrameService: ds,
+		tradeParamsRepository: ts,
+		dataFrameService:      ds,
 	}
 }
 
-func (ts *tradeParamsService) OptimizeEMA(df *model.DataFrame, fastPeriod, slowPeriod int, size float64) (float64, int, int) {
+func (ts *tradeParamsService) Save(params model.TradeParams) error {
+	return ts.tradeParamsRepository.Save(params)
+}
+
+func (ts *tradeParamsService) Find(productCode string) (*model.TradeParams, error) {
+	return ts.tradeParamsRepository.Find(productCode)
+}
+
+func (ts *tradeParamsService) OptimizeEMA(df *model.DataFrame, fastPeriod, slowPeriod int, size float64) (float64, int, int, bool) {
 	performance := float64(0)
 	bestFastPeriod := fastPeriod
 	bestSlowPeriod := slowPeriod
@@ -42,10 +58,13 @@ func (ts *tradeParamsService) OptimizeEMA(df *model.DataFrame, fastPeriod, slowP
 		}
 	}
 
-	return performance, bestFastPeriod, bestSlowPeriod
+	changed := fastPeriod != bestFastPeriod ||
+		slowPeriod != bestSlowPeriod
+
+	return performance, bestFastPeriod, bestSlowPeriod, changed
 }
 
-func (ts *tradeParamsService) OptimizeBBands(df *model.DataFrame, n int, k float64, size float64) (float64, int, float64) {
+func (ts *tradeParamsService) OptimizeBBands(df *model.DataFrame, n int, k float64, size float64) (float64, int, float64, bool) {
 	performance := float64(0)
 	bestN := n
 	bestK := k
@@ -65,20 +84,23 @@ func (ts *tradeParamsService) OptimizeBBands(df *model.DataFrame, n int, k float
 		}
 	}
 
-	return performance, bestN, bestK
+	changed := n != bestN ||
+		k != bestK
+
+	return performance, bestN, bestK, changed
 }
 
-func (ts *tradeParamsService) OptimizeIchimoku(df *model.DataFrame, size float64) float64 {
+func (ts *tradeParamsService) OptimizeIchimoku(df *model.DataFrame, size float64) (float64, bool) {
 	signalEvents := ts.dataFrameService.BacktestIchimoku(df, size)
 	if signalEvents == nil {
-		return 0
+		return 0, false
 	}
 	performance := signalEvents.EstimateProfit()
 
-	return performance
+	return performance, false
 }
 
-func (ts *tradeParamsService) OptimizeRSI(df *model.DataFrame, period int, buyThread, sellThread float64, size float64) (float64, int, float64, float64) {
+func (ts *tradeParamsService) OptimizeRSI(df *model.DataFrame, period int, buyThread, sellThread float64, size float64) (float64, int, float64, float64, bool) {
 	performance := float64(0)
 	bestPeriod := period
 	bestBuyThread, bestSellThread := buyThread, sellThread
@@ -101,10 +123,14 @@ func (ts *tradeParamsService) OptimizeRSI(df *model.DataFrame, period int, buyTh
 		}
 	}
 
-	return performance, bestPeriod, bestBuyThread, bestSellThread
+	changed := period != bestPeriod ||
+		buyThread != bestBuyThread ||
+		sellThread != bestSellThread
+
+	return performance, bestPeriod, bestBuyThread, bestSellThread, changed
 }
 
-func (ts *tradeParamsService) OptimizeMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) (float64, int, int, int) {
+func (ts *tradeParamsService) OptimizeMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) (float64, int, int, int, bool) {
 	performance := float64(0)
 	bestFastPeriod := fastPeriod
 	bestSlowPeriod := slowPeriod
@@ -128,14 +154,18 @@ func (ts *tradeParamsService) OptimizeMACD(df *model.DataFrame, fastPeriod, slow
 		}
 	}
 
-	return performance, bestFastPeriod, bestSlowPeriod, bestSignalPeriod
+	changed := fastPeriod != bestFastPeriod ||
+		slowPeriod != bestSlowPeriod ||
+		signalPeriod != bestSignalPeriod
+
+	return performance, bestFastPeriod, bestSlowPeriod, bestSignalPeriod, changed
 }
 
-func (ts *tradeParamsService) OptimizeAll(df *model.DataFrame, params *model.TradeParams) *model.TradeParams {
-	_, emaPeriod1, emaPeriod2 := ts.OptimizeEMA(df, params.EMAPeriod1(), params.EMAPeriod2(), params.Size())
-	_, bbandsN, bbandsK := ts.OptimizeBBands(df, params.BBandsN(), params.BBandsK(), params.Size())
-	_, rsiPeriod, rsiBuyThread, rsiSellThread := ts.OptimizeRSI(df, params.RSIPeriod(), params.RSIBuyThread(), params.RSISellThread(), params.Size())
-	_, macdFastPeriod, macdSlowPeriod, macdSignalPeriod := ts.OptimizeMACD(df, params.MACDFastPeriod(), params.MACDSlowPeriod(), params.MACDSignalPeriod(), params.Size())
+func (ts *tradeParamsService) OptimizeAll(df *model.DataFrame, params *model.TradeParams) (*model.TradeParams, bool) {
+	_, emaPeriod1, emaPeriod2, emaChanged := ts.OptimizeEMA(df, params.EMAPeriod1(), params.EMAPeriod2(), params.Size())
+	_, bbandsN, bbandsK, bbandsChanged := ts.OptimizeBBands(df, params.BBandsN(), params.BBandsK(), params.Size())
+	_, rsiPeriod, rsiBuyThread, rsiSellThread, rsiChanged := ts.OptimizeRSI(df, params.RSIPeriod(), params.RSIBuyThread(), params.RSISellThread(), params.Size())
+	_, macdFastPeriod, macdSlowPeriod, macdSignalPeriod, macdChanged := ts.OptimizeMACD(df, params.MACDFastPeriod(), params.MACDSlowPeriod(), params.MACDSignalPeriod(), params.Size())
 
 	newParams := model.NewTradeParams(
 		params.TradeEnable(),
@@ -163,5 +193,11 @@ func (ts *tradeParamsService) OptimizeAll(df *model.DataFrame, params *model.Tra
 		macdSignalPeriod,
 		params.StopLimitPercent(),
 	)
-	return newParams
+
+	changed := emaChanged &&
+		bbandsChanged &&
+		rsiChanged &&
+		macdChanged
+
+	return newParams, changed
 }
