@@ -58,6 +58,10 @@ func (bor *bitflyerOrderRepository) Send(order model.Order) (*model.Order, error
 	}
 
 	childOrderAcceptanceId := response.ChildOrderAcceptanceID
+	if childOrderAcceptanceId == "" {
+		return nil, errors.New("order send, but child_order_acceptance_id is none")
+	}
+
 	completedOrder := bor.waitUntilOrderComplete(order.ProductCode, childOrderAcceptanceId)
 	if completedOrder == nil {
 		return nil, errors.New("order is not completed")
