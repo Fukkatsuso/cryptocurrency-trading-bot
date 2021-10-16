@@ -35,6 +35,9 @@ func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
 	if err != nil {
 		return err
 	}
+	if !params.TradeEnable() {
+		return errors.New("trade is not enabled")
+	}
 
 	candles, err := ts.candleService.FindAll(productCode, int64(pastPeriod))
 	if err != nil {
