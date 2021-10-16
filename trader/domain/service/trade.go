@@ -12,8 +12,8 @@ import (
 
 type TradeService interface {
 	Trade(productCode string, pastPeriod int) error
-	Buy(productCode string, size float64, timeTime time.Time) error
-	Sell(productCode string, size float64, timeTime time.Time) error
+	Buy(events *model.SignalEvents, productCode string, size float64, timeTime time.Time) error
+	Sell(events *model.SignalEvents, productCode string, size float64, timeTime time.Time) error
 }
 
 type tradeService struct {
@@ -41,7 +41,6 @@ func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
 		return err
 	}
 
-	// Buy, Sellメソッドで再度呼ばれてしまうので，eventsを含んだdfごと引数で受け取るべきかも
 	events, err := ts.signalEventService.FindAll(productCode)
 	if err != nil {
 		return err
@@ -80,7 +79,7 @@ func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
 
 	if buyPoint > 0 {
 		nowTime := time.Now().UTC()
-		err := ts.Buy(productCode, params.Size(), nowTime)
+		err := ts.Buy(events, productCode, params.Size(), nowTime)
 		if err != nil {
 			return err
 		}
@@ -90,7 +89,7 @@ func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
 	if sellPoint > 0 ||
 		events.ShouldCutLoss(currentPrice, params.StopLimitPercent()) {
 		nowTime := time.Now().UTC()
-		err := ts.Sell(productCode, params.Size(), nowTime)
+		err := ts.Sell(events, productCode, params.Size(), nowTime)
 		if err != nil {
 			return err
 		}
@@ -109,13 +108,8 @@ func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
 	return nil
 }
 
-func (ts *tradeService) Buy(productCode string, size float64, timeTime time.Time) error {
-	signalEvents, err := ts.signalEventService.FindAll(productCode)
-	if err != nil {
-		return err
-	}
-
-	if !signalEvents.CanBuyAt(timeTime) {
+func (ts *tradeService) Buy(events *model.SignalEvents, productCode string, size float64, timeTime time.Time) error {
+	if !events.CanBuyAt(timeTime) {
 		return errors.New("[Buy] can't buy due to signal_event's history")
 	}
 
@@ -160,7 +154,7 @@ func (ts *tradeService) Buy(productCode string, size float64, timeTime time.Time
 	if signalEvent == nil {
 		return errors.New("[Buy] order send, but signal_event is nil")
 	}
-	signalEvents.AddBuySignal(*signalEvent)
+	events.AddBuySignal(*signalEvent)
 
 	// SingalEventをDBに保存
 	err = ts.signalEventService.Save(*signalEvent)
@@ -171,13 +165,8 @@ func (ts *tradeService) Buy(productCode string, size float64, timeTime time.Time
 	return nil
 }
 
-func (ts *tradeService) Sell(productCode string, size float64, timeTime time.Time) error {
-	signalEvents, err := ts.signalEventService.FindAll(productCode)
-	if err != nil {
-		return err
-	}
-
-	if !signalEvents.CanSellAt(timeTime) {
+func (ts *tradeService) Sell(events *model.SignalEvents, productCode string, size float64, timeTime time.Time) error {
+	if !events.CanSellAt(timeTime) {
 		return errors.New("[Sell] can't sell due to signal_event's history")
 	}
 
@@ -215,7 +204,7 @@ func (ts *tradeService) Sell(productCode string, size float64, timeTime time.Tim
 	if signalEvent == nil {
 		return errors.New("[Sell] order send, but signal_event is nil")
 	}
-	signalEvents.AddSellSignal(*signalEvent)
+	events.AddSellSignal(*signalEvent)
 
 	// SingalEventをDBに保存
 	err = ts.signalEventService.Save(*signalEvent)
