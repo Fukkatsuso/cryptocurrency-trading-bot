@@ -6,5 +6,5 @@ import (
 
 type NotificationRepository interface {
 	NotifyOfTradingSuccess(event model.SignalEvent) error
-	NotifyOfTradingFailure(producCode string, err error) error
+	NotifyOfTradingFailure(productCode string, err error) error
 }
