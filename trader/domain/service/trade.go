@@ -48,8 +48,12 @@ func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
 	if err != nil {
 		return err
 	}
+	signalEvents := model.NewSignalEvents(events)
+	if signalEvents == nil {
+		return errors.New("can't make a SignalEvents instance")
+	}
 
-	df := model.NewDataFrame(productCode, candles, events)
+	df := model.NewDataFrame(productCode, candles, signalEvents)
 
 	if params.EMAEnable() {
 		ok1 := df.AddEMA(params.EMAPeriod1())
@@ -82,7 +86,7 @@ func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
 
 	if buyPoint > 0 {
 		nowTime := time.Now().UTC()
-		err := ts.Buy(events, productCode, params.Size(), nowTime)
+		err := ts.Buy(signalEvents, productCode, params.Size(), nowTime)
 		if err != nil {
 			return err
 		}
@@ -90,9 +94,9 @@ func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
 
 	currentPrice := candles[now].Close()
 	if sellPoint > 0 ||
-		events.ShouldCutLoss(currentPrice, params.StopLimitPercent()) {
+		signalEvents.ShouldCutLoss(currentPrice, params.StopLimitPercent()) {
 		nowTime := time.Now().UTC()
-		err := ts.Sell(events, productCode, params.Size(), nowTime)
+		err := ts.Sell(signalEvents, productCode, params.Size(), nowTime)
 		if err != nil {
 			return err
 		}
