@@ -17,13 +17,13 @@ type TradeService interface {
 }
 
 type tradeService struct {
-	candleService      CandleService
-	dataFrameService   DataFrameService
-	tradeParamsService TradeParamsService
-	signalEventService SignalEventService
-	balanceRepository  repository.BalanceRepository
-	tickerRepository   repository.TickerRepository
-	orderRepository    repository.OrderRepository
+	candleService         CandleService
+	dataFrameService      DataFrameService
+	tradeParamsService    TradeParamsService
+	signalEventRepository repository.SignalEventRepository
+	balanceRepository     repository.BalanceRepository
+	tickerRepository      repository.TickerRepository
+	orderRepository       repository.OrderRepository
 }
 
 func NewTradeService() TradeService {
@@ -44,7 +44,7 @@ func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
 		return err
 	}
 
-	events, err := ts.signalEventService.FindAll(productCode)
+	events, err := ts.signalEventRepository.FindAll(productCode)
 	if err != nil {
 		return err
 	}
@@ -164,7 +164,7 @@ func (ts *tradeService) Buy(events *model.SignalEvents, productCode string, size
 	events.AddBuySignal(*signalEvent)
 
 	// SingalEventをDBに保存
-	err = ts.signalEventService.Save(*signalEvent)
+	err = ts.signalEventRepository.Save(*signalEvent)
 	if err != nil {
 		return err
 	}
@@ -214,7 +214,7 @@ func (ts *tradeService) Sell(events *model.SignalEvents, productCode string, siz
 	events.AddSellSignal(*signalEvent)
 
 	// SingalEventをDBに保存
-	err = ts.signalEventService.Save(*signalEvent)
+	err = ts.signalEventRepository.Save(*signalEvent)
 	if err != nil {
 		return err
 	}
