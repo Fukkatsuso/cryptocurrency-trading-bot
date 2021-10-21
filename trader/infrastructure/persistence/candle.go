@@ -34,10 +34,10 @@ func (cr candleRepository) Save(candle model.Candle) error {
         VALUES
             (?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
-            open = VALUES(open)
-            close = VALUES(close)
-            high = VALUES(high)
-            low = VALUES(low)
+            open = VALUES(open),
+            close = VALUES(close),
+            high = VALUES(high),
+            low = VALUES(low),
             volume = VALUES(volume)
         `,
 		cr.candleTableName,
@@ -84,7 +84,7 @@ func (cr candleRepository) FindAll(productCode string, duration time.Duration, l
             ORDER BY
                 time DESC
             LIMIT ?
-        )
+        ) AS candle
         ORDER BY
             time ASC
         `,
