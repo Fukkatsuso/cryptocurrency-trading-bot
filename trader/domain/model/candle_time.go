@@ -30,8 +30,8 @@ func (candleTime CandleTime) Format(layout string) string {
 	return candleTime.Time().Format(layout)
 }
 
-func (candleTime CandleTime) Equal(compateTime CandleTime) bool {
-	return candleTime.Time().Equal(candleTime.Time())
+func (candleTime CandleTime) Equal(compareTime CandleTime) bool {
+	return candleTime.Time().Equal(compareTime.Time())
 }
 
 // hour時を境に切り捨てた時間
