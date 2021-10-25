@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -16,7 +15,6 @@ func NewCandleTime(timeTime time.Time) CandleTime {
 func NewCandleTimeByString(timeString string) CandleTime {
 	timeTime, err := time.Parse("2006-01-02T15:04:05", timeString)
 	if err != nil {
-		fmt.Println("[DateTimeUTC]", err)
 		return NewCandleTime(time.Time{})
 	}
 	return NewCandleTime(timeTime)
