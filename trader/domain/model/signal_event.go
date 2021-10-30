@@ -116,7 +116,7 @@ func (s *SignalEvents) AddBuySignal(signal SignalEvent) bool {
 		return false
 	}
 
-	if s.CanBuyAt(signal.time) {
+	if !s.CanBuyAt(signal.time) {
 		return false
 	}
 
@@ -129,7 +129,7 @@ func (s *SignalEvents) AddSellSignal(signal SignalEvent) bool {
 		return false
 	}
 
-	if s.CanSellAt(signal.time) {
+	if !s.CanSellAt(signal.time) {
 		return false
 	}
 
