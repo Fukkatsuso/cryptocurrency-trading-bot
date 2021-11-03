@@ -46,7 +46,7 @@ func newSignalEvents() []model.SignalEvent {
 }
 
 func TestSignalEvent(t *testing.T) {
-	tx := NewMySQLTransaction(config.DSN())
+	tx := persistence.NewMySQLTransaction(config.DSN())
 	defer tx.Rollback()
 
 	signalEventRepository := persistence.NewSignalEventRepository(tx, config.TimeFormat)

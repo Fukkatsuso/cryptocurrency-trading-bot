@@ -126,7 +126,7 @@ func newTradeParamsList() []model.TradeParams {
 }
 
 func TestTradeParams(t *testing.T) {
-	tx := NewMySQLTransaction(config.DSN())
+	tx := persistence.NewMySQLTransaction(config.DSN())
 	defer tx.Rollback()
 
 	tradeParamsRepository := persistence.NewTradeParamsRepository(tx)

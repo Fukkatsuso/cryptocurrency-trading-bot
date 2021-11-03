@@ -41,7 +41,7 @@ func newCandles() []model.Candle {
 }
 
 func TestCandle(t *testing.T) {
-	tx := NewMySQLTransaction(config.DSN())
+	tx := persistence.NewMySQLTransaction(config.DSN())
 	defer tx.Rollback()
 
 	candleRepository := persistence.NewCandleRepository(tx, config.CandleTableName, config.TimeFormat)
