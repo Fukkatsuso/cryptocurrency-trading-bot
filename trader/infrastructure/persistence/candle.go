@@ -1,6 +1,7 @@
 package persistence
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -61,6 +62,10 @@ func (cr candleRepository) FindByCandleTime(productCode string, duration time.Du
 
 	var candleOpen, candleClose, candleHigh, candleLow, candleVolume float64
 	err := row.Scan(&candleOpen, &candleClose, &candleHigh, &candleLow, &candleVolume)
+	// 発見できなかったらそのままnilを返す
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}

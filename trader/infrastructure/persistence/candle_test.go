@@ -78,6 +78,18 @@ func TestCandle(t *testing.T) {
 		if c1 != *c2 {
 			t.Fatalf("%+v != %+v", c1, *c2)
 		}
+
+		c3, err := candleRepository.FindByCandleTime(
+			c1.ProductCode(),
+			c1.Duration(),
+			model.NewCandleTime(time.Date(2200, 1, 1, 0, 0, 0, 0, time.UTC)),
+		)
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+		if c3 != nil {
+			t.Fatal("FindByCandleTime() should return nil")
+		}
 	})
 
 	t.Run("update candle", func(t *testing.T) {
