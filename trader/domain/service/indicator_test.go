@@ -10,9 +10,6 @@ import (
 )
 
 func TestIndicatorService(t *testing.T) {
-	tx := persistence.NewMySQLTransaction(config.DSN())
-	defer tx.Rollback()
-
 	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat)
 	candles, err := candleRepository.FindAll(config.ProductCode, config.CandleDuration, -1)
 	if err != nil {
