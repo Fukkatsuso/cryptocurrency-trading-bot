@@ -105,6 +105,10 @@ func (df *DataFrame) MACD() *MACD {
 	return df.macd
 }
 
+func (df *DataFrame) BacktestEvents() *SignalEvents {
+	return df.backtestEvents
+}
+
 func (df *DataFrame) AddSMA(period int) bool {
 	if df.smas == nil {
 		df.smas = make([]SMA, 0)

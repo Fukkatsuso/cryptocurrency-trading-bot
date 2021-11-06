@@ -85,6 +85,10 @@ func (s *SignalEvents) LastSignal() *SignalEvent {
 	return &s.signals[lenSignals-1]
 }
 
+func (s *SignalEvents) Signals() []SignalEvent {
+	return s.signals
+}
+
 func (s *SignalEvents) Profit() float64 {
 	return s.profit
 }
