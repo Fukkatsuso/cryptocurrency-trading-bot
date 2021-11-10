@@ -9,13 +9,10 @@ import (
 )
 
 type bitflyerOrderMockRepository struct {
-	apiClient *Client
 }
 
-func NewBitflyerOrderMockRepository(apiClient *Client) repository.OrderRepository {
-	return &bitflyerOrderRepository{
-		apiClient: apiClient,
-	}
+func NewBitflyerOrderMockRepository() repository.OrderRepository {
+	return &bitflyerOrderRepository{}
 }
 
 func (bor *bitflyerOrderMockRepository) Send(order model.Order) (*model.Order, error) {

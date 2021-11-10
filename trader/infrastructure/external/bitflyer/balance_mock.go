@@ -8,13 +8,10 @@ import (
 )
 
 type bitflyerBalanceMockRepository struct {
-	apiClient *Client
 }
 
-func NewBitFlyerBalanceMockRepository(apiClient *Client) repository.BalanceRepository {
-	return &bitflyerBalanceRepository{
-		apiClient: apiClient,
-	}
+func NewBitFlyerBalanceMockRepository() repository.BalanceRepository {
+	return &bitflyerBalanceRepository{}
 }
 
 func (bbr *bitflyerBalanceMockRepository) FetchAll() ([]model.Balance, error) {

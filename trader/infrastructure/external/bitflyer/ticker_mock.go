@@ -9,13 +9,10 @@ import (
 )
 
 type bitflyerTickerMockRepository struct {
-	apiClient *Client
 }
 
-func NewBitflyerTickerMockRepository(apiClient *Client) repository.TickerRepository {
-	return &bitflyerTickerRepository{
-		apiClient: apiClient,
-	}
+func NewBitflyerTickerMockRepository() repository.TickerRepository {
+	return &bitflyerTickerRepository{}
 }
 
 func (btr *bitflyerTickerMockRepository) Fetch(productCode string) (*model.Ticker, error) {
