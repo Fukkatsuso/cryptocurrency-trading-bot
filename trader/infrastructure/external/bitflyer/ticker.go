@@ -21,6 +21,8 @@ const (
 	BoardStateMatured      BoardState = "MATURED"       // Lightning Futures の満期に到達
 )
 
+const TimestampFormat = "2006-01-02T15:04:05"
+
 type Ticker struct {
 	ProductCode     string     `json:"product_code"`
 	State           BoardState `json:"state"`
