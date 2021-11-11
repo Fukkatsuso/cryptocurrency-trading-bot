@@ -12,7 +12,7 @@ type bitflyerOrderMockRepository struct {
 }
 
 func NewBitflyerOrderMockRepository() repository.OrderRepository {
-	return &bitflyerOrderRepository{}
+	return &bitflyerOrderMockRepository{}
 }
 
 func (bor *bitflyerOrderMockRepository) Send(order model.Order) (*model.Order, error) {

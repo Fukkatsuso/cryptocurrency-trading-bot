@@ -12,7 +12,7 @@ type bitflyerTickerMockRepository struct {
 }
 
 func NewBitflyerTickerMockRepository() repository.TickerRepository {
-	return &bitflyerTickerRepository{}
+	return &bitflyerTickerMockRepository{}
 }
 
 func (btr *bitflyerTickerMockRepository) Fetch(productCode string) (*model.Ticker, error) {

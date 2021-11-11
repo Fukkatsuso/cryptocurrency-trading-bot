@@ -11,7 +11,7 @@ type bitflyerBalanceMockRepository struct {
 }
 
 func NewBitFlyerBalanceMockRepository() repository.BalanceRepository {
-	return &bitflyerBalanceRepository{}
+	return &bitflyerBalanceMockRepository{}
 }
 
 func (bbr *bitflyerBalanceMockRepository) FetchAll() ([]model.Balance, error) {
