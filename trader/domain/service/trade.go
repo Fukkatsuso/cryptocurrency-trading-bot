@@ -17,17 +17,33 @@ type TradeService interface {
 }
 
 type tradeService struct {
-	candleService         CandleService
-	dataFrameService      DataFrameService
-	tradeParamsService    TradeParamsService
-	signalEventRepository repository.SignalEventRepository
 	balanceRepository     repository.BalanceRepository
 	tickerRepository      repository.TickerRepository
 	orderRepository       repository.OrderRepository
+	signalEventRepository repository.SignalEventRepository
+	candleService         CandleService
+	dataFrameService      DataFrameService
+	tradeParamsService    TradeParamsService
 }
 
-func NewTradeService() TradeService {
-	return &tradeService{}
+func NewTradeService(
+	br repository.BalanceRepository,
+	tr repository.TickerRepository,
+	or repository.OrderRepository,
+	sr repository.SignalEventRepository,
+	cs CandleService,
+	ds DataFrameService,
+	ts TradeParamsService,
+) TradeService {
+	return &tradeService{
+		balanceRepository:     br,
+		tickerRepository:      tr,
+		orderRepository:       or,
+		signalEventRepository: sr,
+		candleService:         cs,
+		dataFrameService:      ds,
+		tradeParamsService:    ts,
+	}
 }
 
 func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
