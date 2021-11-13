@@ -3,7 +3,6 @@ package persistence
 import (
 	"context"
 	"encoding/csv"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -61,7 +60,7 @@ func (cr *candleMockRepository) FindByCandleTime(productCode string, duration ti
 		}
 	}
 
-	return nil, errors.New("cannot find candle by time")
+	return nil, nil
 }
 
 func (cr *candleMockRepository) FindAll(productCode string, duration time.Duration, limit int64) ([]model.Candle, error) {
