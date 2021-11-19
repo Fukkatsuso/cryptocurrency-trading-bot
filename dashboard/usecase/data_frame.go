@@ -15,8 +15,12 @@ type dataFrameUsecase struct {
 	dataFrameService   service.DataFrameService
 }
 
-func NewCandleUsecase() DataFrameUsecase {
-	return &dataFrameUsecase{}
+func NewCandleUsecase(cs service.CandleService, ss service.SignalEventService, ds service.DataFrameService) DataFrameUsecase {
+	return &dataFrameUsecase{
+		candleService:      cs,
+		signalEventService: ss,
+		dataFrameService:   ds,
+	}
 }
 
 func (du *dataFrameUsecase) Get(params *model.TradeParams, candleLimit int64, backtestEnable bool) (*model.DataFrame, error) {
