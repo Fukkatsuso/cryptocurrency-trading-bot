@@ -15,7 +15,7 @@ type dataFrameUsecase struct {
 	dataFrameService   service.DataFrameService
 }
 
-func NewCandleUsecase(cs service.CandleService, ss service.SignalEventService, ds service.DataFrameService) DataFrameUsecase {
+func NewDataFrameUsecase(cs service.CandleService, ss service.SignalEventService, ds service.DataFrameService) DataFrameUsecase {
 	return &dataFrameUsecase{
 		candleService:      cs,
 		signalEventService: ss,
