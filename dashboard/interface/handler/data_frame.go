@@ -9,7 +9,9 @@ import (
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/usecase"
 )
 
-type DataFrameHandler interface{}
+type DataFrameHandler interface {
+	Get(productCode string, tradeSize float64) http.HandlerFunc
+}
 
 type dataFrameHandler struct {
 	dataFrameUsecase usecase.DataFrameUsecase
