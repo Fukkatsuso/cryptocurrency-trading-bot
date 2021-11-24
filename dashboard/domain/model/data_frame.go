@@ -81,6 +81,10 @@ func (df *DataFrame) Volumes() []float64 {
 	return s
 }
 
+func (df *DataFrame) Events() *SignalEvents {
+	return df.events
+}
+
 func (df *DataFrame) SMAs() []SMA {
 	return df.smas
 }

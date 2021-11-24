@@ -24,6 +24,14 @@ func NewSMA(inReal []float64, period int) *SMA {
 	}
 }
 
+func (sma *SMA) Period() int {
+	return sma.period
+}
+
+func (sma *SMA) Values() []float64 {
+	return sma.values
+}
+
 // 指数平滑移動平均線
 type EMA struct {
 	period int
@@ -210,6 +218,10 @@ func NewRSI(inReal []float64, period int) *RSI {
 	}
 }
 
+func (rsi *RSI) Period() int {
+	return rsi.period
+}
+
 func (rsi *RSI) Values() []float64 {
 	return rsi.values
 }
@@ -251,6 +263,18 @@ func NewMACD(inReal []float64, inFastPeriod, inSlowPeriod, inSignalPeriod int) *
 		macdSignal:   outMACDSignal,
 		macdHist:     outMACDHist,
 	}
+}
+
+func (macd *MACD) FastPeriod() int {
+	return macd.fastPeriod
+}
+
+func (macd *MACD) SlowPeriod() int {
+	return macd.slowPeriod
+}
+
+func (macd *MACD) SignalPeriod() int {
+	return macd.signalPeriod
 }
 
 func (macd *MACD) Macd() []float64 {
