@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/domain/model"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/interface/handler/dto"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/usecase"
 )
 
@@ -39,7 +40,10 @@ func (dh *dataFrameHandler) Get(productCode string, tradeSize float64) http.Hand
 			return
 		}
 
-		js, err := json.Marshal(df)
+		// jsonに変換できるように入れ替える
+		dto := dto.ConvertDataFrame(df)
+
+		js, err := json.Marshal(dto)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
