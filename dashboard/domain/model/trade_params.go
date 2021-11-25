@@ -43,32 +43,37 @@ func NewTradeParams(tradeEnable bool, productCode string, size float64,
 		return nil
 	}
 
-	if smaPeriod1 <= 0 ||
-		smaPeriod2 <= 0 ||
-		smaPeriod3 <= 0 {
+	if smaEnable &&
+		(smaPeriod1 <= 0 ||
+			smaPeriod2 <= 0 ||
+			smaPeriod3 <= 0) {
 		return nil
 	}
 
-	if emaPeriod1 <= 0 ||
-		emaPeriod2 <= 0 ||
-		emaPeriod3 <= 0 {
+	if emaEnable &&
+		(emaPeriod1 <= 0 ||
+			emaPeriod2 <= 0 ||
+			emaPeriod3 <= 0) {
 		return nil
 	}
 
-	if bbandsN <= 0 ||
-		bbandsK <= 0 {
+	if bbandsEnable &&
+		(bbandsN <= 0 ||
+			bbandsK <= 0) {
 		return nil
 	}
 
-	if rsiPeriod <= 0 ||
-		rsiBuyThread < 0 || 100 < rsiBuyThread ||
-		rsiSellThread < 0 || 100 < rsiSellThread {
+	if rsiEnable &&
+		(rsiPeriod <= 0 ||
+			rsiBuyThread < 0 || 100 < rsiBuyThread ||
+			rsiSellThread < 0 || 100 < rsiSellThread) {
 		return nil
 	}
 
-	if macdFastPeriod <= 0 ||
-		macdSlowPeriod <= 0 ||
-		macdSignalPeriod <= 0 {
+	if macdEnable &&
+		(macdFastPeriod <= 0 ||
+			macdSlowPeriod <= 0 ||
+			macdSignalPeriod <= 0) {
 		return nil
 	}
 
