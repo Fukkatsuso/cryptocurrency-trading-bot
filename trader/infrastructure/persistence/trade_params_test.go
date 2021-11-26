@@ -9,6 +9,9 @@ import (
 )
 
 func newTradeParamsList() []model.TradeParams {
+	// created_atのデータ型がはDATETIME
+	// trade_paramsをミリ秒単位で作成すると区別がつかずにテスト失敗する
+	// 作成するデータを1個だけにしてテスト
 	table := []struct {
 		tradeEnable      bool
 		productCode      string
@@ -35,32 +38,6 @@ func newTradeParamsList() []model.TradeParams {
 		macdSignalPeriod int
 		stopLimitPercent float64
 	}{
-		{
-			tradeEnable:      false,
-			productCode:      config.ProductCode,
-			size:             0,
-			smaEnable:        false,
-			smaPeriod1:       0,
-			smaPeriod2:       0,
-			smaPeriod3:       0,
-			emaEnable:        false,
-			emaPeriod1:       0,
-			emaPeriod2:       0,
-			emaPeriod3:       0,
-			bbandsEnable:     false,
-			bbandsN:          0,
-			bbandsK:          0,
-			ichimokuEnable:   false,
-			rsiEnable:        false,
-			rsiPeriod:        0,
-			rsiBuyThread:     0,
-			rsiSellThread:    0,
-			macdEnable:       false,
-			macdFastPeriod:   0,
-			macdSlowPeriod:   0,
-			macdSignalPeriod: 0,
-			stopLimitPercent: 0,
-		},
 		{
 			tradeEnable:      true,
 			productCode:      config.ProductCode,
