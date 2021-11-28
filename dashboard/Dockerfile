@@ -10,19 +10,19 @@ EXPOSE 8080
 
 WORKDIR /go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard
 
+COPY go.* ./
+RUN go mod download
+
 
 FROM base AS dev
 
-RUN go get -v github.com/pilu/fresh
+RUN go install github.com/pilu/fresh
 
 CMD [ "fresh" ]
 
 
 # 参考: https://cloud.google.com/run/docs/quickstarts/build-and-deploy?hl=ja#containerizing
 FROM base AS builder
-
-COPY go.* ./
-RUN go mod download
 
 COPY . ./
 
