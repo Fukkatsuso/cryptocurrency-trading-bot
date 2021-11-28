@@ -2,11 +2,11 @@ package router
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"os"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/config"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/controller"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/domain/service"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/infrastructure/persistence"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/interface/handler"
@@ -14,7 +14,7 @@ import (
 )
 
 func Run() {
-	http.HandleFunc("/", controller.IndexPageHandler)
+	http.HandleFunc("/", IndexPageHandler)
 	http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("view/"))))
 
 	// repository
@@ -45,5 +45,12 @@ func Run() {
 	fmt.Printf("listening on port %s\n", port)
 	if err := http.ListenAndServe(":"+port, logger(http.DefaultServeMux)); err != nil {
 		fmt.Println(err)
+	}
+}
+
+func IndexPageHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("view/index.html"))
+	if err := tmpl.Execute(w, nil); err != nil {
+		fmt.Println("[IndexPageHandler]", err)
 	}
 }
