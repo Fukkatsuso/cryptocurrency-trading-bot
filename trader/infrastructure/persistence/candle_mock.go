@@ -88,6 +88,10 @@ func (cr *candleMockRepository) FindByCandleTime(productCode string, duration ti
 }
 
 func (cr *candleMockRepository) FindAll(productCode string, duration time.Duration, limit int64) ([]model.Candle, error) {
+	if limit < 0 {
+		return cr.candles, nil
+	}
+
 	if lenCandles := int64(len(cr.candles)); lenCandles > limit {
 		return cr.candles[lenCandles-limit:], nil
 	}
