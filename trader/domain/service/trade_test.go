@@ -19,7 +19,7 @@ func TestTradeService(t *testing.T) {
 	tickerRepository := bitflyer.NewBitflyerTickerMockRepository()
 	orderRepository := bitflyer.NewBitflyerOrderMockRepository()
 	signalEventRepository := persistence.NewSignalEventRepository(tx, config.TimeFormat)
-	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat)
+	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat, config.ProductCode, config.CandleDuration)
 	tradeParamsRepository := persistence.NewTradeParamsRepository(tx)
 
 	candleService := service.NewCandleServicePerDay(config.LocalTime, config.TradeHour, candleRepository)
