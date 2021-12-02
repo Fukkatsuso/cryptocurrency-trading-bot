@@ -13,7 +13,7 @@ func TestTradeParamsService(t *testing.T) {
 	tx := persistence.NewMySQLTransaction(config.DSN())
 	defer tx.Rollback()
 
-	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat)
+	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat, config.ProductCode, config.CandleDuration)
 	candles, err := candleRepository.FindAll(config.ProductCode, config.CandleDuration, -1)
 	if err != nil {
 		t.Fatal(err.Error())

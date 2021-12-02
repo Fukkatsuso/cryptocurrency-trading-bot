@@ -8,7 +8,7 @@ import (
 )
 
 func TestCandleMock(t *testing.T) {
-	cr := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat)
+	cr := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat, config.ProductCode, config.CandleDuration)
 
 	t.Run("find all candle", func(t *testing.T) {
 		candles, err := cr.FindAll(config.ProductCode, config.CandleDuration, 10)
