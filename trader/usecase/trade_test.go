@@ -17,7 +17,7 @@ func TestTradeUsecase(t *testing.T) {
 	defer tx.Rollback()
 
 	signalEventRepository := persistence.NewSignalEventRepository(tx, config.TimeFormat)
-	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat)
+	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat, config.ProductCode, config.CandleDuration)
 	tradeParamsRepository := persistence.NewTradeParamsRepository(tx)
 	balanceRepository := bitflyer.NewBitFlyerBalanceMockRepository()
 	tickerRepository := bitflyer.NewBitflyerTickerMockRepository()

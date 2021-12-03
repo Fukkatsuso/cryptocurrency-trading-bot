@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"sort"
 	"strconv"
 	"time"
 
@@ -18,20 +19,34 @@ import (
 
 // モックデータ
 // というよりは，本番DBからエクスポートされた価格データファイルを取得する
+// candleTableNameも固定するのでproductCodeとdurationも固定することにする
 type candleMockRepository struct {
 	candleTableName string
 	timeFormat      string
+	productCode     string
+	duration        time.Duration
+	candles         []model.Candle
 }
 
-func NewCandleMockRepository(candleTableName, timeFormat string) repository.CandleRepository {
+func NewCandleMockRepository(candleTableName, timeFormat, productCode string, duration time.Duration) repository.CandleRepository {
 	if candleTableName == "" {
 		return nil
 	}
 
-	return &candleMockRepository{
+	cr := &candleMockRepository{
 		candleTableName: candleTableName,
 		timeFormat:      timeFormat,
+		productCode:     productCode,
+		duration:        duration,
 	}
+
+	candles, err := cr.fetchAll(productCode, duration)
+	if err != nil {
+		return nil
+	}
+	cr.candles = candles
+
+	return cr
 }
 
 const (
@@ -45,16 +60,25 @@ var (
 )
 
 func (cr *candleMockRepository) Save(candle model.Candle) error {
+	for i, candle := range cr.candles {
+		if candle.Time().Equal(candle.Time()) {
+			cr.candles[i] = candle
+			return nil
+		}
+	}
+
+	cr.candles = append(cr.candles, candle)
+	sort.Slice(cr.candles, func(i, j int) bool {
+		timeBefore := cr.candles[i].Time().Time()
+		timeAfter := cr.candles[j].Time().Time()
+		return timeBefore.Before(timeAfter)
+	})
+
 	return nil
 }
 
 func (cr *candleMockRepository) FindByCandleTime(productCode string, duration time.Duration, timeTime model.CandleTime) (*model.Candle, error) {
-	candles, err := cr.FindAll(productCode, duration, -1)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, candle := range candles {
+	for _, candle := range cr.candles {
 		if candle.Time().Equal(timeTime) {
 			return &candle, nil
 		}
@@ -64,6 +88,17 @@ func (cr *candleMockRepository) FindByCandleTime(productCode string, duration ti
 }
 
 func (cr *candleMockRepository) FindAll(productCode string, duration time.Duration, limit int64) ([]model.Candle, error) {
+	if limit < 0 {
+		return cr.candles, nil
+	}
+
+	if lenCandles := int64(len(cr.candles)); lenCandles > limit {
+		return cr.candles[lenCandles-limit:], nil
+	}
+	return cr.candles, nil
+}
+
+func (cr *candleMockRepository) fetchAll(productCode string, duration time.Duration) ([]model.Candle, error) {
 	dirPath := path.Join(dataDir, GCS_BUCKET)
 	if !exists(dirPath) {
 		os.MkdirAll(dirPath, 0777)
@@ -122,14 +157,6 @@ func (cr *candleMockRepository) FindAll(productCode string, duration time.Durati
 		candleTime := model.NewCandleTime(time)
 		candle := model.NewCandle(productCode, duration, candleTime, open, close, high, low, volume)
 		candles = append(candles, *candle)
-	}
-
-	if limit < 0 {
-		return candles, nil
-	}
-
-	if lenCandles := int64(len(candles)); lenCandles > limit {
-		candles = candles[lenCandles-limit:]
 	}
 
 	return candles, nil

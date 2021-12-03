@@ -9,7 +9,7 @@ import (
 )
 
 func TestDataFrame(t *testing.T) {
-	cr := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat)
+	cr := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat, config.ProductCode, config.CandleDuration)
 	candles, err := cr.FindAll(config.ProductCode, config.CandleDuration, -1)
 	if err != nil {
 		t.Fatal(err.Error())

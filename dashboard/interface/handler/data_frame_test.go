@@ -20,7 +20,7 @@ func TestDataFrameHandler(t *testing.T) {
 	tx := persistence.NewMySQLTransaction(config.DSN())
 	defer tx.Rollback()
 
-	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat)
+	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat, config.ProductCode, config.CandleDuration)
 	signalEventRepository := persistence.NewSignalEventRepository(tx, config.TimeFormat)
 
 	candleService := service.NewCandleServicePerDay(config.LocalTime, config.TradeHour, candleRepository)
