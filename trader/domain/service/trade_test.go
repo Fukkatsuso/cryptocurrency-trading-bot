@@ -51,32 +51,7 @@ func TestTradeService(t *testing.T) {
 	})
 
 	// 正常系: Trade()の実行時点でTradeParamsが存在する
-	params := model.NewTradeParams(
-		true,
-		productCode,
-		tradeSize,
-		true,
-		7,
-		14,
-		50,
-		true,
-		7,
-		14,
-		50,
-		true,
-		20,
-		2,
-		true,
-		true,
-		14,
-		30,
-		70,
-		true,
-		12,
-		26,
-		9,
-		0.75,
-	)
+	params := model.NewBasicTradeParams(productCode, tradeSize)
 	tradeParamsRepository.Save(*params)
 
 	t.Run("trade", func(t *testing.T) {

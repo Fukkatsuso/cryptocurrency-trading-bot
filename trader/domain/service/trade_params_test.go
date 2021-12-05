@@ -25,32 +25,7 @@ func TestTradeParamsService(t *testing.T) {
 	dataFrameService := service.NewDataFrameService(indicatorService)
 	tradeParamsService := service.NewTradeParamsService(tradeParamsRepository, dataFrameService)
 
-	params := model.NewTradeParams(
-		true,
-		config.ProductCode,
-		0.01,
-		true,
-		7,
-		14,
-		50,
-		true,
-		7,
-		14,
-		50,
-		true,
-		20,
-		2,
-		true,
-		true,
-		14,
-		30,
-		70,
-		true,
-		12,
-		26,
-		9,
-		0.75,
-	)
+	params := model.NewBasicTradeParams(config.ProductCode, 0.01)
 
 	t.Run("save trade_params", func(t *testing.T) {
 		err := tradeParamsService.Save(*params)

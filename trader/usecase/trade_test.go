@@ -35,32 +35,7 @@ func TestTradeUsecase(t *testing.T) {
 	tradeUsecase := usecase.NewTradeUsecase(signalEventService, tradeService, notificationService)
 
 	// 取引パラメータを用意しておく
-	params := model.NewTradeParams(
-		true,
-		config.ProductCode,
-		0.01,
-		true,
-		7,
-		14,
-		50,
-		true,
-		7,
-		14,
-		50,
-		true,
-		20,
-		2,
-		true,
-		true,
-		14,
-		30,
-		70,
-		true,
-		12,
-		26,
-		9,
-		0.75,
-	)
+	params := model.NewBasicTradeParams(config.ProductCode, 0.01)
 	tradeParamsRepository.Save(*params)
 
 	t.Run("trade", func(t *testing.T) {
