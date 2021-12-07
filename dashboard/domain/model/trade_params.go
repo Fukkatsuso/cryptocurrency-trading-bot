@@ -228,3 +228,32 @@ func (tp *TradeParams) EnableRSI(enable bool) {
 func (tp *TradeParams) EnableMACD(enable bool) {
 	tp.macdEnable = enable
 }
+
+func NewBasicTradeParams(productCode string, size float64) *TradeParams {
+	return NewTradeParams(
+		true,
+		productCode,
+		size,
+		true,
+		7,
+		14,
+		50,
+		true,
+		7,
+		14,
+		50,
+		true,
+		20,
+		2,
+		true,
+		true,
+		14,
+		30,
+		70,
+		true,
+		12,
+		26,
+		9,
+		0.75,
+	)
+}
