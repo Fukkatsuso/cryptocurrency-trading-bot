@@ -45,32 +45,7 @@ func TestDataFrameService(t *testing.T) {
 		t.Logf("BacktestMACD: %v", events)
 	})
 
-	params := model.NewTradeParams(
-		true,
-		config.ProductCode,
-		0.01,
-		true,
-		7,
-		14,
-		50,
-		true,
-		7,
-		14,
-		50,
-		true,
-		20,
-		2,
-		true,
-		true,
-		14,
-		30,
-		70,
-		true,
-		12,
-		26,
-		9,
-		0.75,
-	)
+	params := model.NewBasicTradeParams(config.ProductCode, 0.01)
 	// addXXX()するタイミングは再考の余地あり
 	df.AddEMA(params.EMAPeriod1())
 	df.AddEMA(params.EMAPeriod2())

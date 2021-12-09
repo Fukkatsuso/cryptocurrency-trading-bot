@@ -25,32 +25,7 @@ func TestDataFrameUsecase(t *testing.T) {
 	dataFrameUsecase := usecase.NewDataFrameUsecase(candleService, signalEventService, dataFrameService)
 
 	t.Run("get", func(t *testing.T) {
-		params := model.NewTradeParams(
-			true,
-			config.ProductCode,
-			0.01,
-			true,
-			7,
-			14,
-			50,
-			true,
-			7,
-			14,
-			50,
-			true,
-			20,
-			2,
-			true,
-			true,
-			14,
-			30,
-			70,
-			true,
-			12,
-			26,
-			9,
-			0.75,
-		)
+		params := model.NewBasicTradeParams(config.ProductCode, 0.01)
 		_, err := dataFrameUsecase.Get(params, 1000, true)
 		if err != nil {
 			t.Fatal(err.Error())
