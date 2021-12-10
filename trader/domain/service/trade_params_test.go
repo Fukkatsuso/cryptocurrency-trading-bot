@@ -103,7 +103,34 @@ func TestTradeParamsService(t *testing.T) {
 
 	t.Run("optimize all", func(t *testing.T) {
 		optimizedParams, changed := tradeParamsService.OptimizeAll(df, params)
-		t.Logf("params=%+v", optimizedParams)
+
+		if optimizedParams.EMAEnable() {
+			ok1 := df.AddEMA(optimizedParams.EMAPeriod1())
+			ok2 := df.AddEMA(optimizedParams.EMAPeriod2())
+			optimizedParams.EnableEMA(ok1 && ok2)
+		}
+		if optimizedParams.BBandsEnable() {
+			ok := df.AddBBands(optimizedParams.BBandsN(), optimizedParams.BBandsK())
+			optimizedParams.EnableBBands(ok)
+		}
+		if optimizedParams.IchimokuEnable() {
+			ok := df.AddIchimoku()
+			optimizedParams.EnableIchimoku(ok)
+		}
+		if optimizedParams.MACDEnable() {
+			ok := df.AddMACD(optimizedParams.MACDFastPeriod(), optimizedParams.MACDSlowPeriod(), optimizedParams.MACDSignalPeriod())
+			optimizedParams.EnableMACD(ok)
+		}
+		if optimizedParams.RSIEnable() {
+			ok := df.AddRSI(optimizedParams.RSIPeriod())
+			optimizedParams.EnableRSI(ok)
+		}
+
+		dataFrameService.Backtest(df, optimizedParams)
+		profit := df.BacktestEvents().EstimateProfit()
+
+		t.Logf("params=%+v, profit=%f", optimizedParams, profit)
+
 		if changed && *optimizedParams == *params {
 			t.Fatal("params is not changed")
 		} else if !changed && *optimizedParams != *params {
