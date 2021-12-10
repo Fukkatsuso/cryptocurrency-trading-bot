@@ -194,9 +194,9 @@ func (ts *tradeParamsService) OptimizeAll(df *model.DataFrame, params *model.Tra
 		params.StopLimitPercent(),
 	)
 
-	changed := emaChanged &&
-		bbandsChanged &&
-		rsiChanged &&
+	changed := emaChanged ||
+		bbandsChanged ||
+		rsiChanged ||
 		macdChanged
 
 	return newParams, changed
