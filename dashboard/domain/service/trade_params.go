@@ -43,8 +43,8 @@ func (ts *tradeParamsService) OptimizeEMA(df *model.DataFrame, fastPeriod, slowP
 	bestFastPeriod := fastPeriod
 	bestSlowPeriod := slowPeriod
 
-	for fastPeriod = 5; fastPeriod < 11; fastPeriod++ {
-		for slowPeriod = 12; slowPeriod < 20; slowPeriod++ {
+	for fastPeriod := 5; fastPeriod < 11; fastPeriod++ {
+		for slowPeriod := 12; slowPeriod < 20; slowPeriod++ {
 			signalEvents := ts.dataFrameService.BacktestEMA(df, fastPeriod, slowPeriod, size)
 			if signalEvents == nil {
 				continue
