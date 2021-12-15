@@ -256,10 +256,5 @@ func (ds *dataFrameService) Analyze(df *model.DataFrame, at int, params *model.T
 		}
 	}
 
-	// レンジ相場なら購入しない
-	if df.IsBoxedRange(7, at) {
-		buyPoint = 0
-	}
-
 	return buyPoint, sellPoint
 }
