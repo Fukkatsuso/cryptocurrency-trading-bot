@@ -72,31 +72,4 @@ func TestIndicatorService(t *testing.T) {
 		sell := indicatorService.SellSignalOfMACD(macd, lenCandle-1)
 		t.Logf("SellSignalOfMACD: %t", sell)
 	})
-
-	t.Run("Is Boxed Range?", func(t *testing.T) {
-		term := 50
-		rsiPeriod := 14
-
-		// 疑似レンジ相場
-		boxed := make([]float64, term)
-		for i := range boxed {
-			boxed[i] = float64(10001 - 2*(i&2))
-		}
-		rsi := model.NewRSI(boxed, rsiPeriod)
-		t.Log(rsi.Values())
-		if !indicatorService.IsBoxedRange(rsi, 7, term-1) {
-			t.Fatal("not boxed range")
-		}
-
-		// 疑似トレンド相場
-		trend := make([]float64, term)
-		for i := range trend {
-			trend[i] = float64(10000 + i)
-		}
-		rsi = model.NewRSI(trend, rsiPeriod)
-		t.Log(rsi.Values())
-		if indicatorService.IsBoxedRange(rsi, 7, term-1) {
-			t.Fatal("boxed range")
-		}
-	})
 }

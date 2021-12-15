@@ -13,8 +13,6 @@ type IndicatorService interface {
 	SellSignalOfRSI(rsi *model.RSI, sellThread float64, at int) bool
 	BuySignalOfMACD(macd *model.MACD, at int) bool
 	SellSignalOfMACD(macd *model.MACD, at int) bool
-
-	IsBoxedRange(rsi *model.RSI, period, at int) bool
 }
 
 type indicatorService struct{}
@@ -129,16 +127,4 @@ func (is *indicatorService) SellSignalOfMACD(macd *model.MACD, at int) bool {
 		macd.MacdSignal()[at] > 0 &&
 		macd.Macd()[at-1] > macd.MacdSignal()[at-1] &&
 		macd.Macd()[at] <= macd.MacdSignal()[at]
-}
-
-// レンジ相場かどうか判定する
-// 一定期間RSIが40-60の間を推移していれば，レンジ相場
-func (is *indicatorService) IsBoxedRange(rsi *model.RSI, period, at int) bool {
-	values := rsi.Values()
-	for i := at; i >= 0 && at-i < period; i-- {
-		if values[i] <= 40 || 60 <= values[i] {
-			return false
-		}
-	}
-	return true
 }
