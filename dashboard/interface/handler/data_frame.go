@@ -34,7 +34,9 @@ func (dh *dataFrameHandler) Get(productCode string, tradeSize float64) http.Hand
 			candleLimit = 1000
 		}
 
-		df, err := dh.dataFrameUsecase.Get(params, int64(candleLimit), true)
+		backtestEnable := r.URL.Query().Get("backtest") == "true"
+
+		df, err := dh.dataFrameUsecase.Get(params, int64(candleLimit), backtestEnable)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
