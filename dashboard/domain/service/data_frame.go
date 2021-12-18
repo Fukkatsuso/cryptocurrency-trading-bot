@@ -256,5 +256,5 @@ func (ds *dataFrameService) Analyze(df *model.DataFrame, at int, params *model.T
 		}
 	}
 
-	return buyPoint > 0, sellPoint > 0
+	return buyPoint > 1, sellPoint > 1
 }
