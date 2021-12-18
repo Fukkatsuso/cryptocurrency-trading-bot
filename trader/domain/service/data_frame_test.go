@@ -55,8 +55,8 @@ func TestDataFrameService(t *testing.T) {
 	df.AddMACD(params.MACDFastPeriod(), params.MACDSlowPeriod(), params.MACDSlowPeriod())
 
 	t.Run("Analyze", func(t *testing.T) {
-		buyPoint, sellPoint := dataFrameService.Analyze(df, len(candles)-1, params)
-		t.Logf("Analyze: buyPoint=%d, sellPoint=%d", buyPoint, sellPoint)
+		buy, sell := dataFrameService.Analyze(df, len(candles)-1, params)
+		t.Logf("Analyze: buy=%t, sell=%t", buy, sell)
 	})
 
 	t.Run("Backtest", func(t *testing.T) {

@@ -98,9 +98,9 @@ func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
 	}
 
 	now := len(candles) - 1
-	buyPoint, sellPoint := ts.dataFrameService.Analyze(df, now, params)
+	buy, sell := ts.dataFrameService.Analyze(df, now, params)
 
-	if buyPoint > 0 {
+	if buy {
 		nowTime := time.Now().UTC()
 		err := ts.Buy(signalEvents, productCode, params.Size(), nowTime)
 		if err != nil {
@@ -109,7 +109,7 @@ func (ts *tradeService) Trade(productCode string, pastPeriod int) error {
 	}
 
 	currentPrice := candles[now].Close()
-	if sellPoint > 0 ||
+	if sell ||
 		signalEvents.ShouldCutLoss(currentPrice, params.StopLimitPercent()) {
 		nowTime := time.Now().UTC()
 		err := ts.Sell(signalEvents, productCode, params.Size(), nowTime)
