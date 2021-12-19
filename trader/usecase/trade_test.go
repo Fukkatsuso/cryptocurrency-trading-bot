@@ -1,0 +1,47 @@
+package usecase_test
+
+import (
+	"testing"
+
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/config"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/domain/model"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/domain/service"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/infrastructure/external/bitflyer"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/infrastructure/external/slack"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/infrastructure/persistence"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/usecase"
+)
+
+func TestTradeUsecase(t *testing.T) {
+	tx := persistence.NewMySQLTransaction(config.DSN())
+	defer tx.Rollback()
+
+	signalEventRepository := persistence.NewSignalEventRepository(tx, config.TimeFormat)
+	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat, config.ProductCode, config.CandleDuration)
+	tradeParamsRepository := persistence.NewTradeParamsRepository(tx)
+	balanceRepository := bitflyer.NewBitFlyerBalanceMockRepository()
+	tickerRepository := bitflyer.NewBitflyerTickerMockRepository()
+	orderRepository := bitflyer.NewBitflyerOrderMockRepository()
+	notificationRepository := slack.NewSlackNotificationMockRepository(config.LocalTime)
+
+	signalEventService := service.NewSignalEventService(signalEventRepository)
+	candleService := service.NewCandleServicePerDay(config.LocalTime, config.TradeHour, candleRepository)
+	indicatorService := service.NewIndicatorService()
+	dataFrameService := service.NewDataFrameService(indicatorService)
+	tradeParamsService := service.NewTradeParamsService(tradeParamsRepository, dataFrameService)
+	tradeService := service.NewTradeService(balanceRepository, tickerRepository, orderRepository, signalEventRepository, candleService, dataFrameService, tradeParamsService)
+	notificationService := service.NewNotificationService(notificationRepository)
+
+	tradeUsecase := usecase.NewTradeUsecase(signalEventService, tradeService, notificationService)
+
+	// 取引パラメータを用意しておく
+	params := model.NewBasicTradeParams(config.ProductCode, 0.01)
+	tradeParamsRepository.Save(*params)
+
+	t.Run("trade", func(t *testing.T) {
+		err := tradeUsecase.Trade(config.ProductCode, 365)
+		if err != nil {
+			t.Fatal(err.Error())
+		}
+	})
+}
