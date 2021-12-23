@@ -2,6 +2,7 @@ package model_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/config"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/trader/domain/model"
@@ -74,4 +75,52 @@ func TestDataFrame(t *testing.T) {
 		signalEvents := model.NewSignalEvents(make([]model.SignalEvent, 0))
 		df.AddBacktestEvents(signalEvents)
 	})
+}
+
+func TestDataFrameBoxedRange(t *testing.T) {
+	term := 50
+	rsiPeriod := 14
+
+	// 疑似レンジ相場
+	t.Run("boxed range", func(t *testing.T) {
+		inReal := make([]float64, term)
+		for i := range inReal {
+			inReal[i] = float64(10001 - 2*(i&1))
+		}
+		candles := candlesByCloses(inReal)
+
+		df := model.NewDataFrame(config.ProductCode, candles, nil)
+		df.AddRSI(rsiPeriod)
+
+		if !df.IsBoxedRange(7, term-1) {
+			t.Fatal("not boxed range")
+		}
+	})
+
+	// 疑似トレンド相場
+	t.Run("not boxed range", func(t *testing.T) {
+		inReal := make([]float64, term)
+		for i := range inReal {
+			inReal[i] = float64(10000 + i)
+		}
+		candles := candlesByCloses(inReal)
+
+		df := model.NewDataFrame(config.ProductCode, candles, nil)
+		df.AddRSI(rsiPeriod)
+
+		if df.IsBoxedRange(7, term-1) {
+			t.Fatal("boxed range")
+		}
+	})
+}
+
+func candlesByCloses(closes []float64) []model.Candle {
+	candles := make([]model.Candle, len(closes))
+	currentTime := time.Now()
+	for i := range candles {
+		candleTime := model.NewCandleTime(currentTime)
+		candles[i] = *model.NewCandle(config.ProductCode, config.CandleDuration, candleTime, closes[i], closes[i], closes[i], closes[i], closes[i])
+		currentTime = currentTime.Add(config.CandleDuration)
+	}
+	return candles
 }

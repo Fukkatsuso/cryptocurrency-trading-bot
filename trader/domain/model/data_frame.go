@@ -184,3 +184,15 @@ func (df *DataFrame) AddMACD(inFastPeriod, inSlowPeriod, inSignalPeriod int) boo
 func (df *DataFrame) AddBacktestEvents(events *SignalEvents) {
 	df.backtestEvents = events
 }
+
+// レンジ相場かどうか判定する
+// 一定期間RSIが40-60の間を推移していれば，レンジ相場
+func (df *DataFrame) IsBoxedRange(period, at int) bool {
+	values := df.rsi.values
+	for i := at; i >= 0 && at-i < period; i-- {
+		if values[i] <= 40 || 60 <= values[i] {
+			return false
+		}
+	}
+	return true
+}

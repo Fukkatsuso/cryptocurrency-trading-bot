@@ -12,7 +12,7 @@ type DataFrameService interface {
 	BacktestMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) *model.SignalEvents
 
 	Backtest(df *model.DataFrame, tp *model.TradeParams)
-	Analyze(df *model.DataFrame, at int, params *model.TradeParams) (int, int)
+	Analyze(df *model.DataFrame, at int, params *model.TradeParams) (bool, bool)
 }
 
 type dataFrameService struct {
@@ -172,16 +172,16 @@ func (ds *dataFrameService) Backtest(df *model.DataFrame, params *model.TradePar
 	signals := make([]model.SignalEvent, 0)
 	signalEvents := model.NewSignalEvents(signals)
 	for i, candle := range df.Candles() {
-		buyPoint, sellPoint := ds.Analyze(df, i, params)
+		buy, sell := ds.Analyze(df, i, params)
 
-		if buyPoint > 0 {
+		if buy {
 			signal := model.NewSignalEvent(candle.Time().Time(), df.ProductCode(), model.OrderSideBuy, candle.Close(), params.Size())
 			if signal != nil {
 				signalEvents.AddBuySignal(*signal)
 			}
 		}
 
-		if sellPoint > 0 ||
+		if sell ||
 			signalEvents.ShouldCutLoss(candle.Close(), params.StopLimitPercent()) {
 			signal := model.NewSignalEvent(candle.Time().Time(), df.ProductCode(), model.OrderSideSell, candle.Close(), params.Size())
 			if signal != nil {
@@ -197,11 +197,11 @@ func (ds *dataFrameService) Backtest(df *model.DataFrame, params *model.TradePar
 
 // 各指標の時点"at"で分析する
 // buyPoint, sellPointを返す
-func (ds *dataFrameService) Analyze(df *model.DataFrame, at int, params *model.TradeParams) (int, int) {
+func (ds *dataFrameService) Analyze(df *model.DataFrame, at int, params *model.TradeParams) (bool, bool) {
 	buyPoint, sellPoint := 0, 0
 
 	if at <= 0 {
-		return buyPoint, sellPoint
+		return false, false
 	}
 
 	if params.EMAEnable() &&
@@ -256,5 +256,5 @@ func (ds *dataFrameService) Analyze(df *model.DataFrame, at int, params *model.T
 		}
 	}
 
-	return buyPoint, sellPoint
+	return buyPoint > 1, sellPoint > 1
 }
