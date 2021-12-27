@@ -14,12 +14,14 @@ type UserService interface {
 }
 
 type userService struct {
-	userRepository repository.UserRepository
+	userRepository    repository.UserRepository
+	sessionRepository repository.SessionRepository
 }
 
-func NewUserService(ur repository.UserRepository) UserService {
+func NewUserService(ur repository.UserRepository, sr repository.SessionRepository) UserService {
 	return &userService{
-		userRepository: ur,
+		userRepository:    ur,
+		sessionRepository: sr,
 	}
 }
 
@@ -35,9 +37,7 @@ func (us *userService) Login(id string, password string) (string, error) {
 	}
 
 	sessionID := model.NewSessionID()
-
-	user = model.NewUser(id, passwordDigest, sessionID)
-	if err := us.userRepository.Save(user); err != nil {
+	if err := us.sessionRepository.Save(id, sessionID); err != nil {
 		return "", err
 	}
 
@@ -45,6 +45,10 @@ func (us *userService) Login(id string, password string) (string, error) {
 }
 
 func (us *userService) Logout(id string) error {
+	if err := us.sessionRepository.Delete(id); err != nil {
+		return err
+	}
+
 	return nil
 }
 
