@@ -7,26 +7,26 @@ import (
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/domain/repository"
 )
 
-type UserService interface {
-	Login(id string, password string) (string, error)
-	Logout(id string) error
-	LoggedIn(id string, password string) bool
+type AuthService interface {
+	Login(userID string, password string) (string, error)
+	Logout(userID string) error
+	LoggedIn(userID string, password string) bool
 }
 
-type userService struct {
+type authService struct {
 	userRepository    repository.UserRepository
 	sessionRepository repository.SessionRepository
 }
 
-func NewUserService(ur repository.UserRepository, sr repository.SessionRepository) UserService {
-	return &userService{
+func NewAuthService(ur repository.UserRepository, sr repository.SessionRepository) AuthService {
+	return &authService{
 		userRepository:    ur,
 		sessionRepository: sr,
 	}
 }
 
-func (us *userService) Login(id string, password string) (string, error) {
-	user, err := us.userRepository.FindByID(id)
+func (as *authService) Login(userID string, password string) (string, error) {
+	user, err := as.userRepository.FindByID(userID)
 	if err != nil {
 		return "", err
 	}
@@ -37,27 +37,27 @@ func (us *userService) Login(id string, password string) (string, error) {
 	}
 
 	sessionID := model.NewSessionID()
-	if err := us.sessionRepository.Save(id, sessionID); err != nil {
+	if err := as.sessionRepository.Save(userID, sessionID); err != nil {
 		return "", err
 	}
 
 	return sessionID, nil
 }
 
-func (us *userService) Logout(id string) error {
-	if err := us.sessionRepository.Delete(id); err != nil {
+func (as *authService) Logout(userID string) error {
+	if err := as.sessionRepository.Delete(userID); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (us *userService) LoggedIn(id string, sessionID string) bool {
+func (as *authService) LoggedIn(userID string, sessionID string) bool {
 	if sessionID == "" {
 		return false
 	}
 
-	sessionIdDigest, err := us.sessionRepository.FindByUserID(id)
+	sessionIdDigest, err := as.sessionRepository.FindByUserID(userID)
 	if err != nil {
 		return false
 	}
