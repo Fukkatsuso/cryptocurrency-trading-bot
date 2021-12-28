@@ -33,3 +33,7 @@ func PasswordDigest(password string) string {
 func NewSessionID() string {
 	return "sessionID"
 }
+
+func SessionIdDigest(id string) string {
+	return id
+}

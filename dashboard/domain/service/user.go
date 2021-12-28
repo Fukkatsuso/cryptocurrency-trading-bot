@@ -52,6 +52,15 @@ func (us *userService) Logout(id string) error {
 	return nil
 }
 
-func (us *userService) LoggedIn(id string, password string) bool {
-	return false
+func (us *userService) LoggedIn(id string, sessionID string) bool {
+	if sessionID == "" {
+		return false
+	}
+
+	sessionIdDigest, err := us.sessionRepository.FindByUserID(id)
+	if err != nil {
+		return false
+	}
+
+	return model.SessionIdDigest(sessionID) == sessionIdDigest
 }
