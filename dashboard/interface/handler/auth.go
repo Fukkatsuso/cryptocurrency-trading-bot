@@ -20,8 +20,14 @@ type authHandler struct {
 	authService  service.AuthService
 }
 
-func NewAuthHandler() AuthHandler {
-	return &authHandler{}
+func NewAuthHandler(cookieName string, cookiePath string, cookieMaxAge int, secureCookie *securecookie.SecureCookie, as service.AuthService) AuthHandler {
+	return &authHandler{
+		cookieName:   cookieName,
+		cookiePath:   cookiePath,
+		cookieMaxAge: cookieMaxAge,
+		secureCookie: secureCookie,
+		authService:  as,
+	}
 }
 
 func (ah *authHandler) Login() http.HandlerFunc {
