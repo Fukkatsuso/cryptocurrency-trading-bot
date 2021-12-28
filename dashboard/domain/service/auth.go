@@ -37,7 +37,8 @@ func (as *authService) Login(userID string, password string) (string, error) {
 	}
 
 	sessionID := model.NewSessionID()
-	if err := as.sessionRepository.Save(userID, sessionID); err != nil {
+	sessionIdDigest := model.SessionIdDigest(sessionID)
+	if err := as.sessionRepository.Save(userID, sessionIdDigest); err != nil {
 		return "", err
 	}
 
