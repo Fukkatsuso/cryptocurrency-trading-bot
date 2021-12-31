@@ -31,14 +31,19 @@ func (as *authService) Login(userID string, password string) (string, error) {
 		return "", err
 	}
 
-	passwordDigest := model.PasswordDigest(password)
-	if passwordDigest != user.Password() {
+	if err := model.CompareHashAndPassword(user.Password(), password); err != nil {
 		return "", errors.New("password is not correct")
 	}
 
-	sessionID := model.NewSessionID()
-	sessionIdDigest := model.SessionIdDigest(sessionID)
-	if err := as.sessionRepository.Save(userID, sessionIdDigest); err != nil {
+	sessionID, err := model.NewSessionID()
+	if err != nil {
+		return "", err
+	}
+	sessionIdHash, err := model.SessionIdHash(sessionID)
+	if err != nil {
+		return "", err
+	}
+	if err := as.sessionRepository.Save(userID, sessionIdHash); err != nil {
 		return "", err
 	}
 
@@ -58,10 +63,10 @@ func (as *authService) LoggedIn(userID string, sessionID string) bool {
 		return false
 	}
 
-	sessionIdDigest, err := as.sessionRepository.FindByUserID(userID)
+	sessionIdHash, err := as.sessionRepository.FindByUserID(userID)
 	if err != nil {
 		return false
 	}
 
-	return model.SessionIdDigest(sessionID) == sessionIdDigest
+	return model.CompareHashAndSessionID(sessionIdHash, sessionID) != nil
 }

@@ -1,5 +1,10 @@
 package model
 
+import (
+	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
+)
+
 type User struct {
 	id        string
 	password  string
@@ -26,14 +31,28 @@ func (user *User) Password() string {
 	return user.password
 }
 
-func PasswordDigest(password string) string {
-	return password
+func PasswordHash(password string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(hash), err
 }
 
-func NewSessionID() string {
-	return "sessionID"
+func CompareHashAndPassword(hash string, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
 
-func SessionIdDigest(id string) string {
-	return id
+func NewSessionID() (string, error) {
+	u, err := uuid.NewRandom()
+	if err != nil {
+		return "", err
+	}
+	return u.String(), nil
+}
+
+func SessionIdHash(sessionID string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(sessionID), bcrypt.DefaultCost)
+	return string(hash), err
+}
+
+func CompareHashAndSessionID(hash string, sessionID string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(sessionID))
 }
