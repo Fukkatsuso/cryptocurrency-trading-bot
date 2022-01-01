@@ -27,8 +27,16 @@ func NewUser(id string, password string, sessionID string) *User {
 	}
 }
 
+func (user *User) ID() string {
+	return user.id
+}
+
 func (user *User) Password() string {
 	return user.password
+}
+
+func (user *User) SessionID() string {
+	return user.sessionID
 }
 
 func PasswordHash(password string) (string, error) {
