@@ -18,10 +18,13 @@ func Run() {
 	http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("view/"))))
 
 	// repository
+	userRepository := persistence.NewUserRepository(config.DB)
+	sessionRepository := persistence.NewSessionRepository(config.DB)
 	candleRepository := persistence.NewCandleRepository(config.DB, config.CandleTableName, config.TimeFormat)
 	signalEventRepository := persistence.NewSignalEventRepository(config.DB, config.TimeFormat)
 
 	// service
+	authService := service.NewAuthService(userRepository, sessionRepository)
 	candleService := service.NewCandleServicePerDay(config.LocalTime, config.TradeHour, candleRepository)
 	signalEventService := service.NewSignalEventService(signalEventRepository)
 	indicatorService := service.NewIndicatorService()
@@ -31,8 +34,11 @@ func Run() {
 	dataFrameUsecase := usecase.NewDataFrameUsecase(candleService, signalEventService, dataFrameService)
 
 	// handler
+	authHandler := handler.NewAuthHandler("cryptobot", "/", 60*30, config.SecureCookie, authService)
 	dataFrameHandler := handler.NewDataFrameHandler(dataFrameUsecase)
 
+	http.HandleFunc("/api/login", authHandler.Login())
+	http.HandleFunc("/api/logout", authHandler.Logout())
 	http.HandleFunc("/api/candle", dataFrameHandler.Get(config.ProductCode, 0.01))
 
 	// Determine port for HTTP service.
