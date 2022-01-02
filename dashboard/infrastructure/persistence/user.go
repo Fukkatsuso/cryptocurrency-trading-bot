@@ -1,7 +1,6 @@
 package persistence
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 
@@ -45,9 +44,6 @@ func (ur *userRepository) FindByID(id string) (*model.User, error) {
 
 	var userId, passwordHash, sessionIdHash string
 	err := row.Scan(&userId, &passwordHash, &sessionIdHash)
-	if err == sql.ErrNoRows {
-		return nil, nil
-	}
 	if err != nil {
 		return nil, err
 	}
