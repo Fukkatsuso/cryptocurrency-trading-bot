@@ -33,7 +33,7 @@ func NewAuthHandler(cookieName string, cookiePath string, cookieMaxAge int, secu
 func (ah *authHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			http.Error(w, "this method is not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
@@ -67,13 +67,14 @@ func (ah *authHandler) Login() http.HandlerFunc {
 		http.SetCookie(w, cookie)
 
 		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Success"))
 	}
 }
 
 func (ah *authHandler) Logout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodDelete {
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			http.Error(w, "this method is not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 
