@@ -45,9 +45,9 @@ func Run() {
 	http.HandleFunc("/api/candle", dataFrameHandler.Get(config.ProductCode, 0.01))
 	http.HandleFunc("/admin/api/balance", AuthGuardHandlerFunc(balanceHandler.Get(), authHandler))
 
-	http.HandleFunc("/", IndexPageHandler)
-	http.HandleFunc("/login", LoginPageHandler)
-	http.HandleFunc("/admin", AuthGuardHandlerFunc(AdminPageHandler, authHandler))
+	http.HandleFunc("/", PageHandlerFunc("view/index.html"))
+	http.HandleFunc("/login", PageHandlerFunc("view/login.html"))
+	http.HandleFunc("/admin", AuthGuardHandlerFunc(PageHandlerFunc("view/admin.html"), authHandler))
 	http.Handle("/view/admin.html", http.RedirectHandler("/admin", http.StatusFound))
 	http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("view/"))))
 
@@ -64,24 +64,12 @@ func Run() {
 	}
 }
 
-func IndexPageHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("view/index.html"))
-	if err := tmpl.Execute(w, nil); err != nil {
-		fmt.Println("[IndexPageHandler]", err)
-	}
-}
-
-func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("view/login.html"))
-	if err := tmpl.Execute(w, nil); err != nil {
-		fmt.Println("[LoginPageHandler]", err)
-	}
-}
-
-func AdminPageHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("view/admin.html"))
-	if err := tmpl.Execute(w, nil); err != nil {
-		fmt.Println("[AdminPageHandler]", err)
+func PageHandlerFunc(filepath string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tmpl := template.Must(template.ParseFiles(filepath))
+		if err := tmpl.Execute(w, nil); err != nil {
+			fmt.Println("[PageHandlerFunc]", err)
+		}
 	}
 }
 
