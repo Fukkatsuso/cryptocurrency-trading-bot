@@ -47,7 +47,7 @@ func Run() {
 
 	http.HandleFunc("/", IndexPageHandler)
 	http.HandleFunc("/login", LoginPageHandler)
-	http.HandleFunc("/admin", AdminPageHandler(authHandler))
+	http.HandleFunc("/admin", AuthGuardHandlerFunc(AdminPageHandler, authHandler))
 	http.Handle("/view/admin.html", http.RedirectHandler("/admin", http.StatusFound))
 	http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("view/"))))
 
@@ -78,17 +78,10 @@ func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AdminPageHandler(ah handler.AuthHandler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if !ah.LoggedIn(r) {
-			http.Redirect(w, r, "/login", http.StatusFound)
-			return
-		}
-
-		tmpl := template.Must(template.ParseFiles("view/admin.html"))
-		if err := tmpl.Execute(w, nil); err != nil {
-			fmt.Println("[AdminPageHandler]", err)
-		}
+func AdminPageHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("view/admin.html"))
+	if err := tmpl.Execute(w, nil); err != nil {
+		fmt.Println("[AdminPageHandler]", err)
 	}
 }
 
