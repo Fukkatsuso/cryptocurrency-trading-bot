@@ -14,9 +14,6 @@ import (
 )
 
 func Run() {
-	http.HandleFunc("/", IndexPageHandler)
-	http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("view/"))))
-
 	// repository
 	userRepository := persistence.NewUserRepository(config.DB)
 	sessionRepository := persistence.NewSessionRepository(config.DB)
@@ -41,6 +38,12 @@ func Run() {
 	http.HandleFunc("/api/logout", authHandler.Logout())
 	http.HandleFunc("/api/candle", dataFrameHandler.Get(config.ProductCode, 0.01))
 
+	http.HandleFunc("/", IndexPageHandler)
+	http.HandleFunc("/login", LoginPageHandler)
+	http.HandleFunc("/admin", AdminPageHandler(authHandler))
+	http.Handle("/view/admin.html", http.RedirectHandler("/admin", http.StatusFound))
+	http.Handle("/view/", http.StripPrefix("/view/", http.FileServer(http.Dir("view/"))))
+
 	// Determine port for HTTP service.
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -58,5 +61,26 @@ func IndexPageHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl := template.Must(template.ParseFiles("view/index.html"))
 	if err := tmpl.Execute(w, nil); err != nil {
 		fmt.Println("[IndexPageHandler]", err)
+	}
+}
+
+func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl := template.Must(template.ParseFiles("view/login.html"))
+	if err := tmpl.Execute(w, nil); err != nil {
+		fmt.Println("[LoginPageHandler]", err)
+	}
+}
+
+func AdminPageHandler(ah handler.AuthHandler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !ah.LoggedIn(r) {
+			http.Redirect(w, r, "/login", http.StatusFound)
+			return
+		}
+
+		tmpl := template.Must(template.ParseFiles("view/admin.html"))
+		if err := tmpl.Execute(w, nil); err != nil {
+			fmt.Println("[AdminPageHandler]", err)
+		}
 	}
 }
