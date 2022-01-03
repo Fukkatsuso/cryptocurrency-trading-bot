@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+  <link href="/view/css/login.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  <title>login | cryptocurrency trading bot</title>
+</head>
+
+<body>
+  <div id="app">
+    <v-app>
+      <v-main>
+        <v-app-bar
+          app
+          color="green"
+          dark
+          id="app-bar"
+        >
+          <v-app-bar-title>cryptocurrency trading bot</v-app-bar-title>
+        </v-app-bar>
+
+        <v-container>
+          <v-card>
+            <v-card-title>Login</v-card-title>
+            <v-card-text>
+              <v-form
+                v-model="valid"
+                @submit.prevent="submit"
+              >
+                <v-text-field
+                  v-model="userId"
+                  :rules="userIdRules"
+                  name="userId"
+                  label="ID"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  v-model="password"
+                  :rules="passwordRules"
+                  name="password"
+                  label="password"
+                  @click:append="showPassword = !showPassword"
+                  :type="showPassword ? 'text' : 'password'"
+                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  required
+                ></v-text-field>
+                <v-btn
+                  :disabled="!valid"
+                  type="submit"
+                  class="mr-4"
+                >
+                  submit
+                </v-btn>
+              </v-form>
+            </v-card-text>
+          </v-card>
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="/view/js/login.js"></script>
+</body>
+</html>
