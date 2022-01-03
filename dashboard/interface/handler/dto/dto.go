@@ -64,7 +64,7 @@ func ConvertDataFrame(df *model.DataFrame) DataFrame {
 }
 
 type Candle struct {
-	ProductCode string        `json:"product_code"`
+	ProductCode string        `json:"productCode"`
 	Duration    time.Duration `json:"duration"`
 	Time        time.Time     `json:"time"`
 	Open        float64       `json:"open"`
@@ -109,7 +109,7 @@ func ConvertSignalEvents(s *model.SignalEvents) *SignalEvents {
 
 type SignalEvent struct {
 	Time        time.Time       `json:"time"`
-	ProductCode string          `json:"product_code"`
+	ProductCode string          `json:"productCode"`
 	Side        model.OrderSide `json:"side"`
 	Price       float64         `json:"price"`
 	Size        float64         `json:"size"`
@@ -210,12 +210,12 @@ func ConvertRSI(rsi *model.RSI) *RSI {
 }
 
 type MACD struct {
-	FastPeriod   int       `json:"fast_period,omitempty"`
-	SlowPeriod   int       `json:"slow_period,omitempty"`
-	SignalPeriod int       `json:"signal_period,omitempty"`
+	FastPeriod   int       `json:"fastPeriod,omitempty"`
+	SlowPeriod   int       `json:"slowPeriod,omitempty"`
+	SignalPeriod int       `json:"signalPeriod,omitempty"`
 	MACD         []float64 `json:"macd,omitempty"`
-	MACDSignal   []float64 `json:"macd_signal,omitempty"`
-	MACDHist     []float64 `json:"macd_hist,omitempty"`
+	MACDSignal   []float64 `json:"macdSignal,omitempty"`
+	MACDHist     []float64 `json:"macdHist,omitempty"`
 }
 
 func ConvertMACD(macd *model.MACD) *MACD {
