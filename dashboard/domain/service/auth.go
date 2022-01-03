@@ -10,7 +10,7 @@ import (
 type AuthService interface {
 	Login(userID string, password string) (string, error)
 	Logout(userID string) error
-	LoggedIn(userID string, password string) bool
+	LoggedIn(userID string, sessionID string) bool
 }
 
 type authService struct {
