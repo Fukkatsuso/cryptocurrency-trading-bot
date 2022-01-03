@@ -8,6 +8,7 @@ import (
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/config"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/domain/service"
+	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/infrastructure/external/bitflyer"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/infrastructure/persistence"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/interface/handler"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/usecase"
@@ -19,6 +20,9 @@ func Run() {
 	sessionRepository := persistence.NewSessionRepository(config.DB)
 	candleRepository := persistence.NewCandleRepository(config.DB, config.CandleTableName, config.TimeFormat)
 	signalEventRepository := persistence.NewSignalEventRepository(config.DB, config.TimeFormat)
+	// repository (bitflyer)
+	bitflyerClient := bitflyer.NewClient(config.APIKey, config.APISecret)
+	balanceRepository := bitflyer.NewBitFlyerBalanceRepository(bitflyerClient)
 
 	// service
 	authService := service.NewAuthService(userRepository, sessionRepository)
@@ -29,14 +33,17 @@ func Run() {
 
 	// usecase
 	dataFrameUsecase := usecase.NewDataFrameUsecase(candleService, signalEventService, dataFrameService)
+	balanceUsecase := usecase.NewBalanceUsecase(balanceRepository)
 
 	// handler
 	authHandler := handler.NewAuthHandler("cryptobot", "/", 60*30, config.SecureCookie, authService)
 	dataFrameHandler := handler.NewDataFrameHandler(dataFrameUsecase)
+	balanceHandler := handler.NewBalanceHandler(balanceUsecase)
 
 	http.HandleFunc("/api/login", authHandler.Login())
 	http.HandleFunc("/api/logout", authHandler.Logout())
 	http.HandleFunc("/api/candle", dataFrameHandler.Get(config.ProductCode, 0.01))
+	http.HandleFunc("/admin/api/balance", AuthGuardHandlerFunc(balanceHandler.Get(), authHandler))
 
 	http.HandleFunc("/", IndexPageHandler)
 	http.HandleFunc("/login", LoginPageHandler)
@@ -82,5 +89,16 @@ func AdminPageHandler(ah handler.AuthHandler) http.HandlerFunc {
 		if err := tmpl.Execute(w, nil); err != nil {
 			fmt.Println("[AdminPageHandler]", err)
 		}
+	}
+}
+
+// ログイン済みユーザだけ受け付ける
+func AuthGuardHandlerFunc(target http.HandlerFunc, ah handler.AuthHandler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !ah.LoggedIn(r) {
+			http.Redirect(w, r, "/login", http.StatusFound)
+			return
+		}
+		target.ServeHTTP(w, r)
 	}
 }

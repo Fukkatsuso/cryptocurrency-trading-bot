@@ -232,3 +232,21 @@ func ConvertMACD(macd *model.MACD) *MACD {
 		MACDHist:     macd.MacdHist(),
 	}
 }
+
+type Balance struct {
+	CurrencyCode string  `json:"currencyCode"`
+	Amount       float64 `json:"amount"`
+	Available    float64 `json:"available"`
+}
+
+func ConvertBalance(balance *model.Balance) *Balance {
+	if balance == nil {
+		return nil
+	}
+
+	return &Balance{
+		CurrencyCode: balance.CurrencyCode(),
+		Amount:       balance.Amount(),
+		Available:    balance.Available(),
+	}
+}
