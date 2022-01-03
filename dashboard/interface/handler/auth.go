@@ -10,6 +10,7 @@ import (
 type AuthHandler interface {
 	Login() http.HandlerFunc
 	Logout() http.HandlerFunc
+	LoggedIn(r *http.Request) bool
 }
 
 type authHandler struct {
@@ -108,4 +109,21 @@ func (ah *authHandler) Logout() http.HandlerFunc {
 
 		http.Redirect(w, r, "/", http.StatusOK)
 	}
+}
+
+func (ah *authHandler) LoggedIn(r *http.Request) bool {
+	// cookieの値を取得
+	cookie, err := r.Cookie(ah.cookieName)
+	if err != nil {
+		return false
+	}
+	value := make(map[string]string)
+	if err = ah.secureCookie.Decode(ah.cookieName, cookie.Value, &value); err != nil {
+		return false
+	}
+
+	userID := value["userID"]
+	sessionID := value["sessionID"]
+
+	return ah.authService.LoggedIn(userID, sessionID)
 }
