@@ -68,5 +68,5 @@ func (as *authService) LoggedIn(userID string, sessionID string) bool {
 		return false
 	}
 
-	return model.CompareHashAndSessionID(sessionIdHash, sessionID) != nil
+	return model.CompareHashAndSessionID(sessionIdHash, sessionID) == nil
 }
