@@ -3,8 +3,8 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"io/ioutil"
 	"net/http"
-	"strconv"
 
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/domain/model"
 	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/interface/handler/dto"
@@ -60,9 +60,9 @@ func (th *tradeParamsHandler) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (th *tradeParamsHandler) Post(w http.ResponseWriter, r *http.Request) {
-	params, err := reqFormToTradeParams(r)
+	params, err := reqJsonToTradeParams(r)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -76,114 +76,43 @@ func (th *tradeParamsHandler) Post(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Success"))
 }
 
-func reqFormToTradeParams(r *http.Request) (*model.TradeParams, error) {
-	tradeEnable := r.FormValue("trade") == "true"
-
-	productCode := r.FormValue("productCode")
-
-	size, err := strconv.ParseFloat(r.FormValue("size"), 64)
+func reqJsonToTradeParams(r *http.Request) (*model.TradeParams, error) {
+	defer r.Body.Close()
+	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		return nil, err
 	}
 
-	smaEnable := r.FormValue("sma") == "true"
-	smaPeriod1, err := strconv.Atoi(r.FormValue("smaPeriod1"))
-	if err != nil {
-		return nil, err
-	}
-	smaPeriod2, err := strconv.Atoi(r.FormValue("smaPeriod2"))
-	if err != nil {
-		return nil, err
-	}
-	smaPeriod3, err := strconv.Atoi(r.FormValue("smaPeriod3"))
-	if err != nil {
-		return nil, err
-	}
-
-	emaEnable := r.FormValue("ema") == "true"
-	emaPeriod1, err := strconv.Atoi(r.FormValue("emaPeriod1"))
-	if err != nil {
-		return nil, err
-	}
-	emaPeriod2, err := strconv.Atoi(r.FormValue("emaPeriod2"))
-	if err != nil {
-		return nil, err
-	}
-	emaPeriod3, err := strconv.Atoi(r.FormValue("emaPeriod3"))
-	if err != nil {
-		return nil, err
-	}
-
-	bbandsEnable := r.FormValue("bbands") == "true"
-	bbandsN, err := strconv.Atoi(r.FormValue("bbandsN"))
-	if err != nil {
-		return nil, err
-	}
-	bbandsK, err := strconv.ParseFloat(r.FormValue("bbandsK"), 64)
-	if err != nil {
-		return nil, err
-	}
-
-	ichimokuEnable := r.FormValue("ichimoku") == "true"
-
-	rsiEnable := r.FormValue("rsi") == "true"
-	rsiPeriod, err := strconv.Atoi(r.FormValue("rsiPeriod"))
-	if err != nil {
-		return nil, err
-	}
-	rsiBuyThread, err := strconv.ParseFloat(r.FormValue("rsiBuyThread"), 64)
-	if err != nil {
-		return nil, err
-	}
-	rsiSellThread, err := strconv.ParseFloat(r.FormValue("rsiSellThread"), 64)
-	if err != nil {
-		return nil, err
-	}
-
-	macdEnable := r.FormValue("macd") == "true"
-	macdFastPeriod, err := strconv.Atoi(r.FormValue("macdFastPeriod"))
-	if err != nil {
-		return nil, err
-	}
-	macdSlowPeriod, err := strconv.Atoi(r.FormValue("macdSlowPeriod"))
-	if err != nil {
-		return nil, err
-	}
-	macdSignalPeriod, err := strconv.Atoi(r.FormValue("macdSignalPeriod"))
-	if err != nil {
-		return nil, err
-	}
-
-	stopLimitPercent, err := strconv.ParseFloat(r.FormValue("stopLimitPercent"), 64)
-	if err != nil {
+	var dto dto.TradeParams
+	if err := json.Unmarshal(body, &dto); err != nil {
 		return nil, err
 	}
 
 	params := model.NewTradeParams(
-		tradeEnable,
-		productCode,
-		size,
-		smaEnable,
-		smaPeriod1,
-		smaPeriod2,
-		smaPeriod3,
-		emaEnable,
-		emaPeriod1,
-		emaPeriod2,
-		emaPeriod3,
-		bbandsEnable,
-		bbandsN,
-		bbandsK,
-		ichimokuEnable,
-		rsiEnable,
-		rsiPeriod,
-		rsiBuyThread,
-		rsiSellThread,
-		macdEnable,
-		macdFastPeriod,
-		macdSlowPeriod,
-		macdSignalPeriod,
-		stopLimitPercent,
+		dto.TradeEnable,
+		dto.ProductCode,
+		dto.Size,
+		dto.SMAEnable,
+		dto.SMAPeriod1,
+		dto.SMAPeriod2,
+		dto.SMAPeriod3,
+		dto.EMAEnable,
+		dto.EMAPeriod1,
+		dto.EMAPeriod2,
+		dto.EMAPeriod3,
+		dto.BBandsEnable,
+		dto.BBandsN,
+		dto.BBandsK,
+		dto.IchimokuEnable,
+		dto.RSIEnable,
+		dto.RSIPeriod,
+		dto.RSIBuyThread,
+		dto.RSISellThread,
+		dto.MACDEnable,
+		dto.MACDFastPeriod,
+		dto.MACDSlowPeriod,
+		dto.MACDSignalPeriod,
+		dto.StopLimitPercent,
 	)
 
 	if params == nil {
