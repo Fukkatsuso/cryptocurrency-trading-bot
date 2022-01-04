@@ -26,7 +26,7 @@ func NewDataFrameHandler(du usecase.DataFrameUsecase) DataFrameHandler {
 
 func (dh *dataFrameHandler) Get(productCode string, tradeSize float64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		params := reqToTradeParams(r, productCode, tradeSize)
+		params := reqUrlToTradeParams(r, productCode, tradeSize)
 
 		// [0, 1000]の範囲に限定
 		candleLimit := getQueryUintDefault(r, "limit", 1000)
@@ -56,8 +56,7 @@ func (dh *dataFrameHandler) Get(productCode string, tradeSize float64) http.Hand
 	}
 }
 
-func reqToTradeParams(r *http.Request, productCode string,
-	tradeSize float64) *model.TradeParams {
+func reqUrlToTradeParams(r *http.Request, productCode string, tradeSize float64) *model.TradeParams {
 	sma := r.URL.Query().Get("sma")
 	smaEnable := sma == "true"
 	var smaPeriod1, smaPeriod2, smaPeriod3 int
