@@ -20,6 +20,7 @@ func Run() {
 	sessionRepository := persistence.NewSessionRepository(config.DB)
 	candleRepository := persistence.NewCandleRepository(config.DB, config.CandleTableName, config.TimeFormat)
 	signalEventRepository := persistence.NewSignalEventRepository(config.DB, config.TimeFormat)
+	tradeParamsRepository := persistence.NewTradeParamsRepository(config.DB)
 	// repository (bitflyer)
 	bitflyerClient := bitflyer.NewClient(config.APIKey, config.APISecret)
 	balanceRepository := bitflyer.NewBitFlyerBalanceRepository(bitflyerClient)
@@ -33,16 +34,19 @@ func Run() {
 
 	// usecase
 	dataFrameUsecase := usecase.NewDataFrameUsecase(candleService, signalEventService, dataFrameService)
+	tradeParamsUsecase := usecase.NewTradeParamsUsecase(tradeParamsRepository)
 	balanceUsecase := usecase.NewBalanceUsecase(balanceRepository)
 
 	// handler
 	authHandler := handler.NewAuthHandler("cryptobot", "/", 60*30, config.SecureCookie, authService)
 	dataFrameHandler := handler.NewDataFrameHandler(dataFrameUsecase)
+	tradeParamsHandler := handler.NewTradeParamsHandler(tradeParamsUsecase)
 	balanceHandler := handler.NewBalanceHandler(balanceUsecase)
 
 	http.HandleFunc("/api/login", authHandler.Login())
 	http.HandleFunc("/api/logout", authHandler.Logout())
 	http.HandleFunc("/api/candle", dataFrameHandler.Get(config.ProductCode, 0.01))
+	http.HandleFunc("/admin/api/trade-params", AuthGuardHandlerFunc(tradeParamsHandler.HandlerFunc(), authHandler))
 	http.HandleFunc("/admin/api/balance", AuthGuardHandlerFunc(balanceHandler.Get(), authHandler))
 
 	http.HandleFunc("/", PageHandlerFunc("view/index.html"))
