@@ -22,11 +22,436 @@
           id="app-bar"
         >
           <v-app-bar-title>cryptocurrency trading bot</v-app-bar-title>
+
+          <template
+            v-slot:extension
+          >
+            <v-tabs>
+              <v-tab>ETH/JPY</v-tab>
+            </v-tabs>
+          </template>
         </v-app-bar>
 
         <v-container>
           <div>
             <span class="text-h6">Admin Page</span>
+          </div>
+
+          <!-- パラメータ入力フォーム．enterで送信されるのを回避 -->
+          <div class="indicator">
+            <span class="text-h6">Indicator</span>
+            <v-form
+              v-if="newTradeParams"
+              v-model="validParams"
+              @submit.prevent
+            >
+              <v-container>
+                <!-- size -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  ></v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        size
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="6"
+                    md="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.size"
+                      :rules="tradeParamsRules.size"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- tradeEnable -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="newTradeParams.trade"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        tradeEnable
+                      </p>
+                    </div>
+                  </v-col>
+                </v-row>
+                <!-- sma -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="newTradeParams.sma"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        SMA
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.smaPeriod1"
+                      :rules="tradeParamsRules.smaPeriod1"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.smaPeriod2"
+                      :rules="tradeParamsRules.smaPeriod2"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.smaPeriod3"
+                      :rules="tradeParamsRules.smaPeriod3"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- ema -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="newTradeParams.ema"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        EMA
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.emaPeriod1"
+                      :rules="tradeParamsRules.emaPeriod1"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.emaPeriod2"
+                      :rules="tradeParamsRules.emaPeriod2"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.emaPeriod3"
+                      :rules="tradeParamsRules.emaPeriod3"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- bbands -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="newTradeParams.bbands"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        BBands
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.bbandsN"
+                      :rules="tradeParamsRules.bbandsN"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.bbandsK"
+                      :rules="tradeParamsRules.bbandsK"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- ichimoku -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="newTradeParams.ichimoku"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        Ichimoku
+                      </p>
+                    </div>
+                  </v-col>
+                </v-row>
+                <!-- rsi -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="newTradeParams.rsi"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        RSI
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.rsiPeriod"
+                      :rules="tradeParamsRules.rsiPeriod"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.rsiBuyThread"
+                      :rules="tradeParamsRules.rsiBuyThread"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.rsiSellThread"
+                      :rules="tradeParamsRules.rsiSellThread"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- macd -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="newTradeParams.macd"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        MACD
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.macdFastPeriod"
+                      :rules="tradeParamsRules.macdFastPeriod"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.macdSlowPeriod"
+                      :rules="tradeParamsRules.macdSlowPeriod"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.macdSignalPeriod"
+                      :rules="tradeParamsRules.macdSignalPeriod"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- stopLimitPercent -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  ></v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        slp
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="6"
+                    md="3"
+                  >
+                    <v-text-field
+                      v-model="newTradeParams.stopLimitPercent"
+                      :rules="tradeParamsRules.stopLimitPercent"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- update/reset button -->
+                <v-row>
+                  <v-col
+                    cols="6"
+                    md="4"
+                  >
+                    <v-btn
+                      block
+                      :disabled="!validParams"
+                      @click="postTradeParams"
+                    >
+                      update
+                    </v-btn>
+                  </v-col>
+                  <v-col
+                    cols="6"
+                    md="4"
+                  >
+                    <v-btn
+                      block
+                      @click="resetTradeParams"
+                    >
+                      reset
+                    </v-btn>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
           </div>
         </v-container>
       </v-main>
@@ -35,6 +460,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
   <script src="/view/js/admin.js"></script>
 </body>
 </html>
