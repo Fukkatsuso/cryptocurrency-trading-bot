@@ -73,7 +73,7 @@
                     md="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.size"
+                      v-model.number="newTradeParams.size"
                       :rules="tradeParamsRules.size"
                       dense
                       hide-details
@@ -132,7 +132,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.smaPeriod1"
+                      v-model.number="newTradeParams.smaPeriod1"
                       :rules="tradeParamsRules.smaPeriod1"
                       dense
                       hide-details
@@ -143,7 +143,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.smaPeriod2"
+                      v-model.number="newTradeParams.smaPeriod2"
                       :rules="tradeParamsRules.smaPeriod2"
                       dense
                       hide-details
@@ -154,7 +154,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.smaPeriod3"
+                      v-model.number="newTradeParams.smaPeriod3"
                       :rules="tradeParamsRules.smaPeriod3"
                       dense
                       hide-details
@@ -189,7 +189,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.emaPeriod1"
+                      v-model.number="newTradeParams.emaPeriod1"
                       :rules="tradeParamsRules.emaPeriod1"
                       dense
                       hide-details
@@ -200,7 +200,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.emaPeriod2"
+                      v-model.number="newTradeParams.emaPeriod2"
                       :rules="tradeParamsRules.emaPeriod2"
                       dense
                       hide-details
@@ -211,7 +211,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.emaPeriod3"
+                      v-model.number="newTradeParams.emaPeriod3"
                       :rules="tradeParamsRules.emaPeriod3"
                       dense
                       hide-details
@@ -246,7 +246,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.bbandsN"
+                      v-model.number="newTradeParams.bbandsN"
                       :rules="tradeParamsRules.bbandsN"
                       dense
                       hide-details
@@ -257,7 +257,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.bbandsK"
+                      v-model.number="newTradeParams.bbandsK"
                       :rules="tradeParamsRules.bbandsK"
                       dense
                       hide-details
@@ -316,7 +316,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.rsiPeriod"
+                      v-model.number="newTradeParams.rsiPeriod"
                       :rules="tradeParamsRules.rsiPeriod"
                       dense
                       hide-details
@@ -327,7 +327,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.rsiBuyThread"
+                      v-model.number="newTradeParams.rsiBuyThread"
                       :rules="tradeParamsRules.rsiBuyThread"
                       dense
                       hide-details
@@ -338,7 +338,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.rsiSellThread"
+                      v-model.number="newTradeParams.rsiSellThread"
                       :rules="tradeParamsRules.rsiSellThread"
                       dense
                       hide-details
@@ -373,7 +373,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.macdFastPeriod"
+                      v-model.number="newTradeParams.macdFastPeriod"
                       :rules="tradeParamsRules.macdFastPeriod"
                       dense
                       hide-details
@@ -384,7 +384,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.macdSlowPeriod"
+                      v-model.number="newTradeParams.macdSlowPeriod"
                       :rules="tradeParamsRules.macdSlowPeriod"
                       dense
                       hide-details
@@ -395,7 +395,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.macdSignalPeriod"
+                      v-model.number="newTradeParams.macdSignalPeriod"
                       :rules="tradeParamsRules.macdSignalPeriod"
                       dense
                       hide-details
@@ -423,7 +423,7 @@
                     md="3"
                   >
                     <v-text-field
-                      v-model="newTradeParams.stopLimitPercent"
+                      v-model.number="newTradeParams.stopLimitPercent"
                       :rules="tradeParamsRules.stopLimitPercent"
                       dense
                       hide-details

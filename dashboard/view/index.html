@@ -79,7 +79,7 @@
                     md="3"
                   >
                     <v-text-field
-                      v-model="config.limit"
+                      v-model.number="config.limit"
                       dense
                       hide-details
                       outlined
@@ -115,7 +115,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="config.sma.periods[smaIndex]"
+                      v-model.number="config.sma.periods[smaIndex]"
                       dense
                       hide-details
                       outlined
@@ -151,7 +151,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="config.ema.periods[emaIndex]"
+                      v-model.number="config.ema.periods[emaIndex]"
                       dense
                       hide-details
                       outlined
@@ -185,7 +185,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="config.bbands.n"
+                      v-model.number="config.bbands.n"
                       dense
                       hide-details
                       outlined
@@ -195,7 +195,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="config.bbands.k"
+                      v-model.number="config.bbands.k"
                       dense
                       hide-details
                       outlined
@@ -253,7 +253,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="config.rsi.period"
+                      v-model.number="config.rsi.period"
                       dense
                       hide-details
                       outlined
@@ -289,7 +289,7 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model="config.macd.periods[macdIndex]"
+                      v-model.number="config.macd.periods[macdIndex]"
                       dense
                       hide-details
                       outlined
