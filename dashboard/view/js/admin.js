@@ -104,6 +104,17 @@ new Vue({
         return null
       })
     },
+    async updateTradeParams() {
+      const res = await this.postTradeParams()
+      if (!res) {
+        alert('failed to update')
+        return
+      }
+      // 表示するパラメータも更新
+      const tradeParams = await this.getTradeParams()
+      this.tradeParams = _.cloneDeep(tradeParams)
+      this.newTradeParams = _.cloneDeep(tradeParams)
+    },
     resetTradeParams() {
       this.newTradeParams = _.cloneDeep(this.tradeParams)
     },
