@@ -460,6 +460,31 @@
               </v-container>
             </v-form>
           </div>
+
+          <!-- 資産一覧表 -->
+          <div class="balance">
+            <span class="text-h6">Balance</span>
+            <v-simple-table>
+              <template v-slot:default>
+                <thead>
+                  <tr>
+                    <th class="text-left">Code</th>
+                    <th class="text-left">Amount</th>
+                  </tr>
+                </thead>
+                <tbody v-if="balance">
+                  <tr
+                    v-for="item in balance"
+                    :key="item.currencyCode"
+                    v-if="item.amount > 0"
+                  >
+                    <td>${ item.currencyCode }</td>
+                    <td>${ item.amount }</td>
+                  </tr>
+                </tbody>
+              </template>
+            </v-simple-table>
+          </div>
         </v-container>
       </v-main>
     </v-app>
