@@ -81,6 +81,38 @@ func (df *DataFrame) Volumes() []float64 {
 	return s
 }
 
+// 平均足のOpens
+func (df *DataFrame) AverageOpens() []float64 {
+	s := make([]float64, len(df.candles))
+	for i, candle := range df.candles {
+		if i == 0 {
+			s[i] = candle.Open()
+		} else {
+			s[i] = (df.candles[i-1].Open() + df.candles[i-1].Close()) / 2.0
+		}
+	}
+	return s
+}
+
+// 平均足のCloses
+func (df *DataFrame) AverageCloses() []float64 {
+	s := make([]float64, len(df.candles))
+	for i, candle := range df.candles {
+		s[i] = (candle.Open() + candle.Close() + candle.High() + candle.Low()) / 4.0
+	}
+	return s
+}
+
+// 平均足のHighs
+func (df *DataFrame) AverageHighs() []float64 {
+	return df.Highs()
+}
+
+// 平均足のLows
+func (df *DataFrame) AverageLows() []float64 {
+	return df.Lows()
+}
+
 func (df *DataFrame) Events() *SignalEvents {
 	return df.events
 }
