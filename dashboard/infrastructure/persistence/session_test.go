@@ -12,11 +12,12 @@ func TestSession(t *testing.T) {
 	db := persistence.NewMySQLTransaction(config.DSN())
 	defer db.Rollback()
 
+	userRepository := persistence.NewUserRepository(db)
 	sessionRepository := persistence.NewSessionRepository(db)
 
-	// test user
+	// create test user
 	testUser := model.NewUser("test", "QWERTYUIOP", "")
-	createTestUser(db, testUser)
+	userRepository.Save(testUser)
 
 	sessionID := "abcdefghijklmnopqrstuvwxyz"
 
@@ -51,15 +52,4 @@ func TestSession(t *testing.T) {
 			t.Fatal("sessionID is not deleted")
 		}
 	})
-}
-
-func createTestUser(db persistence.DB, user *model.User) error {
-	cmd := `
-        INSERT INTO users
-            (id, password_hash, session_id_hash)
-        VALUES
-            (?, ?, ?)
-    `
-	_, err := db.Exec(cmd, user.ID(), user.Password(), user.SessionID())
-	return err
 }
