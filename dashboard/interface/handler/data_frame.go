@@ -11,7 +11,7 @@ import (
 )
 
 type DataFrameHandler interface {
-	Get(productCode string, tradeSize float64) http.HandlerFunc
+	Get(productCode string) http.HandlerFunc
 }
 
 type dataFrameHandler struct {
@@ -24,7 +24,7 @@ func NewDataFrameHandler(du usecase.DataFrameUsecase) DataFrameHandler {
 	}
 }
 
-func (dh *dataFrameHandler) Get(productCode string, tradeSize float64) http.HandlerFunc {
+func (dh *dataFrameHandler) Get(productCode string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := reqUrlToTradeParams(r, productCode)
 

@@ -45,7 +45,7 @@ func Run() {
 
 	http.HandleFunc("/api/login", authHandler.Login())
 	http.HandleFunc("/api/logout", authHandler.Logout())
-	http.HandleFunc("/api/candle", dataFrameHandler.Get(config.ProductCode, 0.01))
+	http.HandleFunc("/api/candle", dataFrameHandler.Get(config.ProductCode))
 	http.HandleFunc("/admin/api/trade-params", AuthGuardHandlerFunc(tradeParamsHandler.HandlerFunc(), authHandler))
 	http.HandleFunc("/admin/api/balance", AuthGuardHandlerFunc(balanceHandler.Get(), authHandler))
 

@@ -33,7 +33,7 @@ func TestDataFrameHandler(t *testing.T) {
 	dataFrameHandler := handler.NewDataFrameHandler(dataFrameUsecase)
 
 	t.Run("get", func(t *testing.T) {
-		ts := httptest.NewServer(dataFrameHandler.Get(config.ProductCode, 0.01))
+		ts := httptest.NewServer(dataFrameHandler.Get(config.ProductCode))
 		defer ts.Close()
 
 		req, err := http.NewRequest("GET", ts.URL, nil)
