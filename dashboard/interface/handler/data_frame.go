@@ -26,7 +26,7 @@ func NewDataFrameHandler(du usecase.DataFrameUsecase) DataFrameHandler {
 
 func (dh *dataFrameHandler) Get(productCode string, tradeSize float64) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		params := reqUrlToTradeParams(r, productCode, tradeSize)
+		params := reqUrlToTradeParams(r, productCode)
 
 		// [0, 1000]の範囲に限定
 		candleLimit := getQueryUintDefault(r, "limit", 1000)
@@ -56,7 +56,9 @@ func (dh *dataFrameHandler) Get(productCode string, tradeSize float64) http.Hand
 	}
 }
 
-func reqUrlToTradeParams(r *http.Request, productCode string, tradeSize float64) *model.TradeParams {
+func reqUrlToTradeParams(r *http.Request, productCode string) *model.TradeParams {
+	size := getQueryFloatDefault(r, "size", 0.01)
+
 	sma := r.URL.Query().Get("sma")
 	smaEnable := sma == "true"
 	var smaPeriod1, smaPeriod2, smaPeriod3 int
@@ -93,8 +95,8 @@ func reqUrlToTradeParams(r *http.Request, productCode string, tradeSize float64)
 	var rsiBuyThread, rsiSellThread float64
 	if rsiEnable {
 		rsiPeriod = getQueryUintDefault(r, "rsiPeriod", 14)
-		rsiBuyThread = 30.0
-		rsiSellThread = 70.0
+		rsiBuyThread = getQueryFloatDefault(r, "rsiBuyThread", 30.0)
+		rsiSellThread = getQueryFloatDefault(r, "rsiSellThread", 70.0)
 	}
 
 	macd := r.URL.Query().Get("macd")
@@ -106,12 +108,12 @@ func reqUrlToTradeParams(r *http.Request, productCode string, tradeSize float64)
 		macdSignalPeriod = getQueryUintDefault(r, "macdPeriod3", 9)
 	}
 
-	stopLimitPercent := 0.75
+	stopLimitPercent := getQueryFloatDefault(r, "stopLimitPercent", 0.75)
 
 	params := model.NewTradeParams(
 		false,
 		productCode,
-		tradeSize,
+		size,
 		smaEnable,
 		smaPeriod1,
 		smaPeriod2,

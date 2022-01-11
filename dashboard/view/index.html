@@ -259,6 +259,26 @@
                       outlined
                     ></v-text-field>
                   </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model.number="config.rsi.buyThread"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model.number="config.rsi.sellThread"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
                 </v-row>
                 <!-- macd -->
                 <v-row>
@@ -318,6 +338,60 @@
                         backtest
                       </p>
                     </div>
+                  </v-col>
+                </v-row>
+                <!-- size -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  ></v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        size
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="6"
+                    md="3"
+                  >
+                    <v-text-field
+                      v-model.number="config.size"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- stopLimitPercent -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  ></v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        slp
+                      </p>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="6"
+                    md="3"
+                  >
+                    <v-text-field
+                      v-model.number="config.stopLimitPercent"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
                   </v-col>
                 </v-row>
                 <!-- update button -->

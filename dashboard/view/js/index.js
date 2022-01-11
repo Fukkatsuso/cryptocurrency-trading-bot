@@ -28,6 +28,7 @@ new Vue({
       candle: null,
       config: {
         limit: 30,
+        size: 0.01,
         sma: {
           enable: false,
           periods: [7, 14, 50],
@@ -47,14 +48,17 @@ new Vue({
         rsi: {
           enable: false,
           period: 14,
+          buyThread: 30,
+          sellThread: 70,
         },
         macd: {
           enable: false,
           periods: [12, 26, 9],
         },
+        stopLimitPercent: 0.75,
         backtest: {
           enable: false,
-        }
+        },
       }
     }
   },
@@ -62,6 +66,7 @@ new Vue({
     async getCandle() {
       let params = {
         "limit": this.config.limit,
+        "size": this.config.size,
         "sma": this.config.sma.enable,
         "smaPeriod1": this.config.sma.periods[0],
         "smaPeriod2": this.config.sma.periods[1],
@@ -76,10 +81,13 @@ new Vue({
         "ichimoku": this.config.ichimoku.enable,
         "rsi": this.config.rsi.enable,
         "rsiPeriod": this.config.rsi.period,
+        "rsiBuyThread": this.config.rsi.buyThread,
+        "rsiSellThread": this.config.rsi.sellThread,
         "macd": this.config.macd.enable,
         "macdPeriod1": this.config.macd.periods[0],
         "macdPeriod2": this.config.macd.periods[1],
         "macdPeriod3": this.config.macd.periods[2],
+        "stopLimitPercent": this.config.stopLimitPercent,
         "backtest": this.config.backtest.enable,
       }
       return await axios.get('/api/candle', {
