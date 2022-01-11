@@ -57,7 +57,10 @@
           <!-- パラメータ入力フォーム．enterでリロードされるのを回避 -->
           <div class="indicator">
             <span class="text-h6">Indicator</span>
-            <v-form @submit.prevent>
+            <v-form
+              v-model="validConfig"
+              @submit.prevent
+            >
               <v-container>
                 <!-- limit -->
                 <v-row>
@@ -80,6 +83,7 @@
                   >
                     <v-text-field
                       v-model.number="config.limit"
+                      :rules="configRules.limit"
                       dense
                       hide-details
                       outlined
@@ -116,6 +120,7 @@
                   >
                     <v-text-field
                       v-model.number="config.sma.periods[smaIndex]"
+                      :rules="configRules.smaPeriod"
                       dense
                       hide-details
                       outlined
@@ -152,6 +157,7 @@
                   >
                     <v-text-field
                       v-model.number="config.ema.periods[emaIndex]"
+                      :rules="configRules.emaPeriod"
                       dense
                       hide-details
                       outlined
@@ -186,6 +192,7 @@
                   >
                     <v-text-field
                       v-model.number="config.bbands.n"
+                      :rules="configRules.bbandsN"
                       dense
                       hide-details
                       outlined
@@ -196,6 +203,7 @@
                   >
                     <v-text-field
                       v-model.number="config.bbands.k"
+                      :rules="configRules.bbandsK"
                       dense
                       hide-details
                       outlined
@@ -254,6 +262,7 @@
                   >
                     <v-text-field
                       v-model.number="config.rsi.period"
+                      :rules="configRules.rsiPeriod"
                       dense
                       hide-details
                       outlined
@@ -264,6 +273,7 @@
                   >
                     <v-text-field
                       v-model.number="config.rsi.buyThread"
+                      :rules="configRules.rsiBuyThread"
                       dense
                       hide-details
                       outlined
@@ -274,6 +284,7 @@
                   >
                     <v-text-field
                       v-model.number="config.rsi.sellThread"
+                      :rules="configRules.rsiSellThread"
                       dense
                       hide-details
                       outlined
@@ -310,6 +321,7 @@
                   >
                     <v-text-field
                       v-model.number="config.macd.periods[macdIndex]"
+                      :rules="configRules.macdPeriod"
                       dense
                       hide-details
                       outlined
@@ -361,6 +373,7 @@
                   >
                     <v-text-field
                       v-model.number="config.size"
+                      :rules="configRules.size"
                       dense
                       hide-details
                       outlined
@@ -388,6 +401,7 @@
                   >
                     <v-text-field
                       v-model.number="config.stopLimitPercent"
+                      :rules="configRules.stopLimitPercent"
                       dense
                       hide-details
                       outlined
@@ -402,6 +416,7 @@
                   >
                     <v-btn
                       block
+                      :disabled="!validConfig"
                       @click="update"
                     >
                       update chart

@@ -26,6 +26,7 @@ new Vue({
   data() {
     return {
       candle: null,
+      validConfig: true,
       config: {
         limit: 30,
         size: 0.01,
@@ -59,7 +60,56 @@ new Vue({
         backtest: {
           enable: false,
         },
-      }
+      },
+      configRules: {
+        limit: [
+          v => !!v || 'limit is required',
+          v => (v && v > 0) || 'limit must be more than 0',
+        ],
+        size: [
+          v => !!v || 'size is required',
+          v => (v && parseFloat(v) >= 0) || 'size must be more than 0',
+        ],
+        smaPeriod: [
+          v => !!v || 'period is required',
+          v => (v && v > 0) || 'period must be more than 0',
+        ],
+        emaPeriod: [
+          v => !!v || 'period is required',
+          v => (v && v > 0) || 'period must be more than 0',
+        ],
+        bbandsN: [
+          v => !!v || 'bbandsN is required',
+          v => (v && v > 0) || 'bbandsN is must be more than 0',
+        ],
+        bbandsK: [
+          v => !!v || 'bbandsK is required',
+          v => (v && parseFloat(v) > 0) || 'bbandsK is must be more than 0',
+        ],
+        rsiPeriod: [
+          v => !!v || 'rsiPeriod is required',
+          v => (v && v > 0) || 'rsiPeriod is must be more than 0',
+        ],
+        rsiBuyThread: [
+          v => !!v || 'rsiBuyThread is required',
+          v => (v && v >= 0) || 'rsiBuyThread is must be more than 0',
+          v => (v && v <= 100) || 'rsiBuyThread is must be less than 100',
+        ],
+        rsiSellThread: [
+          v => !!v || 'rsiSellThread is required',
+          v => (v && parseFloat(v) >= 0) || 'rsiSellThread is must be more than 0',
+          v => (v && parseFloat(v) <= 100) || 'rsiSellThread is must be less than 100',
+        ],
+        macdPeriod: [
+          v => !!v || 'period is required',
+          v => (v && v > 0) || 'period is must be more than 0',
+        ],
+        stopLimitPercent: [
+          v => !!v || 'stopLimitPercent is required',
+          v => (v && parseFloat(v) >= 0) || 'stopLimitPercent is must be more than 0',
+          v => (v && parseFloat(v) <= 1) || 'stopLimitPercent is must be less than 100',
+        ],
+      },
     }
   },
   methods: {
