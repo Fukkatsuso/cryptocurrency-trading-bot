@@ -200,9 +200,9 @@ new Vue({
       let hold = 0
       for (const signal of this.candle.backtestEvents.signals) {
         if (signal.side == "BUY") {
-          hold -= signal.size
-        } else if (signal.side == "SELL") {
           hold += signal.size
+        } else if (signal.side == "SELL") {
+          hold -= signal.size
         }
       }
       return hold
