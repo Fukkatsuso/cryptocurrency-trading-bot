@@ -15,6 +15,8 @@ BITFLYER_API_SECRET=<bitflyerのAPIシークレット>
 PRODUCT_CODE=ETH_JPY
 SLACK_BOT_TOKEN=<Slack Botのトークン>
 SLACK_CHANNEL_ID=<SlackのチャンネルID>
+COOKIE_HASHKEY=<cookie暗号化のためのキー(32byte以上)>
+COOKIE_BLOCKKEY=<cookie暗号化のためのブロックキー(16byte or 32byte)>
 ```
 
 ## 本番環境(GCP)
@@ -35,4 +37,6 @@ BITFLYER_API_SECRET: <bitflyerのAPIシークレット>
 PRODUCT_CODE: ETH_JPY
 SLACK_BOT_TOKEN: <Slack Botのトークン>
 SLACK_CHANNEL_ID: <SlackのチャンネルID>
+COOKIE_HASHKEY: <cookie暗号化のためのキー(32byte以上)>
+COOKIE_BLOCKKEY: <cookie暗号化のためのブロックキー(16byte or 32byte)>
 ```

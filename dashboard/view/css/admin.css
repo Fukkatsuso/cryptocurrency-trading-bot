@@ -1,0 +1,22 @@
+.vertical-middle-wrapper {
+  height: 100%;
+  width: 100%;
+  display: table;
+}
+
+.vertical-middle {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#app-bar {
+  z-index: 20;
+}
+
+.trade-params {
+  padding-top: 2em;
+}
+
+.balance {
+  padding-top: 2em;
+}
