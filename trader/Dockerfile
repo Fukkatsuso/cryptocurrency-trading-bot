@@ -1,5 +1,4 @@
-# https://hub.docker.com/layers/golang/library/golang/1.14-buster/images/sha256-93dd6ad8909cb192a2a0f113521d4ec08e9dd35d02d33e4ae1eca2db3c269eff
-FROM golang:1.14-buster AS base
+FROM golang:1.17-buster AS base
 
 RUN apt-get update && \
     cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
@@ -16,7 +15,7 @@ RUN go mod download
 
 FROM base AS dev
 
-RUN go install github.com/pilu/fresh
+RUN go install github.com/pilu/fresh@latest
 
 CMD [ "fresh" ]
 
