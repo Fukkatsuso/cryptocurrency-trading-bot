@@ -29,6 +29,8 @@ env:
   PRODUCT_CODE: ${{ secrets.PRODUCT_CODE }}
   SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
   SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+  COOKIE_HASHKEY: ${{ secrets.COOKIE_HASHKEY }}
+  COOKIE_BLOCKKEY: ${{ secrets.COOKIE_BLOCKKEY }}
 
 jobs:
   test:
@@ -52,6 +54,8 @@ jobs:
           echo PRODUCT_CODE="$PRODUCT_CODE" >> "$ENV_FILE"
           echo SLACK_BOT_TOKEN="$SLACK_BOT_TOKEN" >> "$ENV_FILE"
           echo SLACK_CHANNEL_ID="$SLACK_CHANNEL_ID" >> "$ENV_FILE"
+          echo COOKIE_HASHKEY="$COOKIE_HASHKEY" >> "$ENV_FILE"
+          echo COOKIE_BLOCKKEY="$COOKIE_BLOCKKEY" >> "$ENV_FILE"
 
       - name: Set sa_key file
         run: |
