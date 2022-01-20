@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
-  <link href="/view/css/index.css" rel="stylesheet">
+  <link href="/view/css/admin.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-  <title>cryptocurrency trading bot</title>
+  <title>admin | cryptocurrency trading bot</title>
 </head>
 
 <body>
@@ -25,44 +25,35 @@
           <v-spacer></v-spacer>
           <v-btn
             icon
-            href="/admin"
+            href="/"
           >
-            <v-icon>mdi-monitor-dashboard</v-icon>
+            <v-icon>mdi-home</v-icon>
           </v-btn>
 
           <template
             v-slot:extension
-            v-if="candle"
           >
             <v-tabs>
-              <v-tab
-                style="white-space: pre-line;"
-              >ETH/JPY
-               ${ candle.candles[candle.candles.length-1].close }</v-tab>
+              <v-tab>ETH/JPY</v-tab>
             </v-tabs>
           </template>
         </v-app-bar>
 
         <v-container>
-          <!-- チャート -->
-          <div id="chart" v-if="candle">
-            <span class="text-h6">Chart</span>
-            <apexchart
-              height="400"
-              :options="chartOptions"
-              :series="series"
-            ></apexchart>
+          <div>
+            <span class="text-h6">Admin Page</span>
           </div>
 
-          <!-- パラメータ入力フォーム．enterでリロードされるのを回避 -->
-          <div class="indicator">
-            <span class="text-h6">Indicator</span>
+          <!-- パラメータ入力フォーム．enterで送信されるのを回避 -->
+          <div class="trade-params">
+            <span class="text-h6">Trade Params</span>
             <v-form
-              v-model="validConfig"
+              v-if="newTradeParams"
+              v-model="validParams"
               @submit.prevent
             >
               <v-container>
-                <!-- limit -->
+                <!-- size -->
                 <v-row>
                   <v-col
                     cols="1"
@@ -73,7 +64,7 @@
                   >
                     <div class="vertical-middle-wrapper">
                       <p class="vertical-middle text-body-2 text-md-body-1">
-                        limit
+                        size
                       </p>
                     </div>
                   </v-col>
@@ -82,12 +73,36 @@
                     md="3"
                   >
                     <v-text-field
-                      v-model.number="config.limit"
-                      :rules="configRules.limit"
+                      v-model.number="newTradeParams.size"
+                      :rules="tradeParamsRules.size"
                       dense
                       hide-details
                       outlined
                     ></v-text-field>
+                  </v-col>
+                </v-row>
+                <!-- tradeEnable -->
+                <v-row>
+                  <v-col
+                    cols="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <v-simple-checkbox
+                        v-model="newTradeParams.trade"
+                        color="primary"
+                        class="vertical-middle"
+                      ></v-simple-checkbox>
+                    </div>
+                  </v-col>
+                  <v-col
+                    cols="2"
+                    md="1"
+                  >
+                    <div class="vertical-middle-wrapper">
+                      <p class="vertical-middle text-body-2 text-md-body-1">
+                        tradeEnable
+                      </p>
+                    </div>
                   </v-col>
                 </v-row>
                 <!-- sma -->
@@ -97,7 +112,7 @@
                   >
                     <div class="vertical-middle-wrapper">
                       <v-simple-checkbox
-                        v-model="config.sma.enable"
+                        v-model="newTradeParams.sma"
                         color="primary"
                         class="vertical-middle"
                       ></v-simple-checkbox>
@@ -114,13 +129,33 @@
                     </div>
                   </v-col>
                   <v-col
-                    v-for="(smaPeriod, smaIndex) in config.sma.periods"
-                    :key="smaPeriod.id"
                     cols="3"
                   >
                     <v-text-field
-                      v-model.number="config.sma.periods[smaIndex]"
-                      :rules="configRules.smaPeriod"
+                      v-model.number="newTradeParams.smaPeriod1"
+                      :rules="tradeParamsRules.smaPeriod1"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model.number="newTradeParams.smaPeriod2"
+                      :rules="tradeParamsRules.smaPeriod2"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model.number="newTradeParams.smaPeriod3"
+                      :rules="tradeParamsRules.smaPeriod3"
                       dense
                       hide-details
                       outlined
@@ -134,7 +169,7 @@
                   >
                     <div class="vertical-middle-wrapper">
                       <v-simple-checkbox
-                        v-model="config.ema.enable"
+                        v-model="newTradeParams.ema"
                         color="primary"
                         class="vertical-middle"
                       ></v-simple-checkbox>
@@ -151,13 +186,33 @@
                     </div>
                   </v-col>
                   <v-col
-                    v-for="(emaPeriod, emaIndex) in config.ema.periods"
-                    :key="emaPeriod.id"
                     cols="3"
                   >
                     <v-text-field
-                      v-model.number="config.ema.periods[emaIndex]"
-                      :rules="configRules.emaPeriod"
+                      v-model.number="newTradeParams.emaPeriod1"
+                      :rules="tradeParamsRules.emaPeriod1"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model.number="newTradeParams.emaPeriod2"
+                      :rules="tradeParamsRules.emaPeriod2"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model.number="newTradeParams.emaPeriod3"
+                      :rules="tradeParamsRules.emaPeriod3"
                       dense
                       hide-details
                       outlined
@@ -171,7 +226,7 @@
                   >
                     <div class="vertical-middle-wrapper">
                       <v-simple-checkbox
-                        v-model="config.bbands.enable"
+                        v-model="newTradeParams.bbands"
                         color="primary"
                         class="vertical-middle"
                       ></v-simple-checkbox>
@@ -191,8 +246,8 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model.number="config.bbands.n"
-                      :rules="configRules.bbandsN"
+                      v-model.number="newTradeParams.bbandsN"
+                      :rules="tradeParamsRules.bbandsN"
                       dense
                       hide-details
                       outlined
@@ -202,8 +257,8 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model.number="config.bbands.k"
-                      :rules="configRules.bbandsK"
+                      v-model.number="newTradeParams.bbandsK"
+                      :rules="tradeParamsRules.bbandsK"
                       dense
                       hide-details
                       outlined
@@ -217,7 +272,7 @@
                   >
                     <div class="vertical-middle-wrapper">
                       <v-simple-checkbox
-                        v-model="config.ichimoku.enable"
+                        v-model="newTradeParams.ichimoku"
                         color="primary"
                         class="vertical-middle"
                       ></v-simple-checkbox>
@@ -241,7 +296,7 @@
                   >
                     <div class="vertical-middle-wrapper">
                       <v-simple-checkbox
-                        v-model="config.rsi.enable"
+                        v-model="newTradeParams.rsi"
                         color="primary"
                         class="vertical-middle"
                       ></v-simple-checkbox>
@@ -261,8 +316,8 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model.number="config.rsi.period"
-                      :rules="configRules.rsiPeriod"
+                      v-model.number="newTradeParams.rsiPeriod"
+                      :rules="tradeParamsRules.rsiPeriod"
                       dense
                       hide-details
                       outlined
@@ -272,8 +327,8 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model.number="config.rsi.buyThread"
-                      :rules="configRules.rsiBuyThread"
+                      v-model.number="newTradeParams.rsiBuyThread"
+                      :rules="tradeParamsRules.rsiBuyThread"
                       dense
                       hide-details
                       outlined
@@ -283,8 +338,8 @@
                     cols="3"
                   >
                     <v-text-field
-                      v-model.number="config.rsi.sellThread"
-                      :rules="configRules.rsiSellThread"
+                      v-model.number="newTradeParams.rsiSellThread"
+                      :rules="tradeParamsRules.rsiSellThread"
                       dense
                       hide-details
                       outlined
@@ -298,7 +353,7 @@
                   >
                     <div class="vertical-middle-wrapper">
                       <v-simple-checkbox
-                        v-model="config.macd.enable"
+                        v-model="newTradeParams.macd"
                         color="primary"
                         class="vertical-middle"
                       ></v-simple-checkbox>
@@ -315,65 +370,33 @@
                     </div>
                   </v-col>
                   <v-col
-                    v-for="(macdPeriod, macdIndex) in config.macd.periods"
-                    :key="macdPeriod.id"
                     cols="3"
                   >
                     <v-text-field
-                      v-model.number="config.macd.periods[macdIndex]"
-                      :rules="configRules.macdPeriod"
+                      v-model.number="newTradeParams.macdFastPeriod"
+                      :rules="tradeParamsRules.macdFastPeriod"
                       dense
                       hide-details
                       outlined
                     ></v-text-field>
                   </v-col>
-                </v-row>
-                <!-- backtest -->
-                <v-row>
                   <v-col
-                    cols="1"
-                  >
-                    <div class="vertical-middle-wrapper">
-                      <v-simple-checkbox
-                        v-model="config.backtest.enable"
-                        color="primary"
-                        class="vertical-middle"
-                      ></v-simple-checkbox>
-                    </div>
-                  </v-col>
-                  <v-col
-                    cols="2"
-                    md="1"
-                  >
-                    <div class="vertical-middle-wrapper">
-                      <p class="vertical-middle text-body-2 text-md-body-1">
-                        backtest
-                      </p>
-                    </div>
-                  </v-col>
-                </v-row>
-                <!-- size -->
-                <v-row>
-                  <v-col
-                    cols="1"
-                  ></v-col>
-                  <v-col
-                    cols="2"
-                    md="1"
-                  >
-                    <div class="vertical-middle-wrapper">
-                      <p class="vertical-middle text-body-2 text-md-body-1">
-                        size
-                      </p>
-                    </div>
-                  </v-col>
-                  <v-col
-                    cols="6"
-                    md="3"
+                    cols="3"
                   >
                     <v-text-field
-                      v-model.number="config.size"
-                      :rules="configRules.size"
+                      v-model.number="newTradeParams.macdSlowPeriod"
+                      :rules="tradeParamsRules.macdSlowPeriod"
+                      dense
+                      hide-details
+                      outlined
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="3"
+                  >
+                    <v-text-field
+                      v-model.number="newTradeParams.macdSignalPeriod"
+                      :rules="tradeParamsRules.macdSignalPeriod"
                       dense
                       hide-details
                       outlined
@@ -400,26 +423,37 @@
                     md="3"
                   >
                     <v-text-field
-                      v-model.number="config.stopLimitPercent"
-                      :rules="configRules.stopLimitPercent"
+                      v-model.number="newTradeParams.stopLimitPercent"
+                      :rules="tradeParamsRules.stopLimitPercent"
                       dense
                       hide-details
                       outlined
                     ></v-text-field>
                   </v-col>
                 </v-row>
-                <!-- update button -->
+                <!-- update/reset button -->
                 <v-row>
                   <v-col
-                    cols="8"
+                    cols="6"
                     md="4"
                   >
                     <v-btn
                       block
-                      :disabled="!validConfig"
-                      @click="update"
+                      :disabled="!validParams"
+                      @click="updateTradeParams"
                     >
-                      update chart
+                      update
+                    </v-btn>
+                  </v-col>
+                  <v-col
+                    cols="6"
+                    md="4"
+                  >
+                    <v-btn
+                      block
+                      @click="resetTradeParams"
+                    >
+                      reset
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -427,66 +461,29 @@
             </v-form>
           </div>
 
-          <!-- 実際の取引履歴 -->
-          <div class="history">
-            <span class="text-h6">Trade History</span>
+          <!-- 資産一覧表 -->
+          <div class="balance">
+            <span class="text-h6">Balance</span>
             <v-simple-table>
               <template v-slot:default>
                 <thead>
                   <tr>
-                    <th class="text-left">Date</th>
-                    <th class="text-left">Price</th>
-                    <th class="text-left">Side</th>
-                    <th class="text-left">Size</th>
+                    <th class="text-left">Code</th>
+                    <th class="text-left">Amount</th>
                   </tr>
                 </thead>
-                <tbody v-if="candle && candle.events && candle.events.signals">
+                <tbody v-if="balance">
                   <tr
-                    v-for="item in candle.events.signals"
-                    :key="item.time"
+                    v-for="item in balance"
+                    :key="item.currencyCode"
+                    v-if="item.amount > 0"
                   >
-                    <td>${ timeToString(item.time) }</td>
-                    <td>${ item.price }</td>
-                    <td>${ item.side }</td>
-                    <td>${ item.size }</td>
+                    <td>${ item.currencyCode }</td>
+                    <td>${ item.amount }</td>
                   </tr>
                 </tbody>
               </template>
             </v-simple-table>
-          </div>
-
-          <!-- バックテストの取引履歴 -->
-          <div class="history">
-            <span class="text-h6">Backtest History</span>
-            <v-simple-table>
-              <template v-slot:default>
-                <thead>
-                  <tr>
-                    <th class="text-left">Date</th>
-                    <th class="text-left">Price</th>
-                    <th class="text-left">Side</th>
-                    <th class="text-left">Size</th>
-                  </tr>
-                </thead>
-                <tbody v-if="candle && candle.backtestEvents && candle.backtestEvents.signals">
-                  <tr
-                    v-for="item in candle.backtestEvents.signals"
-                    :key="item.time"
-                  >
-                    <td>${ timeToString(item.time) }</td>
-                    <td>${ item.price }</td>
-                    <td>${ item.side }</td>
-                    <td>${ item.size }</td>
-                  </tr>
-                </tbody>
-              </template>
-            </v-simple-table>
-            <p
-              v-if="candle && candle.backtestEvents"
-              class="text-body-1 font-weight-bold"
-            >
-              backtest profit: ${ candle.backtestEvents.profit } JPY / hold: ${ backtestCurrentHold } ETH
-            </p>
           </div>
         </v-container>
       </v-main>
@@ -496,8 +493,7 @@
   <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vue-apexcharts"></script>
-  <script src="/view/js/index.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+  <script src="/view/js/admin.js"></script>
 </body>
 </html>

@@ -26,8 +26,10 @@ new Vue({
   data() {
     return {
       candle: null,
+      validConfig: true,
       config: {
         limit: 30,
+        size: 0.01,
         sma: {
           enable: false,
           periods: [7, 14, 50],
@@ -47,21 +49,74 @@ new Vue({
         rsi: {
           enable: false,
           period: 14,
+          buyThread: 30,
+          sellThread: 70,
         },
         macd: {
           enable: false,
           periods: [12, 26, 9],
         },
+        stopLimitPercent: 0.75,
         backtest: {
           enable: false,
-        }
-      }
+        },
+      },
+      configRules: {
+        limit: [
+          v => !!v || 'limit is required',
+          v => (v && v > 0) || 'limit must be more than 0',
+        ],
+        size: [
+          v => !!v || 'size is required',
+          v => (v && parseFloat(v) >= 0) || 'size must be more than 0',
+        ],
+        smaPeriod: [
+          v => !!v || 'period is required',
+          v => (v && v > 0) || 'period must be more than 0',
+        ],
+        emaPeriod: [
+          v => !!v || 'period is required',
+          v => (v && v > 0) || 'period must be more than 0',
+        ],
+        bbandsN: [
+          v => !!v || 'bbandsN is required',
+          v => (v && v > 0) || 'bbandsN is must be more than 0',
+        ],
+        bbandsK: [
+          v => !!v || 'bbandsK is required',
+          v => (v && parseFloat(v) > 0) || 'bbandsK is must be more than 0',
+        ],
+        rsiPeriod: [
+          v => !!v || 'rsiPeriod is required',
+          v => (v && v > 0) || 'rsiPeriod is must be more than 0',
+        ],
+        rsiBuyThread: [
+          v => !!v || 'rsiBuyThread is required',
+          v => (v && v >= 0) || 'rsiBuyThread is must be more than 0',
+          v => (v && v <= 100) || 'rsiBuyThread is must be less than 100',
+        ],
+        rsiSellThread: [
+          v => !!v || 'rsiSellThread is required',
+          v => (v && parseFloat(v) >= 0) || 'rsiSellThread is must be more than 0',
+          v => (v && parseFloat(v) <= 100) || 'rsiSellThread is must be less than 100',
+        ],
+        macdPeriod: [
+          v => !!v || 'period is required',
+          v => (v && v > 0) || 'period is must be more than 0',
+        ],
+        stopLimitPercent: [
+          v => !!v || 'stopLimitPercent is required',
+          v => (v && parseFloat(v) >= 0) || 'stopLimitPercent is must be more than 0',
+          v => (v && parseFloat(v) <= 1) || 'stopLimitPercent is must be less than 100',
+        ],
+      },
     }
   },
   methods: {
     async getCandle() {
       let params = {
         "limit": this.config.limit,
+        "size": this.config.size,
         "sma": this.config.sma.enable,
         "smaPeriod1": this.config.sma.periods[0],
         "smaPeriod2": this.config.sma.periods[1],
@@ -76,10 +131,13 @@ new Vue({
         "ichimoku": this.config.ichimoku.enable,
         "rsi": this.config.rsi.enable,
         "rsiPeriod": this.config.rsi.period,
+        "rsiBuyThread": this.config.rsi.buyThread,
+        "rsiSellThread": this.config.rsi.sellThread,
         "macd": this.config.macd.enable,
         "macdPeriod1": this.config.macd.periods[0],
         "macdPeriod2": this.config.macd.periods[1],
         "macdPeriod3": this.config.macd.periods[2],
+        "stopLimitPercent": this.config.stopLimitPercent,
         "backtest": this.config.backtest.enable,
       }
       return await axios.get('/api/candle', {
@@ -192,9 +250,9 @@ new Vue({
       let hold = 0
       for (const signal of this.candle.backtestEvents.signals) {
         if (signal.side == "BUY") {
-          hold -= signal.size
-        } else if (signal.side == "SELL") {
           hold += signal.size
+        } else if (signal.side == "SELL") {
+          hold -= signal.size
         }
       }
       return hold

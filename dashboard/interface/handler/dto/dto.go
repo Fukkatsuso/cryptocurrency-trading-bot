@@ -64,7 +64,7 @@ func ConvertDataFrame(df *model.DataFrame) DataFrame {
 }
 
 type Candle struct {
-	ProductCode string        `json:"product_code"`
+	ProductCode string        `json:"productCode"`
 	Duration    time.Duration `json:"duration"`
 	Time        time.Time     `json:"time"`
 	Open        float64       `json:"open"`
@@ -109,7 +109,7 @@ func ConvertSignalEvents(s *model.SignalEvents) *SignalEvents {
 
 type SignalEvent struct {
 	Time        time.Time       `json:"time"`
-	ProductCode string          `json:"product_code"`
+	ProductCode string          `json:"productCode"`
 	Side        model.OrderSide `json:"side"`
 	Price       float64         `json:"price"`
 	Size        float64         `json:"size"`
@@ -210,12 +210,12 @@ func ConvertRSI(rsi *model.RSI) *RSI {
 }
 
 type MACD struct {
-	FastPeriod   int       `json:"fast_period,omitempty"`
-	SlowPeriod   int       `json:"slow_period,omitempty"`
-	SignalPeriod int       `json:"signal_period,omitempty"`
+	FastPeriod   int       `json:"fastPeriod,omitempty"`
+	SlowPeriod   int       `json:"slowPeriod,omitempty"`
+	SignalPeriod int       `json:"signalPeriod,omitempty"`
 	MACD         []float64 `json:"macd,omitempty"`
-	MACDSignal   []float64 `json:"macd_signal,omitempty"`
-	MACDHist     []float64 `json:"macd_hist,omitempty"`
+	MACDSignal   []float64 `json:"macdSignal,omitempty"`
+	MACDHist     []float64 `json:"macdHist,omitempty"`
 }
 
 func ConvertMACD(macd *model.MACD) *MACD {
@@ -230,5 +230,83 @@ func ConvertMACD(macd *model.MACD) *MACD {
 		MACD:         macd.Macd(),
 		MACDSignal:   macd.MacdSignal(),
 		MACDHist:     macd.MacdHist(),
+	}
+}
+
+type TradeParams struct {
+	TradeEnable      bool    `json:"trade"`
+	ProductCode      string  `json:"productCode"`
+	Size             float64 `json:"size"`
+	SMAEnable        bool    `json:"sma"`
+	SMAPeriod1       int     `json:"smaPeriod1"`
+	SMAPeriod2       int     `json:"smaPeriod2"`
+	SMAPeriod3       int     `json:"smaPeriod3"`
+	EMAEnable        bool    `json:"ema"`
+	EMAPeriod1       int     `json:"emaPeriod1"`
+	EMAPeriod2       int     `json:"emaPeriod2"`
+	EMAPeriod3       int     `json:"emaPeriod3"`
+	BBandsEnable     bool    `json:"bbands"`
+	BBandsN          int     `json:"bbandsN"`
+	BBandsK          float64 `json:"bbandsK"`
+	IchimokuEnable   bool    `json:"ichimoku"`
+	RSIEnable        bool    `json:"rsi"`
+	RSIPeriod        int     `json:"rsiPeriod"`
+	RSIBuyThread     float64 `json:"rsiBuyThread"`
+	RSISellThread    float64 `json:"rsiSellThread"`
+	MACDEnable       bool    `json:"macd"`
+	MACDFastPeriod   int     `json:"macdFastPeriod"`
+	MACDSlowPeriod   int     `json:"macdSlowPeriod"`
+	MACDSignalPeriod int     `json:"macdSignalPeriod"`
+	StopLimitPercent float64 `json:"stopLimitPercent"`
+}
+
+func ConvertTradeParams(params *model.TradeParams) *TradeParams {
+	if params == nil {
+		return nil
+	}
+
+	return &TradeParams{
+		TradeEnable:      params.TradeEnable(),
+		ProductCode:      params.ProductCode(),
+		Size:             params.Size(),
+		SMAEnable:        params.SMAEnable(),
+		SMAPeriod1:       params.SMAPeriod1(),
+		SMAPeriod2:       params.SMAPeriod2(),
+		SMAPeriod3:       params.SMAPeriod3(),
+		EMAEnable:        params.EMAEnable(),
+		EMAPeriod1:       params.EMAPeriod1(),
+		EMAPeriod2:       params.EMAPeriod2(),
+		EMAPeriod3:       params.EMAPeriod3(),
+		BBandsEnable:     params.BBandsEnable(),
+		BBandsN:          params.BBandsN(),
+		BBandsK:          params.BBandsK(),
+		IchimokuEnable:   params.IchimokuEnable(),
+		RSIEnable:        params.RSIEnable(),
+		RSIPeriod:        params.RSIPeriod(),
+		RSIBuyThread:     params.RSIBuyThread(),
+		RSISellThread:    params.RSISellThread(),
+		MACDEnable:       params.MACDEnable(),
+		MACDFastPeriod:   params.MACDFastPeriod(),
+		MACDSlowPeriod:   params.MACDSlowPeriod(),
+		MACDSignalPeriod: params.MACDSignalPeriod(),
+		StopLimitPercent: params.StopLimitPercent(),
+	}
+}
+
+type Balance struct {
+	CurrencyCode string  `json:"currencyCode"`
+	Amount       float64 `json:"amount"`
+	Available    float64 `json:"available"`
+}
+
+func ConvertBalance(balance *model.Balance) *Balance {
+	if balance == nil {
+		return nil
+	}
+
+	return &Balance{
+		CurrencyCode: balance.CurrencyCode(),
+		Amount:       balance.Amount(),
+		Available:    balance.Available(),
 	}
 }
