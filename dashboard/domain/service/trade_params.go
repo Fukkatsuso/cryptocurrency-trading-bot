@@ -69,8 +69,8 @@ func (ts *tradeParamsService) OptimizeBBands(df *model.DataFrame, n int, k float
 	bestN := n
 	bestK := k
 
-	for n := 10; n <= 30; n++ {
-		for k := 1.8; k <= 2.2; k += 0.1 {
+	for n := 20; n <= 21; n++ {
+		for k := 2.0; k <= 2.0; k += 0.1 {
 			signalEvents := ts.dataFrameService.BacktestBBands(df, n, k, size)
 			if signalEvents == nil {
 				continue
