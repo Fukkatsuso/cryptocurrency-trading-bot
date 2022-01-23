@@ -105,9 +105,9 @@ func (ts *tradeParamsService) OptimizeRSI(df *model.DataFrame, period int, buyTh
 	bestPeriod := period
 	bestBuyThread, bestSellThread := buyThread, sellThread
 
-	for period := 3; period < 30; period++ {
-		for buyThread := float64(20); buyThread <= 40; buyThread++ {
-			for sellThread := float64(60); sellThread <= 80; sellThread++ {
+	for period := 14; period <= 21; period++ {
+		for buyThread := float64(25); buyThread <= 35; buyThread++ {
+			for sellThread := float64(65); sellThread <= 75; sellThread++ {
 				signalEvents := ts.dataFrameService.BacktestRSI(df, period, buyThread, sellThread, size)
 				if signalEvents == nil {
 					continue
