@@ -136,9 +136,9 @@ func (ts *tradeParamsService) OptimizeMACD(df *model.DataFrame, fastPeriod, slow
 	bestSlowPeriod := slowPeriod
 	bestSignalPeriod := signalPeriod
 
-	for fastPeriod := 5; fastPeriod < 20; fastPeriod++ {
-		for slowPeriod := 20; slowPeriod < 40; slowPeriod++ {
-			for signalPeriod := 5; signalPeriod < 15; signalPeriod++ {
+	for fastPeriod := 12; fastPeriod <= 12; fastPeriod++ {
+		for slowPeriod := 26; slowPeriod <= 26; slowPeriod++ {
+			for signalPeriod := 9; signalPeriod <= 9; signalPeriod++ {
 				signalEvents := ts.dataFrameService.BacktestMACD(df, fastPeriod, slowPeriod, signalPeriod, size)
 				if signalEvents == nil {
 					continue
