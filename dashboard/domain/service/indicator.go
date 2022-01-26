@@ -90,21 +90,13 @@ func (is *indicatorService) SellSignalOfIchimoku(ichimoku *model.IchimokuCloud, 
 }
 
 func (is *indicatorService) BuySignalOfRSI(rsi *model.RSI, buyThread float64, at int) bool {
-	if at < 1 {
-		return false
-	}
-
-	return rsi.Values()[at-1] < buyThread &&
-		rsi.Values()[at] >= buyThread
+	// 逆張り
+	return rsi.Values()[at] <= buyThread
 }
 
 func (is *indicatorService) SellSignalOfRSI(rsi *model.RSI, sellThread float64, at int) bool {
-	if at < 1 {
-		return false
-	}
-
-	return rsi.Values()[at-1] > sellThread &&
-		rsi.Values()[at] <= sellThread
+	// 逆張り
+	return rsi.Values()[at] >= sellThread
 }
 
 func (is *indicatorService) BuySignalOfMACD(macd *model.MACD, at int) bool {

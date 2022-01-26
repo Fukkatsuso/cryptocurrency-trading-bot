@@ -43,8 +43,8 @@ func (ts *tradeParamsService) OptimizeEMA(df *model.DataFrame, fastPeriod, slowP
 	bestFastPeriod := fastPeriod
 	bestSlowPeriod := slowPeriod
 
-	for fastPeriod := 5; fastPeriod < 11; fastPeriod++ {
-		for slowPeriod := 12; slowPeriod < 20; slowPeriod++ {
+	for fastPeriod := 7; fastPeriod <= 10; fastPeriod++ {
+		for slowPeriod := 20; slowPeriod <= 25; slowPeriod++ {
 			signalEvents := ts.dataFrameService.BacktestEMA(df, fastPeriod, slowPeriod, size)
 			if signalEvents == nil {
 				continue
@@ -69,8 +69,8 @@ func (ts *tradeParamsService) OptimizeBBands(df *model.DataFrame, n int, k float
 	bestN := n
 	bestK := k
 
-	for n := 10; n <= 30; n++ {
-		for k := 1.8; k <= 2.2; k += 0.1 {
+	for n := 20; n <= 21; n++ {
+		for k := 2.0; k <= 2.0; k += 0.1 {
 			signalEvents := ts.dataFrameService.BacktestBBands(df, n, k, size)
 			if signalEvents == nil {
 				continue
@@ -105,9 +105,9 @@ func (ts *tradeParamsService) OptimizeRSI(df *model.DataFrame, period int, buyTh
 	bestPeriod := period
 	bestBuyThread, bestSellThread := buyThread, sellThread
 
-	for period := 3; period < 30; period++ {
-		for buyThread := float64(20); buyThread <= 40; buyThread++ {
-			for sellThread := float64(60); sellThread <= 80; sellThread++ {
+	for period := 14; period <= 21; period++ {
+		for buyThread := float64(25); buyThread <= 35; buyThread++ {
+			for sellThread := float64(65); sellThread <= 75; sellThread++ {
 				signalEvents := ts.dataFrameService.BacktestRSI(df, period, buyThread, sellThread, size)
 				if signalEvents == nil {
 					continue
@@ -136,9 +136,9 @@ func (ts *tradeParamsService) OptimizeMACD(df *model.DataFrame, fastPeriod, slow
 	bestSlowPeriod := slowPeriod
 	bestSignalPeriod := signalPeriod
 
-	for fastPeriod := 5; fastPeriod < 20; fastPeriod++ {
-		for slowPeriod := 20; slowPeriod < 40; slowPeriod++ {
-			for signalPeriod := 5; signalPeriod < 15; signalPeriod++ {
+	for fastPeriod := 12; fastPeriod <= 12; fastPeriod++ {
+		for slowPeriod := 26; slowPeriod <= 26; slowPeriod++ {
+			for signalPeriod := 9; signalPeriod <= 9; signalPeriod++ {
 				signalEvents := ts.dataFrameService.BacktestMACD(df, fastPeriod, slowPeriod, signalPeriod, size)
 				if signalEvents == nil {
 					continue

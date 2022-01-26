@@ -288,3 +288,57 @@ func (macd *MACD) MacdSignal() []float64 {
 func (macd *MACD) MacdHist() []float64 {
 	return macd.macdHist
 }
+
+// 平均足
+type AverageCandle struct {
+	opens  []float64
+	closes []float64
+	highs  []float64
+	lows   []float64
+}
+
+func NewAverageCandle(candles []Candle) *AverageCandle {
+	lenCandle := len(candles)
+
+	opens := make([]float64, lenCandle)
+	closes := make([]float64, lenCandle)
+	highs := make([]float64, lenCandle)
+	lows := make([]float64, lenCandle)
+	for i, candle := range candles {
+		// open
+		if i == 0 {
+			opens[i] = candle.Open()
+		} else {
+			opens[i] = (candles[i-1].Open() + candles[i-1].Close()) / 2.0
+		}
+		// close
+		closes[i] = (candle.Open() + candle.Close() + candle.High() + candle.Low()) / 4.0
+		// high
+		highs[i] = candle.High()
+		// low
+		lows[i] = candle.Low()
+	}
+
+	return &AverageCandle{
+		opens:  opens,
+		closes: closes,
+		highs:  highs,
+		lows:   lows,
+	}
+}
+
+func (ac *AverageCandle) Opens() []float64 {
+	return ac.opens
+}
+
+func (ac *AverageCandle) Closes() []float64 {
+	return ac.closes
+}
+
+func (ac *AverageCandle) High() []float64 {
+	return ac.highs
+}
+
+func (ac *AverageCandle) Lows() []float64 {
+	return ac.lows
+}

@@ -10,6 +10,7 @@ type DataFrame struct {
 	ichimokuCloud  *IchimokuCloud
 	rsi            *RSI
 	macd           *MACD
+	averageCandle  *AverageCandle
 	backtestEvents *SignalEvents
 }
 
@@ -109,6 +110,10 @@ func (df *DataFrame) MACD() *MACD {
 	return df.macd
 }
 
+func (df *DataFrame) AverageCandle() *AverageCandle {
+	return df.averageCandle
+}
+
 func (df *DataFrame) BacktestEvents() *SignalEvents {
 	return df.backtestEvents
 }
@@ -178,6 +183,16 @@ func (df *DataFrame) AddMACD(inFastPeriod, inSlowPeriod, inSignalPeriod int) boo
 	}
 
 	df.macd = macd
+	return true
+}
+
+func (df *DataFrame) AddAverageCandle() bool {
+	averageCandle := NewAverageCandle(df.candles)
+	if averageCandle == nil {
+		return false
+	}
+
+	df.averageCandle = averageCandle
 	return true
 }
 
