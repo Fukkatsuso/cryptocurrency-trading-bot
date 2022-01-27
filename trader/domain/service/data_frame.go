@@ -258,3 +258,99 @@ func (ds *dataFrameService) Analyze(df *model.DataFrame, at int, params *model.T
 
 	return buyPoint > 1, sellPoint > 1
 }
+
+// MACDとRSIを組み合わせて売買サインを出す
+type mrBaseDataFrameService struct {
+	indicatorService IndicatorService
+}
+
+func NewMRBaseDataFrameService(is IndicatorService) DataFrameService {
+	return &mrBaseDataFrameService{
+		indicatorService: is,
+	}
+}
+
+func (ds *mrBaseDataFrameService) BacktestEMA(df *model.DataFrame, fastPeriod, slowPeriod int, size float64) *model.SignalEvents {
+	return NewDataFrameService(ds.indicatorService).BacktestEMA(df, fastPeriod, slowPeriod, size)
+}
+func (ds *mrBaseDataFrameService) BacktestBBands(df *model.DataFrame, n int, k float64, size float64) *model.SignalEvents {
+	return NewDataFrameService(ds.indicatorService).BacktestBBands(df, n, k, size)
+}
+
+func (ds *mrBaseDataFrameService) BacktestIchimoku(df *model.DataFrame, size float64) *model.SignalEvents {
+	return NewDataFrameService(ds.indicatorService).BacktestIchimoku(df, size)
+}
+
+func (ds *mrBaseDataFrameService) BacktestRSI(df *model.DataFrame, period int, buyThread, sellThread float64, size float64) *model.SignalEvents {
+	return NewDataFrameService(ds.indicatorService).BacktestRSI(df, period, buyThread, sellThread, size)
+}
+
+func (ds *mrBaseDataFrameService) BacktestMACD(df *model.DataFrame, fastPeriod, slowPeriod, signalPeriod int, size float64) *model.SignalEvents {
+	return NewDataFrameService(ds.indicatorService).BacktestMACD(df, fastPeriod, slowPeriod, signalPeriod, size)
+}
+
+func (ds *mrBaseDataFrameService) Backtest(df *model.DataFrame, params *model.TradeParams) {
+	if df == nil || params == nil {
+		return
+	}
+
+	signals := make([]model.SignalEvent, 0)
+	signalEvents := model.NewSignalEvents(signals)
+	for i, candle := range df.Candles() {
+		buy, sell := ds.Analyze(df, i, params)
+
+		if buy {
+			signal := model.NewSignalEvent(candle.Time().Time(), df.ProductCode(), model.OrderSideBuy, candle.Close(), params.Size())
+			if signal != nil {
+				signalEvents.AddBuySignal(*signal)
+			}
+		}
+
+		if sell ||
+			signalEvents.ShouldCutLoss(candle.Close(), params.StopLimitPercent()) {
+			signal := model.NewSignalEvent(candle.Time().Time(), df.ProductCode(), model.OrderSideSell, candle.Close(), params.Size())
+			if signal != nil {
+				signalEvents.AddSellSignal(*signal)
+			}
+		}
+	}
+
+	signalEvents.EstimateProfit()
+
+	df.AddBacktestEvents(signalEvents)
+}
+
+func (ds *mrBaseDataFrameService) Analyze(df *model.DataFrame, at int, params *model.TradeParams) (bool, bool) {
+	if at <= 0 {
+		return false, false
+	}
+
+	if !params.MACDEnable() {
+		return false, false
+	}
+
+	if !params.RSIEnable() {
+		return false, false
+	}
+
+	macd := df.MACD()
+	macdBuySignal := ds.indicatorService.BuySignalOfMACD(macd, at)
+	macdSellSignal := ds.indicatorService.SellSignalOfMACD(macd, at)
+
+	rsi := df.RSI()
+	rsiBuySignal := ds.indicatorService.BuySignalOfRSI(rsi, params.RSIBuyThread(), at)
+	rsiSellSignal := ds.indicatorService.SellSignalOfRSI(rsi, params.RSISellThread(), at)
+
+	// 買いサインが両方点灯
+	if macdBuySignal && rsiBuySignal {
+		return true, false
+	}
+
+	// 売りサインが両方点灯
+	if macdSellSignal && rsiSellSignal {
+		return false, true
+	}
+
+	// MACDのサインには素直に従う
+	return macdBuySignal, macdSellSignal
+}

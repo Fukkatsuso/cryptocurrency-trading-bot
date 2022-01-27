@@ -138,3 +138,46 @@ func TestTradeParamsService(t *testing.T) {
 		}
 	})
 }
+
+func TestTradeParamsServiceMRBase(t *testing.T) {
+	tx := persistence.NewMySQLTransaction(config.DSN())
+	defer tx.Rollback()
+
+	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat, config.ProductCode, config.CandleDuration)
+	candles, err := candleRepository.FindAll(config.ProductCode, config.CandleDuration, -1)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	df := model.NewDataFrame(config.ProductCode, candles, nil)
+
+	tradeParamsRepository := persistence.NewTradeParamsRepository(tx)
+	indicatorService := service.NewIndicatorService()
+	dataFrameService := service.NewMRBaseDataFrameService(indicatorService)
+	tradeParamsService := service.NewTradeParamsService(tradeParamsRepository, dataFrameService)
+
+	params := model.NewBasicTradeParams(config.ProductCode, 0.01)
+
+	t.Run("optimize", func(t *testing.T) {
+		optimizedParams, changed := tradeParamsService.OptimizeAll(df, params)
+
+		if optimizedParams.MACDEnable() {
+			ok := df.AddMACD(optimizedParams.MACDFastPeriod(), optimizedParams.MACDSlowPeriod(), optimizedParams.MACDSignalPeriod())
+			optimizedParams.EnableMACD(ok)
+		}
+		if optimizedParams.RSIEnable() {
+			ok := df.AddRSI(optimizedParams.RSIPeriod())
+			optimizedParams.EnableRSI(ok)
+		}
+
+		dataFrameService.Backtest(df, optimizedParams)
+		profit := df.BacktestEvents().EstimateProfit()
+
+		t.Logf("params=%+v, profit=%f", optimizedParams, profit)
+
+		if changed && *optimizedParams == *params {
+			t.Fatal("params is not changed")
+		} else if !changed && *optimizedParams != *params {
+			t.Fatal("params is changed")
+		}
+	})
+}

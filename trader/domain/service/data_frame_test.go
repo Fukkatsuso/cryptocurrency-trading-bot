@@ -69,3 +69,34 @@ func TestDataFrameService(t *testing.T) {
 		t.Logf("Profit: %f", events.Profit())
 	})
 }
+
+func TestMRBaseDataFrameService(t *testing.T) {
+	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat, config.ProductCode, config.CandleDuration)
+	candles, err := candleRepository.FindAll(config.ProductCode, config.CandleDuration, -1)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	df := model.NewDataFrame(config.ProductCode, candles, nil)
+
+	indicatorService := service.NewIndicatorService()
+	dataFrameService := service.NewMRBaseDataFrameService(indicatorService)
+
+	params := model.NewBasicTradeParams(config.ProductCode, 0.01)
+	df.AddRSI(params.RSIPeriod())
+	df.AddMACD(params.MACDFastPeriod(), params.MACDSlowPeriod(), params.MACDSlowPeriod())
+
+	t.Run("Analyze", func(t *testing.T) {
+		buy, sell := dataFrameService.Analyze(df, len(candles)-1, params)
+		t.Logf("Analyze: buy=%t, sell=%t", buy, sell)
+	})
+
+	t.Run("Backtest", func(t *testing.T) {
+		dataFrameService.Backtest(df, params)
+		events := df.BacktestEvents()
+		if events == nil {
+			t.Fatal("Backtest() does not set SignalEvents")
+		}
+		t.Logf("Signals: %v", events.Signals())
+		t.Logf("Profit: %f", events.Profit())
+	})
+}
