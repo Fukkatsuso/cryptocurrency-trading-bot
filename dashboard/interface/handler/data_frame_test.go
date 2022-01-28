@@ -26,7 +26,7 @@ func TestDataFrameHandler(t *testing.T) {
 	candleService := service.NewCandleServicePerDay(config.LocalTime, config.TradeHour, candleRepository)
 	signalEventService := service.NewSignalEventService(signalEventRepository)
 	indicatorService := service.NewIndicatorService()
-	dataFrameService := service.NewDataFrameService(indicatorService)
+	dataFrameService := service.NewMRBaseDataFrameService(indicatorService)
 
 	dataFrameUsecase := usecase.NewDataFrameUsecase(candleService, signalEventService, dataFrameService)
 
