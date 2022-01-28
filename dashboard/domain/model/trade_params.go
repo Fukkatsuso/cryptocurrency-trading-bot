@@ -254,6 +254,6 @@ func NewBasicTradeParams(productCode string, size float64) *TradeParams {
 		12,
 		26,
 		9,
-		0.75,
+		0.95,
 	)
 }
