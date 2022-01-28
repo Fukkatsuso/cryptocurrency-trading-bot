@@ -32,7 +32,7 @@ func Run() {
 	candleService := service.NewCandleServicePerDay(config.LocalTime, config.TradeHour, candleRepository)
 	signalEventService := service.NewSignalEventService(signalEventRepository)
 	indicatorService := service.NewIndicatorService()
-	dataFrameService := service.NewDataFrameService(indicatorService)
+	dataFrameService := service.NewMRBaseDataFrameService(indicatorService)
 	tradeParamsService := service.NewTradeParamsService(tradeParamsRepository, dataFrameService)
 	tradeService := service.NewTradeService(balanceRepository, tickerRepository, orderRepository, signalEventRepository, candleService, dataFrameService, tradeParamsService)
 	notificationService := service.NewNotificationService(notificationRepository)

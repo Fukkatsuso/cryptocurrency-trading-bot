@@ -24,7 +24,7 @@ func TestTradeService(t *testing.T) {
 
 	candleService := service.NewCandleServicePerDay(config.LocalTime, config.TradeHour, candleRepository)
 	indicatorService := service.NewIndicatorService()
-	dataFrameService := service.NewDataFrameService(indicatorService)
+	dataFrameService := service.NewMRBaseDataFrameService(indicatorService)
 	tradeParamsService := service.NewTradeParamsService(tradeParamsRepository, dataFrameService)
 	tradeService := service.NewTradeService(balanceRepository, tickerRepository, orderRepository, signalEventRepository, candleService, dataFrameService, tradeParamsService)
 
