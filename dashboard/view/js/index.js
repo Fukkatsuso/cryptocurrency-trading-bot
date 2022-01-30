@@ -56,7 +56,7 @@ new Vue({
           enable: false,
           periods: [12, 26, 9],
         },
-        stopLimitPercent: 0.75,
+        stopLimitPercent: 0.95,
         backtest: {
           enable: false,
         },
