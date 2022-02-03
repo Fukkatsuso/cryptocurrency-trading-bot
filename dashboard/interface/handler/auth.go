@@ -18,9 +18,9 @@ type authHandler struct {
 	authService service.AuthService
 }
 
-func NewAuthHandler(cr repository.Cookie, as service.AuthService) AuthHandler {
+func NewAuthHandler(cookie repository.Cookie, as service.AuthService) AuthHandler {
 	return &authHandler{
-		cookie:      cr,
+		cookie:      cookie,
 		authService: as,
 	}
 }
