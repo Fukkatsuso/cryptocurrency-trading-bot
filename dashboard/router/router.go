@@ -21,6 +21,7 @@ func Run() {
 	candleRepository := persistence.NewCandleRepository(config.DB, config.CandleTableName, config.TimeFormat)
 	signalEventRepository := persistence.NewSignalEventRepository(config.DB, config.TimeFormat)
 	tradeParamsRepository := persistence.NewTradeParamsRepository(config.DB)
+	cookie := persistence.NewCookie("cryptobot", "/", 60*30, config.SecureCookie)
 	// repository (bitflyer)
 	bitflyerClient := bitflyer.NewClient(config.APIKey, config.APISecret)
 	balanceRepository := bitflyer.NewBitFlyerBalanceRepository(bitflyerClient)
@@ -38,7 +39,7 @@ func Run() {
 	balanceUsecase := usecase.NewBalanceUsecase(balanceRepository)
 
 	// handler
-	authHandler := handler.NewAuthHandler("cryptobot", "/", 60*30, config.SecureCookie, authService)
+	authHandler := handler.NewAuthHandler(cookie, authService)
 	dataFrameHandler := handler.NewDataFrameHandler(dataFrameUsecase)
 	tradeParamsHandler := handler.NewTradeParamsHandler(tradeParamsUsecase)
 	balanceHandler := handler.NewBalanceHandler(balanceUsecase)

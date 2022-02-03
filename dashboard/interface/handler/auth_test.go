@@ -19,10 +19,11 @@ func TestAuth(t *testing.T) {
 
 	userRepository := persistence.NewUserRepository(tx)
 	sessionRepository := persistence.NewSessionRepository(tx)
+	cookie := persistence.NewCookie("cryptobot", "/", 60*30, config.SecureCookie)
 
 	authService := service.NewAuthService(userRepository, sessionRepository)
 
-	authHandler := handler.NewAuthHandler("cryptobot", "/", 60*30, config.SecureCookie, authService)
+	authHandler := handler.NewAuthHandler(cookie, authService)
 
 	// create testUser
 	passwordHash, err := model.PasswordHash("password")
