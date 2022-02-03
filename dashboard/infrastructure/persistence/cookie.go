@@ -8,32 +8,32 @@ import (
 )
 
 type cookie struct {
-	cookieName   string
-	cookiePath   string
-	cookieMaxAge int // ブラウザでcookieが削除されるまでの秒数
+	name         string
+	path         string
+	maxAge       int // ブラウザでcookieが削除されるまでの秒数
 	secureCookie *securecookie.SecureCookie
 }
 
-func NewCookie(cookieName string, cookiePath string, cookieMaxAge int, secureCookie *securecookie.SecureCookie) repository.Cookie {
+func NewCookie(name string, path string, maxAge int, secureCookie *securecookie.SecureCookie) repository.Cookie {
 	return &cookie{
-		cookieName:   cookieName,
-		cookiePath:   cookiePath,
-		cookieMaxAge: cookieMaxAge,
+		name:         name,
+		path:         path,
+		maxAge:       maxAge,
 		secureCookie: secureCookie,
 	}
 }
 
 func (c *cookie) Set(w http.ResponseWriter, value map[string]string) error {
-	encoded, err := c.secureCookie.Encode(c.cookieName, value)
+	encoded, err := c.secureCookie.Encode(c.name, value)
 	if err != nil {
 		return err
 	}
 
 	cookie := &http.Cookie{
-		Name:     c.cookieName,
+		Name:     c.name,
 		Value:    encoded,
-		Path:     c.cookiePath,
-		MaxAge:   c.cookieMaxAge,
+		Path:     c.path,
+		MaxAge:   c.maxAge,
 		Secure:   true,
 		HttpOnly: true,
 	}
@@ -43,21 +43,21 @@ func (c *cookie) Set(w http.ResponseWriter, value map[string]string) error {
 }
 
 func (c *cookie) GetValue(r *http.Request) (map[string]string, error) {
-	cookie, err := r.Cookie(c.cookieName)
+	cookie, err := r.Cookie(c.name)
 	if err != nil {
 		return nil, err
 	}
 
 	value := make(map[string]string)
-	err = c.secureCookie.Decode(c.cookieName, cookie.Value, &value)
+	err = c.secureCookie.Decode(c.name, cookie.Value, &value)
 
 	return value, err
 }
 
 func (c *cookie) Delete(w http.ResponseWriter) {
 	cookie := &http.Cookie{
-		Name:     c.cookieName,
-		Path:     c.cookiePath,
+		Name:     c.name,
+		Path:     c.path,
 		MaxAge:   -1,
 		Secure:   true,
 		HttpOnly: true,
