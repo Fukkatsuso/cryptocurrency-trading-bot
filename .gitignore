@@ -20,3 +20,5 @@ sa_key
 /dashboard/tmp/
 /db/volumes/
 /trader/tmp/
+
+.vscode/
