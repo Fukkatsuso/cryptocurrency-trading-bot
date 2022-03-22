@@ -5,12 +5,12 @@ on:
     branches:
       - main
     paths-ignore:
-      - 'doc/**'
-      - 'scheduler/**'
-      - 'LICENSE'
-      - 'README.md'
-      - '.editorconfig'
-      - '.gitignore'
+      - "doc/**"
+      - "scheduler/**"
+      - "LICENSE"
+      - "README.md"
+      - ".editorconfig"
+      - ".gitignore"
 
 env:
   PROXY_IMAGE: gcr.io/cloudsql-docker/gce-proxy:latest
