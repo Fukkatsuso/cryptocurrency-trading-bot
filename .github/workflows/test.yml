@@ -8,13 +8,13 @@ on:
       - opened
       - synchronize
     paths-ignore:
-      - 'cloud-functions/**'
-      - 'doc/**'
-      - 'scheduler/**'
-      - 'LICENSE'
-      - 'README.md'
-      - '.editorconfig'
-      - '.gitignore'
+      - "cloud-functions/**"
+      - "doc/**"
+      - "scheduler/**"
+      - "LICENSE"
+      - "README.md"
+      - ".editorconfig"
+      - ".gitignore"
 
 env:
   MYSQL_USER: ${{ secrets.MYSQL_USER }}
