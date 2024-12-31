@@ -77,6 +77,8 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${
   --role="roles/storage.admin"
 gcloud iam service-accounts add-iam-policy-binding ${PROJECT_NUMBER}-compute@developer.gserviceaccount.com --member="serviceAccount:${IAM_ACCOUNT}" \
   --role="roles/iam.serviceAccountUser"
+gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${IAM_ACCOUNT}" \
+  --role="roles/artifactregistry.writer"
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${IAM_ACCOUNT}" \
   --role="roles/cloudsql.admin"
