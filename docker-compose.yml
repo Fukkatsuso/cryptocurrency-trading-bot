@@ -1,66 +1,65 @@
-version: "3.7"
-
 services:
-  trader:
-    build:
-      context: ./trader/
-      dockerfile: Dockerfile
-      target: dev
-    container_name: trading_trader
-    env_file:
-      - .env
-    links:
-      - db
-    ports:
-      - 8000:8080
-    tty: true
-    volumes:
-      - ./trader:/go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/trader
-      - ./sa_key:/sa_key
-    working_dir: /go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/trader
+  # trader:
+  #   build:
+  #     context: ./trader/
+  #     dockerfile: Dockerfile
+  #     target: dev
+  #   container_name: trading_trader
+  #   env_file:
+  #     - .env
+  #   links:
+  #     - db
+  #   ports:
+  #     - 8000:8080
+  #   tty: true
+  #   volumes:
+  #     - ./trader:/go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/trader
+  #     - ./sa_key:/sa_key
+  #   working_dir: /go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/trader
 
   dashboard:
     build:
-      context: ./dashboard/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: dashboard/Dockerfile
       target: dev
     container_name: trading_dashboard
     env_file:
       - .env
-    links:
-      - db
+    # links:
+    #   - db
     ports:
       - 8080:8080
     tty: true
     volumes:
       - ./dashboard:/go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard
+      - ./sqlite:/var/sqlite
       - ./sa_key:/sa_key
     working_dir: /go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard
 
-  db:
-    build:
-      context: ./db/
-      dockerfile: Dockerfile
-    container_name: trading_db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      TZ: "Asia/Tokyo"
-    env_file:
-      - .env
-    ports:
-      - 3306:3306
-    restart: unless-stopped
-    volumes:
-      - ./db/volumes:/var/lib/mysql
-      - ./db/init:/docker-entrypoint-initdb.d
+  # db:
+  #   build:
+  #     context: ./db/
+  #     dockerfile: Dockerfile
+  #   container_name: trading_db
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     TZ: "Asia/Tokyo"
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - 3306:3306
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./db/volumes:/var/lib/mysql
+  #     - ./db/init:/docker-entrypoint-initdb.d
 
-  scheduler:
-    build:
-      context: ./scheduler/
-      dockerfile: Dockerfile
-    container_name: trader_scheduler
-    tty: true
-    volumes:
-      - ./scheduler:/go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/scheduler
-    working_dir: /go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/scheduler
-    command: go run main.go
+  # scheduler:
+  #   build:
+  #     context: ./scheduler/
+  #     dockerfile: Dockerfile
+  #   container_name: trader_scheduler
+  #   tty: true
+  #   volumes:
+  #     - ./scheduler:/go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/scheduler
+  #   working_dir: /go/src/github.com/Fukkatsuso/cryptocurrency-trading-bot/scheduler
+  #   command: go run main.go

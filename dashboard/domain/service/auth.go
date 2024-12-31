@@ -1,72 +1,65 @@
 package service
 
-import (
-	"errors"
+// type AuthService interface {
+// 	Login(userID string, password string) (string, error)
+// 	Logout(userID string) error
+// 	LoggedIn(userID string, sessionID string) bool
+// }
 
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/domain/model"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/domain/repository"
-)
+// type authService struct {
+// 	userRepository    repository.UserRepository
+// 	sessionRepository repository.SessionRepository
+// }
 
-type AuthService interface {
-	Login(userID string, password string) (string, error)
-	Logout(userID string) error
-	LoggedIn(userID string, sessionID string) bool
-}
+// func NewAuthService(ur repository.UserRepository, sr repository.SessionRepository) AuthService {
+// 	return &authService{
+// 		userRepository:    ur,
+// 		sessionRepository: sr,
+// 	}
+// }
 
-type authService struct {
-	userRepository    repository.UserRepository
-	sessionRepository repository.SessionRepository
-}
+// func (as *authService) Login(userID string, password string) (string, error) {
+// 	user, err := as.userRepository.FindByID(userID)
+// 	if err != nil {
+// 		return "", err
+// 	}
 
-func NewAuthService(ur repository.UserRepository, sr repository.SessionRepository) AuthService {
-	return &authService{
-		userRepository:    ur,
-		sessionRepository: sr,
-	}
-}
+// 	if err := model.CompareHashAndPassword(user.Password(), password); err != nil {
+// 		return "", errors.New("password is not correct")
+// 	}
 
-func (as *authService) Login(userID string, password string) (string, error) {
-	user, err := as.userRepository.FindByID(userID)
-	if err != nil {
-		return "", err
-	}
+// 	sessionID, err := model.NewSessionID()
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	sessionIdHash, err := model.SessionIdHash(sessionID)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	if err := as.sessionRepository.Save(userID, sessionIdHash); err != nil {
+// 		return "", err
+// 	}
 
-	if err := model.CompareHashAndPassword(user.Password(), password); err != nil {
-		return "", errors.New("password is not correct")
-	}
+// 	return sessionID, nil
+// }
 
-	sessionID, err := model.NewSessionID()
-	if err != nil {
-		return "", err
-	}
-	sessionIdHash, err := model.SessionIdHash(sessionID)
-	if err != nil {
-		return "", err
-	}
-	if err := as.sessionRepository.Save(userID, sessionIdHash); err != nil {
-		return "", err
-	}
+// func (as *authService) Logout(userID string) error {
+// 	if err := as.sessionRepository.Delete(userID); err != nil {
+// 		return err
+// 	}
 
-	return sessionID, nil
-}
+// 	return nil
+// }
 
-func (as *authService) Logout(userID string) error {
-	if err := as.sessionRepository.Delete(userID); err != nil {
-		return err
-	}
+// func (as *authService) LoggedIn(userID string, sessionID string) bool {
+// 	if sessionID == "" {
+// 		return false
+// 	}
 
-	return nil
-}
+// 	sessionIdHash, err := as.sessionRepository.FindByUserID(userID)
+// 	if err != nil {
+// 		return false
+// 	}
 
-func (as *authService) LoggedIn(userID string, sessionID string) bool {
-	if sessionID == "" {
-		return false
-	}
-
-	sessionIdHash, err := as.sessionRepository.FindByUserID(userID)
-	if err != nil {
-		return false
-	}
-
-	return model.CompareHashAndSessionID(sessionIdHash, sessionID) == nil
-}
+// 	return model.CompareHashAndSessionID(sessionIdHash, sessionID) == nil
+// }

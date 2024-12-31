@@ -1,98 +1,91 @@
 package handler
 
-import (
-	"net/http"
+// type AuthHandler interface {
+// 	Login() http.HandlerFunc
+// 	Logout() http.HandlerFunc
+// 	LoggedIn(r *http.Request) bool
+// }
 
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/domain/repository"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/domain/service"
-)
+// type authHandler struct {
+// 	cookie      repository.Cookie
+// 	authService service.AuthService
+// }
 
-type AuthHandler interface {
-	Login() http.HandlerFunc
-	Logout() http.HandlerFunc
-	LoggedIn(r *http.Request) bool
-}
+// func NewAuthHandler(cookie repository.Cookie, as service.AuthService) AuthHandler {
+// 	return &authHandler{
+// 		cookie:      cookie,
+// 		authService: as,
+// 	}
+// }
 
-type authHandler struct {
-	cookie      repository.Cookie
-	authService service.AuthService
-}
+// func (ah *authHandler) Login() http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		if r.Method != http.MethodPost {
+// 			http.Error(w, "this method is not allowed", http.StatusMethodNotAllowed)
+// 			return
+// 		}
 
-func NewAuthHandler(cookie repository.Cookie, as service.AuthService) AuthHandler {
-	return &authHandler{
-		cookie:      cookie,
-		authService: as,
-	}
-}
+// 		userID := r.FormValue("userId")
+// 		password := r.FormValue("password")
 
-func (ah *authHandler) Login() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "this method is not allowed", http.StatusMethodNotAllowed)
-			return
-		}
+// 		sessionID, err := ah.authService.Login(userID, password)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusUnauthorized)
+// 			return
+// 		}
 
-		userID := r.FormValue("userId")
-		password := r.FormValue("password")
+// 		// userIDとsessionIDをCookieにセット
+// 		cookieValue := map[string]string{
+// 			"userID":    userID,
+// 			"sessionID": sessionID,
+// 		}
+// 		err = ah.cookie.Set(w, cookieValue)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
+// 			return
+// 		}
 
-		sessionID, err := ah.authService.Login(userID, password)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusUnauthorized)
-			return
-		}
+// 		w.WriteHeader(http.StatusOK)
+// 		w.Write([]byte("Success"))
+// 	}
+// }
 
-		// userIDとsessionIDをCookieにセット
-		cookieValue := map[string]string{
-			"userID":    userID,
-			"sessionID": sessionID,
-		}
-		err = ah.cookie.Set(w, cookieValue)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+// func (ah *authHandler) Logout() http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		if r.Method != http.MethodDelete {
+// 			http.Error(w, "this method is not allowed", http.StatusMethodNotAllowed)
+// 			return
+// 		}
 
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Success"))
-	}
-}
+// 		// cookieの値を取得
+// 		cookieValue, err := ah.cookie.GetValue(r)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusBadRequest)
+// 			return
+// 		}
 
-func (ah *authHandler) Logout() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodDelete {
-			http.Error(w, "this method is not allowed", http.StatusMethodNotAllowed)
-			return
-		}
+// 		userID := cookieValue["userID"]
+// 		if err := ah.authService.Logout(userID); err != nil {
+// 			http.Error(w, err.Error(), http.StatusBadRequest)
+// 			return
+// 		}
 
-		// cookieの値を取得
-		cookieValue, err := ah.cookie.GetValue(r)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+// 		// cookieを削除
+// 		ah.cookie.Delete(w)
 
-		userID := cookieValue["userID"]
-		if err := ah.authService.Logout(userID); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
+// 		http.Redirect(w, r, "/", http.StatusOK)
+// 	}
+// }
 
-		// cookieを削除
-		ah.cookie.Delete(w)
+// func (ah *authHandler) LoggedIn(r *http.Request) bool {
+// 	// cookieの値を取得
+// 	cookieValue, err := ah.cookie.GetValue(r)
+// 	if err != nil {
+// 		return false
+// 	}
 
-		http.Redirect(w, r, "/", http.StatusOK)
-	}
-}
+// 	userID := cookieValue["userID"]
+// 	sessionID := cookieValue["sessionID"]
 
-func (ah *authHandler) LoggedIn(r *http.Request) bool {
-	// cookieの値を取得
-	cookieValue, err := ah.cookie.GetValue(r)
-	if err != nil {
-		return false
-	}
-
-	userID := cookieValue["userID"]
-	sessionID := cookieValue["sessionID"]
-
-	return ah.authService.LoggedIn(userID, sessionID)
-}
+// 	return ah.authService.LoggedIn(userID, sessionID)
+// }

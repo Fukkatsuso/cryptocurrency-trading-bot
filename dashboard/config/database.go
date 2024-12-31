@@ -2,10 +2,10 @@ package config
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 
-	_ "github.com/go-sql-driver/mysql"
+	// _ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var DB *sql.DB
@@ -26,17 +26,20 @@ const (
 )
 
 func DSN() string {
-	socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
-	if !isSet {
-		socketDir = "/cloudsql"
-	}
+	// socketDir, isSet := os.LookupEnv("DB_SOCKET_DIR")
+	// if !isSet {
+	// 	socketDir = "/cloudsql"
+	// }
 
-	var dsn string
-	if MYSQL_CONNECTION_NAME == "" {
-		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s%s", MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE, MYSQL_OPTION)
-	} else {
-		dsn = fmt.Sprintf("%s:%s@unix(/%s/%s)/%s%s", MYSQL_USER, MYSQL_PASSWORD, socketDir, MYSQL_CONNECTION_NAME, MYSQL_DATABASE, MYSQL_OPTION)
-	}
+	// var dsn string
+	// if MYSQL_CONNECTION_NAME == "" {
+	// 	dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s%s", MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_PORT, MYSQL_DATABASE, MYSQL_OPTION)
+	// } else {
+	// 	dsn = fmt.Sprintf("%s:%s@unix(/%s/%s)/%s%s", MYSQL_USER, MYSQL_PASSWORD, socketDir, MYSQL_CONNECTION_NAME, MYSQL_DATABASE, MYSQL_OPTION)
+	// }
+
+	// sqlite
+	dsn := "/var/sqlite/trading-sqlite3.db"
 
 	return dsn
 }
@@ -47,7 +50,7 @@ func init() {
 	// fmt.Println("dsn:", dsn)
 
 	var err error
-	DB, err = sql.Open("mysql", dsn)
+	DB, err = sql.Open("sqlite3", dsn)
 	if err != nil {
 		panic(err.Error())
 	}

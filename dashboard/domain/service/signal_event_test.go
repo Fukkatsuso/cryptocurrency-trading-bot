@@ -11,7 +11,7 @@ import (
 )
 
 func TestSignalEventService(t *testing.T) {
-	tx := persistence.NewMySQLTransaction(config.DSN())
+	tx := persistence.NewSQLiteTransaction(config.DSN())
 	defer tx.Rollback()
 
 	signalEventRepository := persistence.NewSignalEventRepository(tx, config.TimeFormat)
@@ -37,7 +37,7 @@ func TestSignalEventService(t *testing.T) {
 		}
 	})
 
-	t.Run("sind all after time", func(t *testing.T) {
+	t.Run("find all after time", func(t *testing.T) {
 		events, err := signalEventRepository.FindAllAfterTime(config.ProductCode, signalTime)
 		if err != nil {
 			t.Fatal(err.Error())

@@ -34,89 +34,89 @@ env:
   DASHBOARD_IMAGE: asia.gcr.io/${{ secrets.GCP_PROJECT }}/dashboard:${{ github.sha }}
 
 jobs:
-  migrate-db:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: db
+  # migrate-db:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: db
 
-    steps:
-      - uses: actions/checkout@v2
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Start Cloud SQL Proxy
-        run: |
-          echo '${{ secrets.GCP_SA_KEY }}' > sa_key
-          docker pull $PROXY_IMAGE
-          docker run -d \
-            -v $PWD/sa_key:/config \
-            -p 127.0.0.1:3306:3306 \
-            $PROXY_IMAGE /cloud_sql_proxy \
-            -instances=$CLOUDSQL_INSTANCE_CONNECTION_NAME=tcp:0.0.0.0:3306 \
-            -credential_file=/config
+  #     - name: Start Cloud SQL Proxy
+  #       run: |
+  #         echo '${{ secrets.GCP_SA_KEY }}' > sa_key
+  #         docker pull $PROXY_IMAGE
+  #         docker run -d \
+  #           -v $PWD/sa_key:/config \
+  #           -p 127.0.0.1:3306:3306 \
+  #           $PROXY_IMAGE /cloud_sql_proxy \
+  #           -instances=$CLOUDSQL_INSTANCE_CONNECTION_NAME=tcp:0.0.0.0:3306 \
+  #           -credential_file=/config
 
-      - name: Install migrate
-        run: |
-          curl -L https://packagecloud.io/golang-migrate/migrate/gpgkey | sudo apt-key add -
-          echo "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/migrate.list
-          sudo apt-get update
-          sudo apt-get install -y migrate
+  #     - name: Install migrate
+  #       run: |
+  #         curl -L https://packagecloud.io/golang-migrate/migrate/gpgkey | sudo apt-key add -
+  #         echo "deb https://packagecloud.io/golang-migrate/migrate/ubuntu/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/migrate.list
+  #         sudo apt-get update
+  #         sudo apt-get install -y migrate
 
-      - name: Migrate DB (up)
-        run: |
-          migrate -path "./migrations/" -database "$MYSQL_DSN" up
+  #     - name: Migrate DB (up)
+  #       run: |
+  #         migrate -path "./migrations/" -database "$MYSQL_DSN" up
 
-  deploy-trader:
-    runs-on: ubuntu-latest
-    needs: migrate-db
-    defaults:
-      run:
-        working-directory: trader
+  # deploy-trader:
+  #   runs-on: ubuntu-latest
+  #   needs: migrate-db
+  #   defaults:
+  #     run:
+  #       working-directory: trader
 
-    steps:
-      - uses: actions/checkout@v2
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Google auth
-        uses: google-github-actions/auth@v0
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+  #     - name: Google auth
+  #       uses: google-github-actions/auth@v0
+  #       with:
+  #         credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+  #     - name: Set up Cloud SDK
+  #       uses: google-github-actions/setup-gcloud@v0
 
-      - name: Configure docker to use the gcloud cli
-        run: gcloud auth configure-docker --quiet
+  #     - name: Configure docker to use the gcloud cli
+  #       run: gcloud auth configure-docker --quiet
 
-      - name: Build a docker image
-        run: docker build -f Dockerfile --target release -t $TRADER_IMAGE .
+  #     - name: Build a docker image
+  #       run: docker build -f Dockerfile --target release -t $TRADER_IMAGE .
 
-      - name: Push the docker image
-        run: docker push $TRADER_IMAGE
+  #     - name: Push the docker image
+  #       run: docker push $TRADER_IMAGE
 
-      - name: Deploy to Cloud Run
-        run: |
-          gcloud run deploy trader \
-            --image $TRADER_IMAGE \
-            --project $GCP_PROJECT \
-            --region $GCP_REGION \
-            --platform managed \
-            --add-cloudsql-instances $CLOUDSQL_INSTANCE_CONNECTION_NAME \
-            --update-env-vars MYSQL_USER="$MYSQL_USER" \
-            --update-env-vars MYSQL_PASSWORD="$MYSQL_PASSWORD" \
-            --update-env-vars MYSQL_DATABASE="$MYSQL_DATABASE" \
-            --update-env-vars MYSQL_CONNECTION_NAME="$CLOUDSQL_INSTANCE_CONNECTION_NAME" \
-            --update-env-vars BITFLYER_API_KEY="$BITFLYER_API_KEY" \
-            --update-env-vars BITFLYER_API_SECRET="$BITFLYER_API_SECRET" \
-            --update-env-vars PRODUCT_CODE="$PRODUCT_CODE" \
-            --update-env-vars SLACK_BOT_TOKEN="$SLACK_BOT_TOKEN" \
-            --update-env-vars SLACK_CHANNEL_ID="$SLACK_CHANNEL_ID" \
-            --quiet
+  #     - name: Deploy to Cloud Run
+  #       run: |
+  #         gcloud run deploy trader \
+  #           --image $TRADER_IMAGE \
+  #           --project $GCP_PROJECT \
+  #           --region $GCP_REGION \
+  #           --platform managed \
+  #           --add-cloudsql-instances $CLOUDSQL_INSTANCE_CONNECTION_NAME \
+  #           --update-env-vars MYSQL_USER="$MYSQL_USER" \
+  #           --update-env-vars MYSQL_PASSWORD="$MYSQL_PASSWORD" \
+  #           --update-env-vars MYSQL_DATABASE="$MYSQL_DATABASE" \
+  #           --update-env-vars MYSQL_CONNECTION_NAME="$CLOUDSQL_INSTANCE_CONNECTION_NAME" \
+  #           --update-env-vars BITFLYER_API_KEY="$BITFLYER_API_KEY" \
+  #           --update-env-vars BITFLYER_API_SECRET="$BITFLYER_API_SECRET" \
+  #           --update-env-vars PRODUCT_CODE="$PRODUCT_CODE" \
+  #           --update-env-vars SLACK_BOT_TOKEN="$SLACK_BOT_TOKEN" \
+  #           --update-env-vars SLACK_CHANNEL_ID="$SLACK_CHANNEL_ID" \
+  #           --quiet
 
   deploy-dashboard:
     runs-on: ubuntu-latest
-    needs: migrate-db
-    defaults:
-      run:
-        working-directory: dashboard
+    # needs: migrate-db
+    # defaults:
+    #   run:
+    #     working-directory: dashboard
 
     steps:
       - uses: actions/checkout@v2
@@ -133,7 +133,7 @@ jobs:
         run: gcloud auth configure-docker --quiet
 
       - name: Build a docker image
-        run: docker build -f Dockerfile --target release -t $DASHBOARD_IMAGE .
+        run: docker build -f dashboard/Dockerfile --target release -t $DASHBOARD_IMAGE .
 
       - name: Push the docker image
         run: docker push $DASHBOARD_IMAGE
@@ -145,11 +145,6 @@ jobs:
             --project $GCP_PROJECT \
             --region $GCP_REGION \
             --platform managed \
-            --add-cloudsql-instances $CLOUDSQL_INSTANCE_CONNECTION_NAME \
-            --update-env-vars MYSQL_USER="$MYSQL_USER" \
-            --update-env-vars MYSQL_PASSWORD="$MYSQL_PASSWORD" \
-            --update-env-vars MYSQL_DATABASE="$MYSQL_DATABASE" \
-            --update-env-vars MYSQL_CONNECTION_NAME="$CLOUDSQL_INSTANCE_CONNECTION_NAME" \
             --update-env-vars BITFLYER_API_KEY="$BITFLYER_API_KEY" \
             --update-env-vars BITFLYER_API_SECRET="$BITFLYER_API_SECRET" \
             --update-env-vars PRODUCT_CODE="$PRODUCT_CODE" \
@@ -158,34 +153,34 @@ jobs:
             --allow-unauthenticated \
             --quiet
 
-  deploy-functions:
-    runs-on: ubuntu-latest
-    needs: migrate-db
-    defaults:
-      run:
-        working-directory: cloud-functions
+  # deploy-functions:
+  #   runs-on: ubuntu-latest
+  #   needs: migrate-db
+  #   defaults:
+  #     run:
+  #       working-directory: cloud-functions
 
-    steps:
-      - uses: actions/checkout@v2
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Google auth
-        uses: google-github-actions/auth@v0
-        with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+  #     - name: Google auth
+  #       uses: google-github-actions/auth@v0
+  #       with:
+  #         credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+  #     - name: Set up Cloud SDK
+  #       uses: google-github-actions/setup-gcloud@v0
 
-      - name: Deploy to Cloud Functions
-        run: |
-          gcloud functions deploy export-database-to-storage \
-            --project $GCP_PROJECT \
-            --region $GCP_REGION \
-            --entry-point ExportDatabaseToStorage \
-            --runtime go113 \
-            --update-env-vars GCP_PROJECT="$GCP_PROJECT" \
-            --update-env-vars CLOUDSQL_INSTANCE="$CLOUDSQL_INSTANCE" \
-            --update-env-vars MYSQL_DATABASE="$MYSQL_DATABASE" \
-            --update-env-vars GCS_BUCKET="$GCS_BUCKET" \
-            --max-instances 1 \
-            --trigger-http
+  #     - name: Deploy to Cloud Functions
+  #       run: |
+  #         gcloud functions deploy export-database-to-storage \
+  #           --project $GCP_PROJECT \
+  #           --region $GCP_REGION \
+  #           --entry-point ExportDatabaseToStorage \
+  #           --runtime go113 \
+  #           --update-env-vars GCP_PROJECT="$GCP_PROJECT" \
+  #           --update-env-vars CLOUDSQL_INSTANCE="$CLOUDSQL_INSTANCE" \
+  #           --update-env-vars MYSQL_DATABASE="$MYSQL_DATABASE" \
+  #           --update-env-vars GCS_BUCKET="$GCS_BUCKET" \
+  #           --max-instances 1 \
+  #           --trigger-http

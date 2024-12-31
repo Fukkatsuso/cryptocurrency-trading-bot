@@ -10,8 +10,24 @@ type DB interface {
 	QueryRow(query string, args ...interface{}) *sql.Row
 }
 
-func NewMySQLTransaction(dsn string) *sql.Tx {
-	db, err := sql.Open("mysql", dsn)
+// func NewMySQLTransaction(dsn string) *sql.Tx {
+// 	db, err := sql.Open("mysql", dsn)
+// 	if err != nil {
+// 		panic(err.Error())
+// 	}
+
+// 	err = db.Ping()
+// 	if err != nil {
+// 		panic(err.Error())
+// 	}
+
+// 	tx, _ := db.Begin()
+
+// 	return tx
+// }
+
+func NewSQLiteTransaction(dsn string) *sql.Tx {
+	db, err := sql.Open("sqlite3", dsn)
 	if err != nil {
 		panic(err.Error())
 	}
