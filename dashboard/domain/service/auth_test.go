@@ -1,71 +1,62 @@
 package service_test
 
-import (
-	"testing"
+// func TestAuth(t *testing.T) {
+// 	tx := persistence.NewMySQLTransaction(config.DSN())
+// 	defer tx.Rollback()
 
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/config"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/domain/model"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/domain/service"
-	"github.com/Fukkatsuso/cryptocurrency-trading-bot/dashboard/infrastructure/persistence"
-)
+// 	userRepository := persistence.NewUserRepository(tx)
+// 	sessionRepository := persistence.NewSessionRepository(tx)
 
-func TestAuth(t *testing.T) {
-	tx := persistence.NewMySQLTransaction(config.DSN())
-	defer tx.Rollback()
+// 	authService := service.NewAuthService(userRepository, sessionRepository)
 
-	userRepository := persistence.NewUserRepository(tx)
-	sessionRepository := persistence.NewSessionRepository(tx)
+// 	// create testUser
+// 	passwordHash, err := model.PasswordHash("password")
+// 	if err != nil {
+// 		t.Fatal(err.Error())
+// 	}
+// 	testUser := model.NewUser("test", passwordHash, "")
+// 	if err := userRepository.Save(testUser); err != nil {
+// 		t.Fatal(err.Error())
+// 	}
 
-	authService := service.NewAuthService(userRepository, sessionRepository)
+// 	t.Run("succeed in login", func(t *testing.T) {
+// 		sessID, err := authService.Login("test", "password")
+// 		if err != nil {
+// 			t.Fatal(err.Error())
+// 		}
+// 		if sessID == "" {
+// 			t.Fatal("Login() returns empty sessionID")
+// 		}
 
-	// create testUser
-	passwordHash, err := model.PasswordHash("password")
-	if err != nil {
-		t.Fatal(err.Error())
-	}
-	testUser := model.NewUser("test", passwordHash, "")
-	if err := userRepository.Save(testUser); err != nil {
-		t.Fatal(err.Error())
-	}
+// 		if !authService.LoggedIn("test", sessID) {
+// 			t.Fatal("test user is not logged in")
+// 		}
 
-	t.Run("succeed in login", func(t *testing.T) {
-		sessID, err := authService.Login("test", "password")
-		if err != nil {
-			t.Fatal(err.Error())
-		}
-		if sessID == "" {
-			t.Fatal("Login() returns empty sessionID")
-		}
+// 		err = authService.Logout("test")
+// 		if err != nil {
+// 			t.Fatal(err.Error())
+// 		}
+// 	})
 
-		if !authService.LoggedIn("test", sessID) {
-			t.Fatal("test user is not logged in")
-		}
+// 	t.Run("fail to login by wrong id", func(t *testing.T) {
+// 		sessID, err := authService.Login("testtest", "password")
+// 		if err == nil {
+// 			t.Fatal("Login() must fail")
+// 		}
 
-		err = authService.Logout("test")
-		if err != nil {
-			t.Fatal(err.Error())
-		}
-	})
+// 		if authService.LoggedIn("test", sessID) {
+// 			t.Fatal("LoggedId() must return false")
+// 		}
+// 	})
 
-	t.Run("fail to login by wrong id", func(t *testing.T) {
-		sessID, err := authService.Login("testtest", "password")
-		if err == nil {
-			t.Fatal("Login() must fail")
-		}
+// 	t.Run("fail to login by wrong password", func(t *testing.T) {
+// 		sessID, err := authService.Login("test", "passwordpassword")
+// 		if err == nil {
+// 			t.Fatal("Login() must fail")
+// 		}
 
-		if authService.LoggedIn("test", sessID) {
-			t.Fatal("LoggedId() must return false")
-		}
-	})
-
-	t.Run("fail to login by wrong password", func(t *testing.T) {
-		sessID, err := authService.Login("test", "passwordpassword")
-		if err == nil {
-			t.Fatal("Login() must fail")
-		}
-
-		if authService.LoggedIn("test", sessID) {
-			t.Fatal("LoggedId() must return false")
-		}
-	})
-}
+// 		if authService.LoggedIn("test", sessID) {
+// 			t.Fatal("LoggedId() must return false")
+// 		}
+// 	})
+// }

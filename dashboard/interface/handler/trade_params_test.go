@@ -18,7 +18,7 @@ import (
 )
 
 func TestTradeParams(t *testing.T) {
-	tx := persistence.NewMySQLTransaction(config.DSN())
+	tx := persistence.NewSQLiteTransaction(config.DSN())
 	defer tx.Rollback()
 
 	tradeParamsRepository := persistence.NewTradeParamsRepository(tx)

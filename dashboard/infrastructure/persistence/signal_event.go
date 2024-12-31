@@ -27,8 +27,7 @@ func (sr *signalEventRepository) Save(signal model.SignalEvent) error {
             (time, product_code, side, price, size)
         VALUES
             (?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-            time = VALUES(time)
+        ON CONFLICT(time) DO NOTHING
         `
 	_, err := sr.db.Exec(cmd, signal.Time().Format(sr.timeFormat), signal.ProductCode(), signal.Side(), signal.Price(), signal.Size())
 
@@ -53,11 +52,17 @@ func (sr *signalEventRepository) FindAll(productCode string) ([]model.SignalEven
 
 	signalEvents := []model.SignalEvent{}
 	for rows.Next() {
-		var timeTime time.Time
+		var timeStr string
 		var productCode string
 		var side model.OrderSide
 		var price, size float64
-		err := rows.Scan(&timeTime, &productCode, &side, &price, &size)
+		err := rows.Scan(&timeStr, &productCode, &side, &price, &size)
+		if err != nil {
+			return nil, err
+		}
+
+		// for sqlite: convert string to time.Time
+		timeTime, err := time.Parse(sr.timeFormat, timeStr)
 		if err != nil {
 			return nil, err
 		}
@@ -97,11 +102,17 @@ func (sr *signalEventRepository) FindAllAfterTime(productCode string, timeTime t
 
 	signalEvents := []model.SignalEvent{}
 	for rows.Next() {
-		var timeTime time.Time
+		var timeStr string
 		var productCode string
 		var side model.OrderSide
 		var price, size float64
-		err := rows.Scan(&timeTime, &productCode, &side, &price, &size)
+		err := rows.Scan(&timeStr, &productCode, &side, &price, &size)
+		if err != nil {
+			return nil, err
+		}
+
+		// for sqlite: convert string to time.Time
+		timeTime, err := time.Parse(sr.timeFormat, timeStr)
 		if err != nil {
 			return nil, err
 		}

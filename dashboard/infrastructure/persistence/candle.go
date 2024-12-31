@@ -34,12 +34,12 @@ func (cr candleRepository) Save(candle model.Candle) error {
             (time, open, close, high, low, volume)
         VALUES
             (?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-            open = VALUES(open),
-            close = VALUES(close),
-            high = VALUES(high),
-            low = VALUES(low),
-            volume = VALUES(volume)
+        ON CONFLICT(time) DO UPDATE SET
+            open = excluded.open,
+            close = excluded.close,
+            high = excluded.high,
+            low = excluded.low,
+            volume = excluded.volume
         `,
 		cr.candleTableName,
 	)
@@ -103,9 +103,15 @@ func (cr candleRepository) FindAll(productCode string, duration time.Duration, l
 
 	candles := make([]model.Candle, 0)
 	for rows.Next() {
-		var timeTime time.Time
+		var timeStr string
 		var candleOpen, candleClose, candleHigh, candleLow, candleVolume float64
-		err := rows.Scan(&timeTime, &candleOpen, &candleClose, &candleHigh, &candleLow, &candleVolume)
+		err := rows.Scan(&timeStr, &candleOpen, &candleClose, &candleHigh, &candleLow, &candleVolume)
+		if err != nil {
+			return nil, err
+		}
+
+		// for sqlite: convert string to time.Time
+		timeTime, err := time.Parse(cr.timeFormat, timeStr)
 		if err != nil {
 			return nil, err
 		}

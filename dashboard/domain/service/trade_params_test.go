@@ -10,7 +10,7 @@ import (
 )
 
 func TestTradeParamsService(t *testing.T) {
-	tx := persistence.NewMySQLTransaction(config.DSN())
+	tx := persistence.NewSQLiteTransaction(config.DSN())
 	defer tx.Rollback()
 
 	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat, config.ProductCode, config.CandleDuration)
@@ -140,7 +140,7 @@ func TestTradeParamsService(t *testing.T) {
 }
 
 func TestTradeParamsServiceMRBase(t *testing.T) {
-	tx := persistence.NewMySQLTransaction(config.DSN())
+	tx := persistence.NewSQLiteTransaction(config.DSN())
 	defer tx.Rollback()
 
 	candleRepository := persistence.NewCandleMockRepository(config.CandleTableName, config.TimeFormat, config.ProductCode, config.CandleDuration)
